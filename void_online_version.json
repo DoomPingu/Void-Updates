@@ -1,6 +1,6 @@
 {
-    "version": "1.7.0",
-    "name": "Alpha 1.7",
-    "sha256": "CB4381EB7C19EEF1405AAFDAC1D5DE621A5CB3C8DDDD5805491B17D980625606",
-    "download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v1.7.0/void_update_test.zip"
+    "version": "2.0.0",
+    "name": "Alpha 2.0",
+    "sha256": "9D4DC66AD74EA00AD47606CBDB38DE5241BBCC20C32C92ABFA03B168FB7A43E0",
+    "download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v2.0.0/void_update_2.0.0.zip"
 }
