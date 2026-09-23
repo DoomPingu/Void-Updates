@@ -7,6 +7,9 @@
         "Neue Orte und Erkundungsbereiche",
         "Wald und Erkundung weiter ausgebaut",
         "Inventar- und Gegenstandssystem verbessert",
-        "Mehrere Bugfixes und Stabilitaetsverbesserungen"
-    ]
+        "Mehrere Bugfixes und Stabilitätsverbesserungen"
+    ],
+    "launcher_version": "1.1.0",
+    "launcher_sha256": "DB9FFA7FB0AFE36E0C9C66C1A772CFDCAD17A22193B5A2533FCE6576F27D767E",
+    "launcher_download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v2.1.0/Void_Launcher_1.1.0.exe"
 }
