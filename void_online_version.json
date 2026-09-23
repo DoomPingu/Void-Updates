@@ -9,7 +9,7 @@
         "Inventar- und Gegenstandssystem verbessert",
         "Mehrere Bugfixes und Stabilitätsverbesserungen"
     ],
-    "launcher_version": "1.2.6",
-    "launcher_sha256": "953423710394E495C14E9272DF1E07C01E9DD5C226621511AD44083694698AE9",
-    "launcher_download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v2.1.0/Void_Launcher_1.2.6.exe"
+    "launcher_version": "1.2.7",
+    "launcher_sha256": "E0D554E41B3771D8E8CA89284C6061701D817F3DB6763E1739B5CEE51B55E72D",
+    "launcher_download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v2.1.0/Void_Launcher_1.2.7.exe"
 }
