@@ -1,0 +1,1000 @@
+        elif (
+            eintrag_id
+            == "versiegeltes_register"
+        ):
+            wegstation_versiegeltes_register_untersuchen()
+
+        return
+
+            
+def marktplatz():
+    ort_titel("Marktplatz von Eichenruh")
+    prolog_ort_besucht("marktplatz")
+
+    ort_nachricht_anzeigen()
+
+    menue_trenner()
+    print("Händler rufen ihre Angebote zwischen kleinen Holzständen aus.")
+    print("Dorfbewohner tragen Körbe über den Platz und Kinder laufen zwischen den Ständen hindurch.")
+    print("In der Luft liegen die Gerüche von Brot, Gewürzen und frisch gesägtem Holz.")
+    print()
+    print("1. Mit Hilda sprechen")
+    print("2. Mit Tomas sprechen")
+
+    if prolog_laeuft():
+        print("3. Den Marktplatz ansehen")
+        print("4. Marktplatz verlassen")
+
+        markt_auswahl = eingabe_menu(
+            1,
+            4,
+            sonder_tasten=()
+        )
+
+    else:
+        print("3. Bei Hilda Zutaten kaufen")
+        print("4. Den Marktplatz ansehen")
+        print("5. Marktplatz verlassen")
+
+        if weg_status(
+            "koenigsring"
+        ) == "entdeckt":
+
+            print(
+                "6. Königsring"
+            )
+
+            markt_auswahl = eingabe_menu(
+                1,
+                6,
+                sonder_tasten=()
+            )
+
+        else:
+            markt_auswahl = eingabe_menu(
+                1,
+                5,
+                sonder_tasten=()
+            )
+    if not prolog_laeuft():
+        hilda_daten = npc_status(
+            "hilda"
+        )
+
+        tomas_daten = npc_status(
+            "tomas"
+        )
+
+        if markt_auswahl == 1:
+            hilda_daten["direkte_besuche"] = (
+                hilda_daten.get(
+                    "direkte_besuche",
+                    0
+                ) + 1
+            )
+        else:
+            hilda_daten[
+                "direkte_besuche"
+            ] = 0
+
+        if markt_auswahl == 2:
+            tomas_daten["direkte_besuche"] = (
+                tomas_daten.get(
+                    "direkte_besuche",
+                    0
+                ) + 1
+            )
+        else:
+            tomas_daten[
+                "direkte_besuche"
+            ] = 0
+
+    if markt_auswahl == 1:
+        dialog_hilda()
+
+    elif markt_auswahl == 2:
+        dialog_tomas()
+
+    elif (
+        markt_auswahl == 3
+        and not prolog_laeuft()
+    ):
+        hilda_zutaten_kaufen()
+
+    elif (
+        markt_auswahl == 3
+        and prolog_laeuft()
+    ) or (
+        markt_auswahl == 4
+        and not prolog_laeuft()
+    ):
+        ort_titel("Marktplatz von Eichenruh")
+
+        if prolog_laeuft():
+            text_ausgeben(
+                "Du lässt deinen Blick über den Marktplatz schweifen."
+            )
+
+            text_ausgeben(
+                "Ein Bäcker legt noch warmes Brot in seine Auslage."
+            )
+
+            text_ausgeben(
+                "Zwischen den Ständen wird gefeilscht, gelacht und gearbeitet."
+            )
+
+            text_ausgeben(
+                "Ein paar Kinder jagen sich zwischen Kisten und Körben hindurch."
+            )
+
+            text_ausgeben(
+                "Für Eichenruh ist es ein ganz gewöhnlicher Morgen."
+            )
+
+        else:
+            text_ausgeben(
+                "Du lässt deinen Blick über den Marktplatz schweifen."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Ein Bäcker verkauft noch warmes Brot."
+            )
+
+            text_ausgeben(
+                "Ein Händler versucht lautstark, "
+                "einen viel zu teuren Teppich loszuwerden."
+            )
+
+            text_ausgeben(
+                "Am Rand des Platzes führt eine breite Straße "
+                "aus Eichenruh hinaus."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Du hast diesen Weg schon oft gesehen, "
+                "aber bisher hattest du keinen Grund, ihm zu folgen."
+            )
+
+        warte_auf_taste()
+
+    elif (
+        markt_auswahl == 4
+        and prolog_laeuft()
+    ) or (
+        markt_auswahl == 5
+        and not prolog_laeuft()
+    ):
+        spieler["ort"] = "Eichenruh"
+
+        ort_nachricht_setzen(
+            "Du verlässt den Marktplatz.",
+            "Wenig später stehst du wieder im Zentrum von Eichenruh."
+        )
+
+    elif (
+        markt_auswahl == 6
+        and not prolog_laeuft()
+        and weg_status(
+            "koenigsring"
+        ) == "entdeckt"
+    ):
+        spieler[
+            "ort"
+        ] = "Eichenruh"
+
+        reise(
+            "Letzthafen",
+            "Der Wald fällt hinter dir zurück.",
+            "Vor dir liegt Letzthafen zwischen Nebel und hohen Klippen.",
+            gebiet_modus=True
+        )
+  
+def dialog_bjorn():
+    npc_besuch_starten(
+        "bjorn"
+    )
+
+    erste_runde = True
+
+    themen_dieses_gespraech = set()
+    nach_prolog_besuch = None
+
+    ort_titel("Bjorns Schmiede")
+    dialog_titel("Bjorn")
+
+    prolog_status = spieler.get(
+        "prolog_status"
+    )
+
+    # -------------------------
+    # ERSTER NORMALER BESUCH
+    # -------------------------
+
+    if prolog_status == "dorf_freigeschaltet":
+        while True:
+            ort_titel("Bjorns Schmiede")
+            dialog_titel("Bjorn")
+
+            text_ausgeben(
+                f'[Bjorn] Morgen, {spieler["name"]}.'
+            )
+
+            text_ausgeben(
+                "Bjorn legt seinen Hammer kurz beiseite "
+                "und wischt sich über die Stirn."
+            )
+
+            print()
+            text_ausgeben(
+                "[Bjorn] Die Esse ist kaum warm "
+                "und ich habe schon mehr Arbeit als mir lieb ist."
+            )
+
+            print()
+            print(
+                "1. " + dialog_option(
+                    "bjorn",
+                    "normaler_morgen",
+                    "Klingt nach einem normalen Morgen."
+                )
+            )
+
+            print(
+                "2. " + dialog_option(
+                    "bjorn",
+                    "aktuelle_arbeit",
+                    "Was arbeitest du gerade?"
+                )
+            )
+
+            print("3. Gespräch beenden")
+
+            bjorn_auswahl = eingabe_menu(
+                1,
+                3,
+                sonder_tasten=()
+            )
+
+            print()
+
+            if bjorn_auswahl == 1:
+                text_ausgeben("Bjorn schnaubt amüsiert.")
+                print()
+
+                text_ausgeben(
+                    "[Bjorn] Genau deshalb sollte ich "
+                    "mich vermutlich nicht beschweren."
+                )
+                dialog_thema_markieren(
+                    "bjorn",
+                    "normaler_morgen"
+                )
+                warte_auf_taste("Weiter")
+
+            elif bjorn_auswahl == 2:
+                text_ausgeben(
+                    "[Bjorn] Nichts Spannendes. "
+                    "Ein paar Werkzeuge, zwei Hufeisen "
+                    "und eine Axt mit gebrochenem Stiel."
+                )
+
+                print()
+                text_ausgeben(
+                    "[Bjorn] Die gewöhnlichen Dinge "
+                    "halten einen Schmied schließlich am Leben."
+                )
+                dialog_thema_markieren(
+                    "bjorn",
+                    "aktuelle_arbeit"
+                )
+                warte_auf_taste("Weiter")
+
+            elif bjorn_auswahl == 3:
+                return
+            
+    # -------------------------
+    # QUESTSTART: JORIS FEHLT
+    # -------------------------
+
+    elif prolog_status == "dorf_kennengelernt":
+        text_ausgeben(
+            "Bjorn steht vor seiner Werkbank und durchsucht "
+            "mehrere Kisten."
+        )
+
+        print()
+        text_ausgeben(
+            "Dabei murmelt er etwas Unverständliches "
+            "und schiebt eine Werkzeugkiste ziemlich unsanft beiseite."
+        )
+
+        print()
+        text_ausgeben(
+            f'[Bjorn] Ah, {spieler["name"]}. '
+            "Hast du Joris heute irgendwo gesehen?"
+        )
+
+        print()
+        print("1. Nein. Ist etwas passiert?")
+        print("2. Wer ist Joris?")
+
+        bjorn_auswahl = eingabe_menu(
+            1,
+            2,
+            sonder_tasten=()
+        )
+
+        print()
+
+        if bjorn_auswahl == 1:
+            text_ausgeben(
+                "[Bjorn] Passiert? Hoffentlich nicht."
+            )
+
+        elif bjorn_auswahl == 2:
+            text_ausgeben(
+                "[Bjorn] Mein Helfer. Der Junge geht mir "
+                "hier seit einer ganzen Weile zur Hand."
+            )
+
+        print()
+        text_ausgeben(
+            "[Bjorn] Er sollte heute Morgen eigentlich "
+            "die neuen Kohlesäcke zählen."
+        )
+
+        text_ausgeben(
+            "[Bjorn] Seitdem habe ich nichts mehr von ihm gesehen."
+        )
+
+        print()
+        text_ausgeben(
+            "[Bjorn] Wahrscheinlich treibt er sich irgendwo herum "
+            "und hat die Zeit vergessen."
+        )
+
+        print()
+        text_ausgeben(
+            "[Bjorn] Wenn du ihn siehst, sag ihm bitte, "
+            "dass ich hier auf ihn warte."
+        )
+
+        spieler["prolog_status"] = "joris_suche"
+
+        quest_meldung(
+            "neu",
+            "Der verlorene Lehrling",
+            "Finde heraus, wo Joris geblieben ist."
+        )
+
+        warte_auf_taste()
+        return
+
+    # -------------------------
+    # JORIS WIRD GESUCHT
+    # -------------------------
+
+    elif prolog_status == "joris_suche":
+        while True:
+            ort_titel("Bjorns Schmiede")
+            dialog_titel("Bjorn")
+
+            text_ausgeben(
+                "[Bjorn] Noch keine Spur von Joris?"
+            )
+
+            print()
+            print(
+                "1. " + dialog_option(
+                    "bjorn",
+                    "joris_suchen",
+                    "Wo sollte ich nach ihm suchen?"
+                )
+            )
+
+            print(
+                "2. " + dialog_option(
+                    "bjorn",
+                    "joris_arbeit",
+                    "Was sollte Joris heute eigentlich erledigen?"
+                )
+            )
+
+            print("3. Gespräch beenden")
+
+            bjorn_auswahl = eingabe_menu(
+                1,
+                3,
+                sonder_tasten=()
+            )
+
+            print()
+
+            if bjorn_auswahl == 1:
+                text_ausgeben(
+                    "[Bjorn] Frag vielleicht bei Mara oder auf dem "
+                    "Marktplatz nach."
+                )
+
+                print()
+                text_ausgeben(
+                    "[Bjorn] Irgendjemand muss den Jungen heute Morgen "
+                    "gesehen haben."
+                )
+                dialog_thema_markieren(
+                    "bjorn",
+                    "joris_suchen"
+                )
+                warte_auf_taste("Weiter")
+
+            elif bjorn_auswahl == 2:
+                text_ausgeben(
+                    "[Bjorn] Er sollte die neuen Kohlesäcke zählen "
+                    "und mir danach bei ein paar Kleinigkeiten helfen."
+                )
+
+                print()
+                text_ausgeben(
+                    "[Bjorn] Nichts, wofür er einfach "
+                    "stundenlang verschwinden müsste."
+                )
+                dialog_thema_markieren(
+                    "bjorn",
+                    "joris_arbeit"
+                )
+                warte_auf_taste("Weiter")
+
+            elif bjorn_auswahl == 3:
+                return
+
+    # -------------------------
+    # HINWEISE ZU JORIS GEFUNDEN
+    # -------------------------
+
+    elif prolog_status == "joris_hinweise_komplett":
+        text_ausgeben(
+            "[Bjorn] Du siehst aus, als hättest du etwas erfahren."
+        )
+
+        print()
+        text_ausgeben(
+            "Du erzählst Bjorn, dass Joris am Morgen "
+            "das Brot bei Mara abgeholt hat."
+        )
+
+        text_ausgeben(
+            "Danach lieh er sich bei Tomas ein langes Hanfseil "
+            "und verschwand hinter der Schmiede."
+        )
+
+        print()
+        text_ausgeben("Bjorns Stirn legt sich in Falten.")
+
+        print()
+        text_ausgeben(
+            "[Bjorn] Hinter der Schmiede..."
+        )
+
+        print()
+        text_ausgeben(
+            "[Bjorn] Verdammt. Der alte Lagerkeller."
+        )
+
+        print()
+        text_ausgeben(
+            "[Bjorn] Dort unten stehen noch ein paar alte Regale "
+            "und Kisten."
+        )
+
+        text_ausgeben(
+            "[Bjorn] Ich habe Joris gestern gesagt, "
+            "dass wir dort irgendwann Ordnung schaffen müssen."
+        )
+
+        print()
+        text_ausgeben(
+            "[Bjorn] Wenn der Junge das auf eigene Faust "
+            "angefangen hat..."
+        )
+
+        spieler["prolog_status"] = "joris_keller"
+
+        quest_meldung(
+            "update",
+            "Der verlorene Lehrling",
+            "Untersuche den alten Lagerkeller hinter Bjorns Schmiede."
+        )
+
+        warte_auf_taste()
+        return
+
+    # -------------------------
+    # JORIS IST ZURÜCK
+    # -------------------------
+
+    elif prolog_status == "joris_gefunden":
+        text_ausgeben(
+            "Bjorns Blick fällt sofort auf Joris."
+        )
+
+        print()
+        text_ausgeben("[Bjorn] Da bist du ja!")
+
+        print()
+        text_ausgeben(
+            "Joris hebt entschuldigend die Hände."
+        )
+
+        print()
+        text_ausgeben(
+            "[Joris] Das Regal ist umgekippt. "
+            "Ich bin hinter der Tür festgesessen."
+        )
+
+        print()
+        text_ausgeben(
+            "[Bjorn] Und deshalb verschwindest du "
+            "für den halben Morgen?"
+        )
+
+        print()
+        text_ausgeben(
+            "[Joris] Für den halben Morgen?"
+        )
+
+        print()
+        text_ausgeben(
+            "Joris schaut kurz zu dir."
+        )
+
+        print()
+        text_ausgeben(
+            "[Joris] Für mich war ich viel länger dort unten."
+        )
+
+        print()
+        text_ausgeben(
+            "Bjorn schnaubt und legt Joris eine Hand "
+            "auf die Schulter."
+        )
+
+        print()
+        text_ausgeben(
+            "[Bjorn] Dunkelheit und ein leerer Magen."
+        )
+
+        text_ausgeben(
+            "[Bjorn] Da verliert man eben irgendwann "
+            "das Gefühl für die Zeit."
+        )
+
+        print()
+        text_ausgeben(
+            "Joris antwortet nicht sofort."
+        )
+
+        print()
+
+        quest_meldung(
+            "abgeschlossen",
+            "Der verlorene Lehrling"
+        )
+
+        spieler["prolog_status"] = "joris_gerettet"
+
+        text_ausgeben(
+            "[Bjorn] Geh rüber zu Mara und hol dir etwas Warmes."
+        )
+
+        text_ausgeben(
+            "[Bjorn] Die Arbeit läuft dir heute nicht mehr davon."
+        )
+
+        print()
+        text_ausgeben(
+            "Joris nickt und verlässt langsam die Schmiede."
+        )
+
+        print()
+        text_ausgeben(
+            "Bjorn sieht ihm einen Moment nach."
+        )
+
+        print()
+        text_ausgeben(
+            f'[Bjorn] Und du, {spieler["name"]}... '
+            "geh noch nicht zu weit."
+        )
+
+        text_ausgeben(
+            "[Bjorn] Jetzt, wo Joris ausfällt, "
+            "könnte ich noch einen Gefallen gebrauchen."
+        )
+
+        warte_auf_taste()
+        return
+
+    elif prolog_status == "joris_gerettet":
+        text_ausgeben(
+            "[Bjorn] Joris ist erstmal bei Mara."
+        )
+
+        print()
+        text_ausgeben(
+            "[Bjorn] Eigentlich hätte er heute noch "
+            "eine Lieferung für mich erledigen sollen."
+        )
+
+        print()
+        text_ausgeben(
+            "Bjorn deutet auf einen kleinen, schweren Sack "
+            "neben seiner Werkbank."
+        )
+
+        print()
+        text_ausgeben(
+            "[Bjorn] Ein paar frisch geschmiedete Keile "
+            "und Achsnägel."
+        )
+
+        text_ausgeben(
+            "[Bjorn] Die Köhler am Waldrand warten darauf."
+        )
+
+        print()
+        text_ausgeben(
+            "[Bjorn] Ihre Leute liefern mir regelmäßig "
+            "Holz und Kohle."
+        )
+
+        text_ausgeben(
+            "[Bjorn] Ohne ihre Kohle bleibt meine Esse kalt, "
+            "und ohne meine Werkzeuge fluchen sie beim Arbeiten."
+        )
+
+        print()
+        text_ausgeben(
+            "[Bjorn] Eigentlich ein ganz gutes Geschäft."
+        )
+
+        print()
+        while True:
+            print("1. Ich kann die Lieferung übernehmen.")
+            print("2. Wie weit ist es bis zur Köhlerei?")
+
+            bjorn_auswahl = eingabe_menu(
+                1,
+                2,
+                sonder_tasten=()
+            )
+
+            print()
+
+            if bjorn_auswahl == 1:
+                break
+
+            elif bjorn_auswahl == 2:
+                text_ausgeben(
+                    "[Bjorn] Nicht weit."
+                )
+
+                text_ausgeben(
+                    "[Bjorn] Folge einfach dem breiten Weg "
+                    "bis zum Waldrand."
+                )
+
+                text_ausgeben(
+                    "[Bjorn] Wenn du richtigen Wald unter den Füßen hast, "
+                    "bist du schon zu weit gegangen."
+                )
+
+                print()
+
+        text_ausgeben(
+            "[Bjorn] Gut. Dann nimm den Sack mit."
+        )
+        if not item_besitzt("bjorns_lieferung"):
+            item_hinzufuegen(
+                "bjorns_lieferung"
+            )
+        print()
+        text_ausgeben(
+            "Bjorn hält plötzlich inne und mustert dich."
+        )
+
+        print()
+        text_ausgeben(
+            "[Bjorn] Moment."
+        )
+
+        print()
+        text_ausgeben(
+            "[Bjorn] Du gehst da draußen doch nicht "
+            "mit leeren Händen herum."
+        )
+
+        text_ausgeben(
+            "[Bjorn] Am Waldrand laufen manchmal Wildschweine herum."
+        )
+
+        print()
+        text_ausgeben(
+            "[Bjorn] Such dir etwas aus der alten Kiste aus."
+        )
+
+        startwaffe_waehlen()
+
+        spieler["prolog_status"] = "koehlerei_lieferung"
+
+        quest_meldung(
+            "neu",
+            "Zur Köhlerei",
+            "Bringe Bjorns Lieferung zur Köhlerei am Waldrand."
+        )
+
+        warte_auf_taste()
+        return
+
+    if spieler.get(
+        "koehler_nachricht_bjorn"
+    ) == "offen":
+        ort_titel("Bjorns Schmiede")
+        dialog_titel("Bjorn")
+
+        text_ausgeben(
+            "Bjorn blickt von seiner Arbeit auf, "
+            "als du an die Werkbank trittst."
+        )
+
+        print()
+        text_ausgeben(
+            "[Bjorn] Na? Ist bei den Köhlern alles angekommen?"
+        )
+
+        print()
+        text_ausgeben(
+            f'[{spieler["name"]}] Ja. Sie lassen dir ausrichten, '
+            "dass die nächste Ladung Kohle morgen bereitsteht."
+        )
+
+        print()
+        text_ausgeben(
+            "Bjorn nickt zufrieden."
+        )
+
+        print()
+        text_ausgeben(
+            "[Bjorn] Gut. Dann reicht mir der Vorrat hier "
+            "noch bis morgen."
+        )
+
+        text_ausgeben(
+            "[Bjorn] Danke fürs Ausrichten."
+        )
+
+        spieler[
+            "koehler_nachricht_bjorn"
+        ] = "ausgerichtet"
+
+        warte_auf_taste(
+            "Weiter"
+        )
+
+        erste_runde = False
+
+    if nach_prolog_besuch is None:
+        bjorn_daten = npc_status(
+            "bjorn"
+        )
+
+        bjorn_daten["nach_prolog_besuche"] = (
+            bjorn_daten.get(
+                "nach_prolog_besuche",
+                0
+            ) + 1
+        )
+
+        nach_prolog_besuch = bjorn_daten[
+            "nach_prolog_besuche"
+        ]
+
+    while True:
+        ort_titel("Bjorns Schmiede")
+        dialog_titel("Bjorn")
+
+        if erste_runde:
+            direkte_besuche = npc_status(
+                "bjorn"
+            ).get(
+                "direkte_besuche",
+                0
+            )
+
+            if spieler["lebenspunkte"] <= 50:
+                begruessung = npc_variante_waehlen(
+                    "bjorn",
+                    "letzte_begruessung_verletzt",
+                    [
+                        (
+                            "Bjorn sieht von seiner Werkbank auf "
+                            "und mustert dich einen Moment.\n\n"
+                            "[Bjorn] Du siehst nicht besonders gut aus."
+                        ),
+                        (
+                            "Bjorns Blick bleibt kurz an dir hängen.\n\n"
+                            "[Bjorn] Was immer du da draußen gemacht hast: "
+                            "Es scheint zurückgeschlagen zu haben."
+                        ),
+                        (
+                            "Bjorn legt den Hammer beiseite.\n\n"
+                            "[Bjorn] Bevor du irgendetwas sagst: "
+                            "Du solltest dich ausruhen."
+                        )
+                    ]
+                )
+
+                for zeile in begruessung.split("\n"):
+                    if zeile:
+                        text_ausgeben(
+                            zeile
+                        )
+                    else:
+                        print()
+
+            elif direkte_besuche >= 5:
+                begruessung = npc_variante_waehlen(
+                    "bjorn",
+                    "letzte_dauerbesuch_begruessung",
+                    [
+                        (
+                            "Bjorn sieht von seiner Arbeit auf.\n\n"
+                            "[Bjorn] Warst du nicht gerade erst hier?"
+                        ),
+                        (
+                            "Bjorn legt den Hammer langsam beiseite.\n\n"
+                            "[Bjorn] Wenn du noch öfter wiederkommst, "
+                            "gebe ich dir gleich einen Besen."
+                        ),
+                        (
+                            "Bjorn mustert dich einen Moment.\n\n"
+                            "[Bjorn] Du weißt schon, dass man eine Schmiede "
+                            "auch länger als drei Minuten verlassen darf?"
+                        ),
+                        (
+                            "Bjorn deutet mit dem Hammer auf einen freien "
+                            "Platz neben der Werkbank.\n\n"
+                            "[Bjorn] Stell dich einfach da hin. "
+                            "Dann sparst du dir den Weg zur Tür."
+                        )
+                    ]
+                )
+
+                for zeile in begruessung.split("\n"):
+                    if zeile:
+                        text_ausgeben(
+                            zeile
+                        )
+                    else:
+                        print()
+
+            elif nach_prolog_besuch == 1:
+                text_ausgeben(
+                    "Bjorn blickt von seiner Werkbank auf "
+                    "und legt den Hammer beiseite."
+                )
+
+                print()
+
+                text_ausgeben(
+                    f"[Bjorn] Da bist du ja, {spieler['name']}."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Bjorn] Was gibt's?"
+                )
+
+            elif nach_prolog_besuch == 2:
+                text_ausgeben(
+                    "Bjorn wischt sich die Hände "
+                    "an seiner Schürze ab."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Bjorn] Wieder da?"
+                )
+
+                text_ausgeben(
+                    "[Bjorn] Gut. Was brauchst du?"
+                )
+
+            else:
+                begruessung = npc_begruessung_waehlen(
+                    "bjorn",
+                    [
+                        "[Bjorn] Na?",
+                        "[Bjorn] Was gibt's?",
+                        "[Bjorn] Wieder da? Was brauchst du?",
+                        "[Bjorn] Ich höre.",
+                        (
+                            "[Bjorn] Wenn du wegen Arbeit kommst: "
+                            "Davon habe ich genug. Wenn nicht, hör ich zu."
+                        ),
+                        "[Bjorn] Also?"
+                    ]
+                )
+
+                text_ausgeben(
+                    begruessung
+                )
+
+        else:
+            text_ausgeben(
+                "[Bjorn] Noch etwas?"
+            )
+
+        print()
+
+        optionen = []
+
+        if "genug_arbeit" not in themen_dieses_gespraech:
+            optionen.append(
+                (
+                    "genug_arbeit",
+                    "Bei dir klingt es jedenfalls nach genug Arbeit."
+                )
+            )
+
+        if "muedigkeit" not in themen_dieses_gespraech:
+            if spieler["lebenspunkte"] <= 50:
+                muedigkeits_text = (
+                    "Ich habe schon bessere Tage gehabt."
+                )
+            else:
+                muedigkeits_text = (
+                    "Ehrlich gesagt bin ich etwas müde."
+                )
+
+            optionen.append(
+                (
+                    "muedigkeit",
+                    muedigkeits_text
+                )
+            )
+
+        if "viele_fragen" not in themen_dieses_gespraech:
+            optionen.append(
+                (
+                    "viele_fragen",
+                    "Du stellst heute ganz schön viele Fragen, Bjorn."
+                )
+            )
+
+        if "dorf_neuigkeiten" not in themen_dieses_gespraech:
+            if spieler.get(
+                "quest_hilda"
+            ) in (
+                "aktiv",
+                "karren_gefunden"
+            ):
+                dorf_neuigkeiten_text = (
+                    "Gibt es Neuigkeiten wegen Hildas Lieferung?"
+                )
+            else:
+                dorf_neuigkeiten_text = (
+                    "Was gibt es Neues in Eichenruh?"
+                )
+
+            optionen.append(
+                (
+                    "dorf_neuigkeiten",
+                    dorf_neuigkeiten_text
+                )
+            )
