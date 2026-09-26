@@ -1,0 +1,1000 @@
+            (int, float)
+        ):
+            continue
+
+        stapel = max(
+            1,
+            aktiv_daten.get(
+                "stapel",
+                1
+            )
+        )
+
+        gesamt += (
+            modifikator * stapel
+        )
+
+    return gesamt
+
+
+def status_dauer_verringern(
+    einheit,
+    menge=1,
+    meldung=True
+):
+    if (
+        isinstance(menge, bool)
+        or not isinstance(
+            menge,
+            (int, float)
+        )
+        or menge <= 0
+    ):
+        return []
+
+    aktive = status_effekte_aktiv()
+
+    beendet = []
+
+    for status_id, aktiv_daten in list(
+        aktive.items()
+    ):
+        if aktiv_daten.get(
+            "einheit"
+        ) != einheit:
+            continue
+
+        dauer = aktiv_daten.get(
+            "dauer"
+        )
+
+        if not isinstance(
+            dauer,
+            (int, float)
+        ):
+            continue
+
+        aktiv_daten[
+            "dauer"
+        ] = dauer - menge
+
+        if aktiv_daten[
+            "dauer"
+        ] <= 0:
+            beendet.append(
+                status_id
+            )
+
+    for status_id in beendet:
+        status_entfernen(
+            status_id,
+            meldung=meldung
+        )
+
+    return beendet
+
+
+def status_kampf_vorbereiten():
+    for status_id, aktiv_daten in (
+        status_effekte_aktiv().items()
+    ):
+        definition = STATUS_EFFEKTE.get(
+            status_id,
+            {}
+        )
+
+        kampf_einheit = definition.get(
+            "kampf_einheit"
+        )
+
+        nach_kampf_einheit = definition.get(
+            "nach_kampf_einheit"
+        )
+
+        if (
+            kampf_einheit
+            and nach_kampf_einheit
+            and aktiv_daten.get(
+                "einheit"
+            ) == nach_kampf_einheit
+        ):
+            aktiv_daten[
+                "einheit"
+            ] = kampf_einheit
+
+
+def status_nach_kampf_verarbeiten():
+    for status_id, aktiv_daten in (
+        status_effekte_aktiv().items()
+    ):
+        definition = STATUS_EFFEKTE.get(
+            status_id,
+            {}
+        )
+
+        nach_kampf_einheit = definition.get(
+            "nach_kampf_einheit"
+        )
+
+        if (
+            nach_kampf_einheit
+            and aktiv_daten.get(
+                "einheit"
+            ) == "runden"
+        ):
+            aktiv_daten[
+                "einheit"
+            ] = nach_kampf_einheit
+
+
+def status_schritte_abschliessen(
+    menge=1
+):
+    if (
+        isinstance(menge, bool)
+        or not isinstance(menge, int)
+        or menge <= 0
+    ):
+        return True
+
+    for _ in range(menge):
+        aktive = status_effekte_aktiv()
+
+        for status_id, aktiv_daten in list(
+            aktive.items()
+        ):
+            if aktiv_daten.get(
+                "einheit"
+            ) != "schritte":
+                continue
+
+            definition = STATUS_EFFEKTE.get(
+                status_id,
+                {}
+            )
+
+            if not definition.get(
+                "schaden_ausserhalb_kampf",
+                False
+            ):
+                continue
+
+            tick_schaden = definition.get(
+                "schaden_pro_tick",
+                0
+            )
+
+            if not isinstance(
+                tick_schaden,
+                (int, float)
+            ):
+                continue
+
+            stapel = max(
+                1,
+                aktiv_daten.get(
+                    "stapel",
+                    1
+                )
+            )
+
+            schaden = int(
+                tick_schaden * stapel
+            )
+
+            if schaden <= 0:
+                continue
+
+            spieler[
+                "lebenspunkte"
+            ] = max(
+                0,
+                spieler[
+                    "lebenspunkte"
+                ] - schaden
+            )
+
+            name = definition.get(
+                "name",
+                status_id
+            )
+
+            print()
+
+            design_text(
+                (
+                    f"{name}: Du erleidest "
+                    f"{schaden} Schaden."
+                ),
+                design="gefahr",
+                art="menue"
+            )
+
+        if spieler[
+            "lebenspunkte"
+        ] <= 0:
+            print()
+
+            design_text(
+                "Du brichst an deinen Verletzungen zusammen.",
+                design="gefahr",
+                art="menue"
+            )
+
+            spieler[
+                "spiel_laeuft"
+            ] = False
+
+            return False
+
+        status_dauer_verringern(
+            "schritte"
+        )
+
+    return True
+
+def status_anzeigen():
+    ort_titel(
+        "Status"
+    )
+
+    aktive = status_effekte_aktiv()
+
+    if not aktive:
+        print(
+            "Aktuell sind keine Buffs, Debuffs "
+            "oder Statuseffekte aktiv."
+        )
+
+        warte_auf_taste(
+            "Zurück"
+        )
+
+        return
+
+    for status_id, aktiv_daten in (
+        aktive.items()
+    ):
+        definition = STATUS_EFFEKTE.get(
+            status_id,
+            {}
+        )
+
+        design_text(
+            definition.get(
+                "name",
+                status_id
+            ),
+            design=definition.get(
+                "design",
+                "wissen"
+            ),
+            art="menue"
+        )
+
+        beschreibung = definition.get(
+            "beschreibung"
+        )
+
+        if beschreibung:
+            print(
+                beschreibung
+            )
+
+        stapel = aktiv_daten.get(
+            "stapel",
+            1
+        )
+
+        if stapel > 1:
+            print(
+                f"Stapel: {stapel}"
+            )
+
+        dauer = aktiv_daten.get(
+            "dauer"
+        )
+
+        einheit = aktiv_daten.get(
+            "einheit"
+        )
+
+        if (
+            dauer is not None
+            and einheit
+        ):
+            if einheit == "schritte":
+                einheit_text = (
+                    "Schritt"
+                    if dauer == 1
+                    else "Schritte"
+                )
+
+            elif einheit == "runden":
+                einheit_text = (
+                    "Runde"
+                    if dauer == 1
+                    else "Runden"
+                )
+
+            elif einheit == "kaempfe":
+                einheit_text = (
+                    "Kampf"
+                    if dauer == 1
+                    else "Kämpfe"
+                )
+
+            else:
+                einheit_text = einheit
+
+            print(
+                f"Dauer: "
+                f"{dauer} "
+                f"{einheit_text}"
+            )
+
+        print()
+
+    warte_auf_taste(
+        "Zurück"
+    )
+
+def kampf_starten(
+    lebenspunkte=100,
+    heiltraenke=1,
+    waffe=None,
+    gegner_typ=None
+):
+    status_kampf_vorbereiten()
+
+    ergebnis = kampfsystem_kampf_starten(
+        lebenspunkte=lebenspunkte,
+        heiltraenke=heiltraenke,
+        waffe=waffe,
+        gegner_typ=gegner_typ,
+        status_effekte=status_effekte_aktiv(),
+        status_definitionen=STATUS_EFFEKTE
+    )
+
+    aktualisierte_status = ergebnis.get(
+        "status_effekte"
+    )
+
+    if isinstance(
+        aktualisierte_status,
+        dict
+    ):
+        spieler[
+            "status_effekte"
+        ] = aktualisierte_status
+
+    status_nach_kampf_verarbeiten()
+
+    status_dauer_verringern(
+        "kaempfe"
+    )
+
+    if ergebnis.get(
+        "gewonnen",
+        False
+    ):
+        akt1_lernerfahrung(
+            "kampf_erfahrung"
+        )
+
+    return ergebnis
+
+ATTRIBUT_DEFINITIONEN = {
+    "koerper": {
+        "name": "Körper",
+        "startwert": 1
+    },
+
+    "geist": {
+        "name": "Geist",
+        "startwert": 1
+    },
+
+    "uebersinnliches": {
+        "name": "Übersinnliches",
+        "startwert": 0
+    }
+}
+
+
+VERFASSUNG_DEFINITIONEN = {
+    # Körper
+    "staerke": {
+        "name": "Stärke",
+        "attribut": "koerper"
+    },
+
+    "ausdauer": {
+        "name": "Ausdauer",
+        "attribut": "koerper"
+    },
+
+    "geschick": {
+        "name": "Geschick",
+        "attribut": "koerper"
+    },
+
+    "zaehigkeit": {
+        "name": "Zähigkeit",
+        "attribut": "koerper"
+    },
+
+    # Geist
+    "wissen": {
+        "name": "Wissen",
+        "attribut": "geist"
+    },
+
+    "wahrnehmung": {
+        "name": "Wahrnehmung",
+        "attribut": "geist"
+    },
+
+    "willenskraft": {
+        "name": "Willenskraft",
+        "attribut": "geist"
+    },
+
+    "empathie": {
+        "name": "Empathie",
+        "attribut": "geist"
+    },
+
+    # Übersinnliches
+    "sensibilitaet": {
+        "name": "Sensibilität",
+        "attribut": "uebersinnliches"
+    },
+
+    "resonanz": {
+        "name": "Resonanz",
+        "attribut": "uebersinnliches"
+    },
+
+    "kontrolle": {
+        "name": "Kontrolle",
+        "attribut": "uebersinnliches"
+    },
+
+    "anker": {
+        "name": "Anker",
+        "attribut": "uebersinnliches"
+    }
+}
+
+
+def attribut_system_sicherstellen(
+    spieler_daten=None
+):
+    if spieler_daten is None:
+        spieler_daten = globals().get(
+            "spieler"
+        )
+
+    if not isinstance(
+        spieler_daten,
+        dict
+    ):
+        return False
+
+    # -------------------------
+    # HAUPTATTRIBUTE
+    # -------------------------
+
+    attribute = spieler_daten.get(
+        "attribute"
+    )
+
+    if not isinstance(
+        attribute,
+        dict
+    ):
+        attribute = {}
+
+        spieler_daten[
+            "attribute"
+        ] = attribute
+
+    for attribut_id, definition in (
+        ATTRIBUT_DEFINITIONEN.items()
+    ):
+        wert = attribute.get(
+            attribut_id
+        )
+
+        if (
+            isinstance(
+                wert,
+                bool
+            )
+            or not isinstance(
+                wert,
+                int
+            )
+        ):
+            attribute[
+                attribut_id
+            ] = definition[
+                "startwert"
+            ]
+
+    # -------------------------
+    # ATTRIBUTFORTSCHRITT
+    # -------------------------
+
+    fortschritt = spieler_daten.get(
+        "attribut_fortschritt"
+    )
+
+    if not isinstance(
+        fortschritt,
+        dict
+    ):
+        fortschritt = {}
+
+        spieler_daten[
+            "attribut_fortschritt"
+        ] = fortschritt
+
+    for attribut_id in (
+        ATTRIBUT_DEFINITIONEN
+    ):
+        wert = fortschritt.get(
+            attribut_id
+        )
+
+        if (
+            isinstance(
+                wert,
+                bool
+            )
+            or not isinstance(
+                wert,
+                (int, float)
+            )
+        ):
+            fortschritt[
+                attribut_id
+            ] = 0
+
+    # -------------------------
+    # VERFASSUNGEN
+    # -------------------------
+
+    verfassungen = spieler_daten.get(
+        "verfassungen"
+    )
+
+    if not isinstance(
+        verfassungen,
+        dict
+    ):
+        verfassungen = {}
+
+        spieler_daten[
+            "verfassungen"
+        ] = verfassungen
+
+    praegung = spieler_daten.get(
+        "verfassungs_praegung"
+    )
+
+    if not isinstance(
+        praegung,
+        dict
+    ):
+        praegung = {}
+
+        spieler_daten[
+            "verfassungs_praegung"
+        ] = praegung
+
+    for verfassung_id in (
+        VERFASSUNG_DEFINITIONEN
+    ):
+        wert = verfassungen.get(
+            verfassung_id
+        )
+
+        if (
+            isinstance(
+                wert,
+                bool
+            )
+            or not isinstance(
+                wert,
+                int
+            )
+        ):
+            verfassungen[
+                verfassung_id
+            ] = 0
+
+        wert = praegung.get(
+            verfassung_id
+        )
+
+        if (
+            isinstance(
+                wert,
+                bool
+            )
+            or not isinstance(
+                wert,
+                (int, float)
+            )
+        ):
+            praegung[
+                verfassung_id
+            ] = 0
+
+    # -------------------------
+    # LERNQUELLEN
+    # -------------------------
+
+    lernquellen = spieler_daten.get(
+        "lernquellen"
+    )
+
+    if not isinstance(
+        lernquellen,
+        dict
+    ):
+        spieler_daten[
+            "lernquellen"
+        ] = {}
+
+    return True
+
+def verfassung_wert_aus_praegung(
+    punkte
+):
+    if (
+        isinstance(
+            punkte,
+            bool
+        )
+        or not isinstance(
+            punkte,
+            (int, float)
+        )
+    ):
+        return 0
+
+    if punkte >= 18:
+        return 3
+
+    if punkte >= 10:
+        return 2
+
+    if punkte >= 4:
+        return 1
+
+    return 0
+
+
+def verfassung_neuberechnen(
+    verfassung_id,
+    meldung=True
+):
+    attribut_system_sicherstellen()
+
+    if (
+        verfassung_id
+        not in VERFASSUNG_DEFINITIONEN
+    ):
+        return False
+
+    praegung = spieler[
+        "verfassungs_praegung"
+    ].get(
+        verfassung_id,
+        0
+    )
+
+    alter_wert = spieler[
+        "verfassungen"
+    ].get(
+        verfassung_id,
+        0
+    )
+
+    neuer_wert = (
+        verfassung_wert_aus_praegung(
+            praegung
+        )
+    )
+
+    if neuer_wert == alter_wert:
+        return False
+
+    spieler[
+        "verfassungen"
+    ][
+        verfassung_id
+    ] = neuer_wert
+
+    if (
+        meldung
+        and neuer_wert > alter_wert
+    ):
+        print()
+
+        design_text(
+            "VERFASSUNG ENTWICKELT",
+            design="positiv",
+            art="menue"
+        )
+
+        print(
+            f"{VERFASSUNG_DEFINITIONEN[verfassung_id]['name']}: "
+            f"+{alter_wert} → +{neuer_wert}"
+        )
+
+    return True
+
+def attribut_schwelle(
+    attribut_id
+):
+    attribut_system_sicherstellen()
+
+    if attribut_id not in ATTRIBUT_DEFINITIONEN:
+        return None
+
+    aktueller_wert = spieler[
+        "attribute"
+    ][
+        attribut_id
+    ]
+
+    # Das Übersinnliche muss zunächst
+    # überhaupt erst erwachen.
+    if (
+        attribut_id
+        == "uebersinnliches"
+        and aktueller_wert == 0
+    ):
+        return 6
+
+    return (
+        8
+        + aktueller_wert * 4
+    )
+
+
+def attribut_fortschritt_hinzufuegen(
+    attribut_id,
+    menge=1,
+    praegungen=None,
+    meldung=True
+):
+    attribut_system_sicherstellen()
+
+    if attribut_id not in ATTRIBUT_DEFINITIONEN:
+        return False
+
+    if (
+        isinstance(
+            menge,
+            bool
+        )
+        or not isinstance(
+            menge,
+            (int, float)
+        )
+        or menge <= 0
+    ):
+        return False
+
+    if praegungen is None:
+        praegungen = {}
+
+    if not isinstance(
+        praegungen,
+        dict
+    ):
+        return False
+
+    # -------------------------
+    # VERFASSUNGSPRÄGUNG
+    # -------------------------
+
+    for (
+        verfassung_id,
+        praegung_menge
+    ) in praegungen.items():
+
+        definition = (
+            VERFASSUNG_DEFINITIONEN.get(
+                verfassung_id
+            )
+        )
+
+        if not definition:
+            continue
+
+        # Eine Stärke-Prägung darf z.B.
+        # nicht Geist trainieren.
+        if (
+            definition[
+                "attribut"
+            ] != attribut_id
+        ):
+            continue
+
+        if (
+            isinstance(
+                praegung_menge,
+                bool
+            )
+            or not isinstance(
+                praegung_menge,
+                (int, float)
+            )
+            or praegung_menge <= 0
+        ):
+            continue
+
+        spieler[
+            "verfassungs_praegung"
+        ][
+            verfassung_id
+        ] += praegung_menge
+
+        verfassung_neuberechnen(
+            verfassung_id,
+            meldung=meldung
+        )
+
+    # -------------------------
+    # HAUPTATTRIBUT
+    # -------------------------
+
+    spieler[
+        "attribut_fortschritt"
+    ][
+        attribut_id
+    ] += menge
+
+    entwickelt = False
+
+    while True:
+        schwelle = attribut_schwelle(
+            attribut_id
+        )
+
+        if schwelle is None:
+            break
+
+        fortschritt = spieler[
+            "attribut_fortschritt"
+        ][
+            attribut_id
+        ]
+
+        if fortschritt < schwelle:
+            break
+
+        spieler[
+            "attribut_fortschritt"
+        ][
+            attribut_id
+        ] -= schwelle
+
+        alter_wert = spieler[
+            "attribute"
+        ][
+            attribut_id
+        ]
+
+        spieler[
+            "attribute"
+        ][
+            attribut_id
+        ] += 1
+
+        neuer_wert = spieler[
+            "attribute"
+        ][
+            attribut_id
+        ]
+
+        entwickelt = True
+
+        if meldung:
+            print()
+
+            design_text(
+                "ATTRIBUT ENTWICKELT",
+                design="positiv",
+                art="menue"
+            )
+
+            print()
+
+            print(
+                f"{ATTRIBUT_DEFINITIONEN[attribut_id]['name']}: "
+                f"{alter_wert} → {neuer_wert}"
+            )
+
+    return entwickelt
+
+def lernerfahrung_hinzufuegen(
+    quelle_id,
+    attribut_id,
+    menge=1,
+    praegungen=None,
+    max_nutzungen=1,
+    meldung=True
+):
+    attribut_system_sicherstellen()
+
+    if (
+        not isinstance(
+            quelle_id,
+            str
+        )
+        or not quelle_id
+    ):
+        return False
+
+    if attribut_id not in ATTRIBUT_DEFINITIONEN:
+        return False
+
+    if (
+        isinstance(
+            menge,
+            bool
+        )
+        or not isinstance(
+            menge,
+            (int, float)
+        )
+        or menge <= 0
+    ):
+        return False
+
+    if praegungen is None:
+        praegungen = {}
+
+    if not isinstance(
+        praegungen,
+        dict
+    ):
+        return False
+
+    if (
+        isinstance(
+            max_nutzungen,
+            bool
+        )
+        or not isinstance(
+            max_nutzungen,
+            int
+        )
+        or max_nutzungen <= 0
+    ):
+        return False
+
+    bisher = spieler[
+        "lernquellen"
+    ].get(
+        quelle_id,
+        0
+    )
+
+    if bisher >= max_nutzungen:
+        return False
+
+    spieler[
+        "lernquellen"
+    ][
+        quelle_id
+    ] = bisher + 1
+
+    attribut_fortschritt_hinzufuegen(
