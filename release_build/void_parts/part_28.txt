@@ -1,0 +1,1000 @@
+    # -------------------------
+    # VERBORGENER SEITENARM - WEGMARKE
+    # -------------------------
+
+    if aktion_id == "bacharm_untersuchen":
+        ort_titel(
+            "Wald - Verborgener Seitenarm"
+        )
+
+        text_ausgeben(
+            "Du folgst dem stillen Wasser ein Stück "
+            "zwischen den Wurzeln entlang."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Zwischen zwei dunklen Steinen fällt dir "
+            "ein matter Metallrand auf."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Du löst eine kleine, flache Scheibe aus "
+            "Schlamm und Moos."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Auf einer Seite ist ein fast abgeschliffenes "
+            "Symbol eingeritzt."
+        )
+
+        if not item_besitzt(
+            "alte_wegmarke"
+        ):
+            item_hinzufuegen(
+                "alte_wegmarke"
+            )
+
+        wald_fund_setzen(
+            "alte_wegmarke_gefunden"
+        )
+
+        besonderen_fund_dokumentieren(
+            "alte_wegmarke"
+        )
+
+        print()
+        print("-" * 34)
+
+        design_text(
+            "BESONDERER FUND",
+            design="wissen",
+            art="ereignis"
+        )
+
+        print()
+        print("Alte Wegmarke")
+        print("-" * 34)
+
+        print()
+
+        besonderen_fund_hinweis_anzeigen(
+            "alte_wegmarke"
+        )
+
+        warte_auf_taste(
+            "Weiter"
+        )
+
+        return
+
+    # -------------------------
+    # LAGER DURCHSUCHEN
+    # -------------------------
+
+    if aktion_id == "lager_durchsuchen":
+        ort_titel(
+            "Wald - Verlassenes Lager"
+        )
+
+        text_ausgeben(
+            "Du gehst zwischen den Resten "
+            "des alten Lagers umher."
+        )
+
+        text_ausgeben(
+            "Unter einer halb verrotteten Plane "
+            "findest du einige trockene Äste."
+        )
+
+        menge = random.randint(
+            1,
+            2
+        )
+
+        item_hinzufuegen(
+            "holz",
+            menge
+        )
+
+        wald_fund_setzen(
+            "lager_durchsucht"
+        )
+
+        print()
+
+        design_text(
+            f"{menge}x Holz gefunden",
+            design="positiv",
+            art="menue"
+        )
+
+        print()
+
+        text_ausgeben(
+            "Unter einer halb zerfallenen Stoffbahn "
+            "entdeckst du außerdem ein Stück Papier."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Die Schrift ist verblasst, "
+            "aber einige Zeilen lassen sich noch lesen."
+        )
+
+        print()
+        print(
+            '"Brot kurz über die Glut halten. '
+            'Danach mit frischen Kräutern bestreuen."'
+        )
+
+        if not rezept_ist_gelernt(
+            "kraeuterbrot"
+        ):
+            rezept_lernen(
+                "kraeuterbrot"
+            )
+
+        else:
+            print()
+            print(
+                "Das beschriebene Rezept kennst du bereits."
+            )
+
+        print()
+        text_ausgeben(
+            "Zwischen dem Gras erkennst du außerdem "
+            "mehrere alte Holzpfosten."
+        )
+
+        text_ausgeben(
+            "Sie könnten einmal zu einem Zaun "
+            "oder einer Wegbegrenzung gehört haben."
+        )
+
+        warte_auf_taste(
+            "Weiter"
+        )
+
+    # -------------------------
+    # LAGER -> FURT ABKÜRZUNG
+    # -------------------------
+
+    elif aktion_id == "lager_zaunlinie":
+        ort_titel(
+            "Wald - Verlassenes Lager"
+        )
+
+        text_ausgeben(
+            "Du folgst den schiefen Holzpfosten "
+            "zwischen den Bäumen."
+        )
+
+        text_ausgeben(
+            "Einige sind fast vollständig im "
+            "Unterholz verschwunden."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Nach kurzer Zeit erkennst du das "
+            "flache Wasser der Furt."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Offenbar verlief hier früher einmal "
+            "eine direkte Verbindung."
+        )
+
+        print()
+
+        wald_abkuerzung_freischalten(
+            "lager_furt"
+        )
+
+        warte_auf_taste(
+            "Weiter"
+        )
+
+    # -------------------------
+    # QUELLMULDE
+    # -------------------------
+
+    elif aktion_id == "quelle_untersuchen":
+        ort_titel(
+            "Wald - Verborgene Quellmulde"
+        )
+
+        text_ausgeben(
+            "Du kniest dich an das flache "
+            "Wasserbecken."
+        )
+
+        text_ausgeben(
+            "Das Wasser selbst wirkt vollkommen klar."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Am Rand der Mulde fällt dir jedoch "
+            "eine dünne helle Ablagerung auf."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Sie zieht sich in ungewöhnlich "
+            "regelmäßigen Linien über mehrere Steine."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Du kannst nicht erkennen, ob sie "
+            "natürlich entstanden ist."
+        )
+
+        wald_fund_setzen(
+            "quellmulde_belag"
+        )
+
+        print()
+
+        wald_hinweis_anzeigen(
+            "Ungewöhnliche Ablagerung",
+            (
+                "Die regelmäßigen Linien wirken nicht natürlich. "
+                "Falls du ähnliche Spuren findest, könnte sich "
+                "ein Zusammenhang erkennen lassen."
+            )
+        )
+
+        warte_auf_taste(
+            "Weiter"
+        )
+
+    # -------------------------
+    # FELSSPALTE
+    # -------------------------
+
+    elif aktion_id == "namen_untersuchen":
+        ort_titel(
+            "Wald - Felsspalte"
+        )
+
+        text_ausgeben(
+            "Du streichst Moos von der "
+            "glatten Felswand."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Darunter kommen mehrere Namen "
+            "zum Vorschein."
+        )
+
+        print()
+
+        print(
+            "Edda"
+        )
+
+        print(
+            "Marek"
+        )
+
+        print(
+            "Silva"
+        )
+
+        print(
+            "Oren"
+        )
+
+        print()
+
+        text_ausgeben(
+            "Darunter befindet sich eine fünfte Stelle."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Dort wurde der Stein so tief bearbeitet, "
+            "dass kein Buchstabe mehr zu erkennen ist."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Jemand hat den Namen nicht einfach "
+            "durchgestrichen."
+        )
+
+        text_ausgeben(
+            "Er wurde vollständig entfernt."
+        )
+
+        wald_fund_setzen(
+            "ausgeloeschter_name"
+        )
+
+        print()
+
+        wald_hinweis_anzeigen(
+            "Ausgelöschter Name",
+            (
+                "Der Name wurde offenbar absichtlich vollständig entfernt. "
+                "Vielleicht findest du dieselbe Art von Spuren "
+                "noch an einem anderen Ort."
+            )
+        )
+
+        warte_auf_taste(
+            "Weiter"
+        )
+
+    # -------------------------
+    # STEINSTUFEN
+    # -------------------------
+
+    elif aktion_id == "stufen_untersuchen":
+        ort_titel(
+            "Wald - Überwachsene Steinstufen"
+        )
+
+        text_ausgeben(
+            "Du entfernst Moos und Erde "
+            "von einer der Stufen."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Im Stein verlaufen mehrere "
+            "schmale Einkerbungen."
+        )
+
+        text_ausgeben(
+            "Die Winkel wirken zu regelmäßig, "
+            "um zufällige Schäden zu sein."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Einige Linien setzen sich sogar "
+            "über mehrere Stufen hinweg fort."
+        )
+
+        wald_fund_setzen(
+            "steinstufen_untersucht"
+        )
+
+        print()
+
+        wald_hinweis_anzeigen(
+            "Zeichen auf den Steinstufen",
+            (
+                "Die regelmäßigen Linien wurden offenbar bewusst gesetzt. "
+                "Vielleicht gehören sie zu einem größeren System "
+                "von Wegzeichen."
+            )
+        )
+
+        warte_auf_taste(
+            "Weiter"
+        )
+
+    # -------------------------
+    # STEINSTUFEN -> BACH
+    # -------------------------
+
+    elif aktion_id == "stufen_abstieg":
+        ort_titel(
+            "Wald - Überwachsene Steinstufen"
+        )
+
+        text_ausgeben(
+            "Seitlich der Stufen bemerkst du "
+            "eine schmale Lücke zwischen zwei Felsen."
+        )
+
+        text_ausgeben(
+            "Du zwängst dich hindurch und folgst "
+            "dem steilen Abstieg."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Mit jedem Schritt wird das Geräusch "
+            "von Wasser deutlicher."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Wenig später stehst du oberhalb "
+            "des bekannten Bachlaufs."
+        )
+
+        print()
+
+        wald_abkuerzung_freischalten(
+            "bach_steinstufen"
+        )
+
+        warte_auf_taste(
+            "Weiter"
+        )
+
+    # -------------------------
+    # WEGMARKEN
+    # -------------------------
+
+    elif aktion_id == "wegmarken_untersuchen":
+        ort_titel(
+            "Wald - Alte Wegmarken"
+        )
+
+        text_ausgeben(
+            "Du gehst von Stein zu Stein "
+            "und entfernst vorsichtig etwas Moos."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Auf mehreren Steinen erkennst du "
+            "dieselben schmalen Linien wie zuvor "
+            "auf den überwachsenen Stufen."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Die Markierungen scheinen nicht "
+            "wahllos verteilt zu sein."
+        )
+
+        text_ausgeben(
+            "Sie weisen alle tiefer in denselben "
+            "Teil des Waldes."
+        )
+
+        wald_fund_setzen(
+            "wegmarken_untersucht"
+        )
+
+        print()
+
+        wald_hinweis_anzeigen(
+            "Alte Wegmarken",
+            (
+                "Die Markierungen gehören offenbar zu einem alten Wegsystem. "
+                "Ihre Ausrichtung weist tiefer in den Wald."
+            )
+        )
+
+        warte_auf_taste(
+            "Weiter"
+        )
+
+    # -------------------------
+    # WEGSTEIN - ZEICHEN
+    # -------------------------
+
+    elif aktion_id == "wegstein_zeichen":
+        ort_titel(
+            "Wald - Alter Wegstein"
+        )
+
+        text_ausgeben(
+            "Du trittst näher an den halb eingesunkenen "
+            "Stein heran."
+        )
+
+        text_ausgeben(
+            "Mit der Hand entfernst du vorsichtig "
+            "Moos und feuchte Erde von seiner Oberfläche."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Darunter kommen mehrere schmale "
+            "Einkerbungen zum Vorschein."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Eine davon bildet einen einfachen Pfeil."
+        )
+
+        text_ausgeben(
+            "Die übrigen Linien verlaufen dagegen "
+            "über die gesamte Vorderseite des Steins."
+        )
+
+        if wald_fund_bekannt(
+            "steinstufen_untersucht"
+        ):
+            print()
+
+            design_text(
+                "[Erinnerung]",
+                design="wissen",
+                art="menue"
+            )
+
+            print(
+                "Die Form der Linien erinnert dich "
+                "an die Einkerbungen auf den alten "
+                "Steinstufen."
+            )
+
+        if wald_fund_bekannt(
+            "ausgeloeschter_name"
+        ):
+            print()
+
+            text_ausgeben(
+                "Eine Stelle wurde auffällig tief "
+                "aus dem Stein geschlagen."
+            )
+
+            text_ausgeben(
+                "Die Spuren erinnern dich an den "
+                "ausgelöschten Namen in der Felsspalte."
+            )
+
+        print()
+
+        text_ausgeben(
+            "Eine der Linien zieht sich bis ganz "
+            "nach unten zum Sockel."
+        )
+
+        spieler[
+            "wald_wegstein_untersucht"
+        ] = True
+
+        wald_fund_setzen(
+            "wegstein_zeichen"
+        )
+
+        print()
+
+        wald_hinweis_anzeigen(
+            "Zeichen am Wegstein",
+            (
+                "Die Einkerbungen setzen das alte Wegsystem fort. "
+                "Eine der Linien führt auffällig bis zum Sockel hinunter."
+            )
+        )
+
+        warte_auf_taste(
+            "Weiter"
+        )
+
+    # -------------------------
+    # WEGSTEIN - FRAGMENT
+    # -------------------------
+
+    elif aktion_id == "wegstein_sockel":
+        ort_titel(
+            "Wald - Alter Wegstein"
+        )
+
+        text_ausgeben(
+            "Du gehst in die Hocke und folgst "
+            "der schmalen Einkerbung nach unten."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Am Sockel verschwindet die Linie "
+            "unter Erde, Moos und dicken Wurzeln."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Du schiebst feuchte Erde mit den "
+            "Händen beiseite."
+        )
+
+        text_ausgeben(
+            "Zwischen zwei Wurzeln stößt du auf "
+            "eine flache Steinplatte."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Sie sitzt ungewöhnlich locker."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Als du sie anhebst, kommt darunter "
+            "ein kleiner Hohlraum zum Vorschein."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Etwas Dunkles liegt darin."
+        )
+
+        warte_auf_taste(
+            "Das Objekt herausnehmen"
+        )
+
+        ort_titel(
+            "Wald - Alter Wegstein"
+        )
+
+        text_ausgeben(
+            "Du ziehst das dunkle Stück vorsichtig "
+            "aus dem Hohlraum."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Es fühlt sich wie Stein an."
+        )
+
+        text_ausgeben(
+            "Doch seine Kanten sind viel zu regelmäßig "
+            "geformt."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Über die Oberfläche verlaufen dieselben "
+            "feinen Einkerbungen wie auf dem Wegstein."
+        )
+
+        if not item_besitzt(
+            "unbekanntes_fragment"
+        ):
+            item_hinzufuegen(
+                "unbekanntes_fragment"
+            )
+
+        spieler[
+            "wald_fragment_gefunden"
+        ] = True
+
+        akt1_lernerfahrung(
+            "unbekanntes_fragment"
+        )
+
+        besonderen_fund_dokumentieren(
+            "unbekanntes_fragment"
+        )
+
+        wald_fund_setzen(
+            "fragment_wegstein"
+        )
+
+        print()
+        print("-" * 34)
+
+        design_text(
+            "UNBEKANNTER FUND",
+            design="wissen",
+            art="ereignis"
+        )
+
+        print()
+        print(
+            "Unbekanntes Fragment"
+        )
+
+        print("-" * 34)
+
+        print()
+
+        text_ausgeben(
+            "Du kannst nicht erkennen, wozu es "
+            "einmal gehört hat."
+        )
+
+        besonderen_fund_hinweis_anzeigen(
+            "unbekanntes_fragment"
+        )
+
+        print()
+
+        text_ausgeben(
+            "Als du dich wieder erhebst, fällt dir "
+            "hinter dem Wegstein etwas auf."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Unter Moos liegen mehrere flache Steine "
+            "in einer auffällig geraden Reihe."
+        )
+
+        wald_fund_setzen(
+            "alter_rueckweg_bemerkt"
+        )
+
+        warte_auf_taste(
+            "Weiter"
+        )
+
+    # -------------------------
+    # WEGSTEIN - RÜCKWEG
+    # -------------------------
+
+    elif aktion_id == "wegstein_rueckweg":
+        ort_titel(
+            "Wald - Alter Rückweg"
+        )
+
+        text_ausgeben(
+            "Du folgst der Reihe flacher Steine "
+            "hinter dem Wegstein."
+        )
+
+        text_ausgeben(
+            "Anfangs sind sie kaum zwischen Moos "
+            "und Wurzeln zu erkennen."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Je weiter du gehst, desto regelmäßiger "
+            "werden ihre Abstände."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Was wie zufällig liegende Steine wirkte, "
+            "war einmal ein richtiger Weg."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Nach einigen Minuten wird das Unterholz "
+            "lichter."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Zwischen den Bäumen erkennst du plötzlich "
+            "den bekannten Hauptweg."
+        )
+
+        print()
+
+        wald_abkuerzung_freischalten(
+            "wegstein_hauptweg"
+        )
+
+        wald_fund_setzen(
+            "alter_rueckweg_entdeckt"
+        )
+
+        warte_auf_taste(
+            "Weiter"
+        )
+
+        return "hauptweg"
+
+
+def wald_seitenpfad_navigieren(
+    start_knoten="eingang"
+):
+    if (
+        start_knoten
+        not in WALD_SEITENPFAD_KNOTEN
+    ):
+        start_knoten = "eingang"
+
+    aktuelle_position = start_knoten
+
+    while True:
+        erstmals = wald_knoten_betreten(
+            aktuelle_position
+        )
+
+        wald_knoten_beschreibung(
+            aktuelle_position,
+            erstmals
+        )
+
+        # -------------------------
+        # ERFOLG: GEHEIMER BACHARM
+        # -------------------------
+
+        if (
+            aktuelle_position
+            == "verborgenes_bachufer"
+            and erstmals
+        ):
+            erfolg_freischalten(
+                "wo_das_wasser_schweigt"
+            )
+
+        # -------------------------
+        # GLÜCKSPROBE AM BACH
+        # -------------------------
+
+        if aktuelle_position == "bachufer":
+            wald_bach_geheimweg_pruefen()
+
+        aktionen = wald_knoten_aktionen(
+            aktuelle_position
+        )
+
+        verbindungen = wald_verbindungen(
+            aktuelle_position
+        )
+
+        if (
+            aktuelle_position == "eingang"
+            and "hauptweg" not in verbindungen
+        ):
+            verbindungen.append(
+                "hauptweg"
+            )
+
+        menue_trenner()
+
+        optionen = []
+
+        # -------------------------
+        # AKTIONEN AM ORT
+        # -------------------------
+
+        for aktion_id, text in aktionen:
+            optionen.append(
+                (
+                    "aktion",
+                    aktion_id
+                )
+            )
+
+            print(
+                f"{len(optionen)}. "
+                f"{text}"
+            )
+
+        # -------------------------
+        # KARTE
+        # -------------------------
+
+        optionen.append(
+            (
+                "karte",
+                None
+            )
+        )
+
+        print(
+            f"{len(optionen)}. Karte ansehen"
+        )
+
+        # -------------------------
+        # WEGE
+        # -------------------------
+
+        for ziel_id in verbindungen:
+            optionen.append(
+                (
+                    "weg",
+                    ziel_id
+                )
+            )
+
+            print(
+                f"{len(optionen)}. "
+                f"{wald_weg_text(
+                    aktuelle_position,
+                    ziel_id
+                )}"
+            )
+
+        auswahl = eingabe_menu(
+            1,
+            len(optionen),
+            sonder_tasten=()
+        )
+
+        typ, wert = optionen[
+            auswahl - 1
+        ]
+
+        # -------------------------
+        # KARTE
+        # -------------------------
+
+        if typ == "karte":
+            wald_gebietskarte_anzeigen()
+            continue
+
+        # -------------------------
+        # ORTSAKTION
+        # -------------------------
+
+        if typ == "aktion":
+            ergebnis = (
+                wald_knoten_aktion_ausfuehren(
+                    aktuelle_position,
+                    wert
+                )
+            )
+
+            if ergebnis == "hauptweg":
+                daten = wald_erforschung_status()
+
+                daten[
+                    "aktueller_knoten"
+                ] = None
+
+                return
+
+            continue
+
+        # -------------------------
+        # WEG
+        # -------------------------
+
+        ziel_id = wert
+
+        if ziel_id == "hauptweg":
+            daten = wald_erforschung_status()
+
+            daten[
+                "aktueller_knoten"
+            ] = None
+
+            return
+
+        ressourcen_vorkommen_regenerieren(
+            "wald_holz"
+        )
+
+        aktuelle_position = ziel_id
+
+def wald_wegstein():
+    while True:
+        ort_titel("Wald - Alter Wegstein")
+
+        if not spieler.get(
+            "wald_wegstein_untersucht",
+            False
+        ):
+            print(
+                "Auf der anderen Seite des Bachs steht "
+                "ein alter, halb eingesunkener Stein."
+            )
+
+            print(
