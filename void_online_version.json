@@ -1,14 +1,17 @@
 {
-    "version": "2.2.1",
-    "name": "Alpha 2.2.1",
-    "sha256": "42A5B541A7EAD69E74A1D9715764AB4325D98950AF38A032598F06EC1DC5FE22",
-    "download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v2.2.1/void_update_2.2.1.zip",
+    "version": "2.2.2",
+    "name": "Alpha 2.2.2",
+    "sha256": "279BA1083BEB38D4D379583FACFC4DD819D9FFBFA55336CE777FE4E5A32A667B",
+    "download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v2.2.2/Void_update_2.2.2.zip",
     "patch_notes": [
-        "Prolog kann bei einem neuen Spiel übersprungen werden",
-        "Spielername-Farbe in den Optionen hinzugefügt",
-        "Geheime schwarze Spielername-Farbe als Easter Egg ergänzt",
-        "Entwickler-Easter-Egg am Dorfbrunnen hinzugefügt",
-        "Kleine Verbesserungen am Prolog- und Startablauf"
+        "Mara, Bjorn, Tomas und Hilda mit erweitertem V2-Dialogsystem überarbeitet",
+        "Neue situationsabhängige Begrüßungen und Abschiede für wichtige NPCs",
+        "NPCs reagieren jetzt auf Verletzungen, wiederholte Besuche und Questfortschritt",
+        "Bereits bekannte Gesprächsthemen werden bei späteren Besuchen als [Wiederholen] markiert",
+        "Bjorns Hammer-Quest stärker in normale Gespräche integriert und um Lore-Dialoge erweitert",
+        "Tomas reagiert auf Marek, alte Wege, das Kartenstück und die alte Wegstation",
+        "Hildas Lieferungsquest und ihre Reaktionen auf Marek und das Erinnerungsproblem erweitert",
+        "Mehrere Dialogübergänge, Wiederholungen und kleinere Logikfehler bereinigt"
     ],
     "launcher_version": "1.2.8",
     "launcher_sha256": "980F63F5D48AF345F6272B666472B932618E9D17B7879687763181CE7A8C12F1",
