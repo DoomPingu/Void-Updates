@@ -1,0 +1,999 @@
+            )
+
+            text_ausgeben(
+                "Für einen Moment starrt er nur auf "
+                "den abgenutzten Griff."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Bjorn] Du hast ihn tatsächlich gefunden..."
+            )
+
+            text_ausgeben(
+                "Bjorn nimmt den Hammer in die Hand und "
+                "betrachtet die eingeritzten Worte."
+            )
+
+            text_ausgeben(
+                "[Bjorn] Ich dachte immer, die Geschichte "
+                "wäre nur ein Märchen."
+            )
+
+            print()
+
+            quest_meldung(
+                "abgeschlossen",
+                "Der Schmied des Weges"
+            )
+
+            spieler[
+                "quest_schmied"
+            ] = "abgeschlossen"
+
+            print()
+
+            text_ausgeben(
+                "Bjorn dreht den Hammer langsam "
+                "in seinen Händen."
+            )
+
+            text_ausgeben(
+                "Sein Blick bleibt an einer kleinen, kaum "
+                "sichtbaren Markierung im Griff hängen."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Bjorn] Dieses Zeichen..."
+            )
+
+            text_ausgeben(
+                "[Bjorn] Ich kenne es aus alten Geschichten "
+                "meiner Familie."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Er schweigt einen Moment und fährt mit dem "
+                "Daumen über die eingeritzte Markierung."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Bjorn] Ich weiß nicht, was das bedeutet. Noch nicht."
+            )
+
+            text_ausgeben(
+                "[Bjorn] Aber ich glaube, dieser Hammer "
+                "gehört nicht hierher zurück."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Bjorn richtet den alten Hammer so gut es geht "
+                "her und reicht ihn dir zurück."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Bjorn] Behalte ihn."
+            )
+
+            text_ausgeben(
+                "[Bjorn] Vielleicht führt er uns irgendwann "
+                "zu einer Antwort."
+            )
+
+            spieler[
+                "waffen_inventar"
+            ].append({
+                "name": "Hammer des Weges",
+                "min_schaden": 20,
+                "max_schaden": 30,
+                "verkaufswert": 25,
+                "typ": "Hammer",
+                "wendigkeit": 1,
+                "parade": 1,
+                "reichweite": 1,
+            })
+
+            print()
+            print("-" * 34)
+
+            design_text(
+                "NEUE WAFFE ERHALTEN",
+                design="positiv",
+                art="menue"
+            )
+
+            print()
+
+            print(
+                "Hammer des Weges"
+            )
+
+            print(
+                "Schaden: 20 - 30"
+            )
+
+            print("-" * 34)
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+        elif aktion == "ende":
+            direkte_besuche = npc_status(
+                "bjorn"
+            ).get(
+                "direkte_besuche",
+                0
+            )
+
+            if spieler["lebenspunkte"] <= 50:
+                abschied = npc_variante_waehlen(
+                    "bjorn",
+                    "letzter_abschied_verletzt",
+                    [
+                        (
+                            "[Bjorn] Du siehst aus, als hättest du "
+                            "schon bessere Tage gehabt.\n"
+                            "[Bjorn] Übertreib es nicht."
+                        ),
+                        (
+                            "[Bjorn] Ruh dich aus, bevor du wieder "
+                            "irgendwo hineinstolperst."
+                        ),
+                        (
+                            "[Bjorn] Geh langsam.\n"
+                            "[Bjorn] Ich repariere Waffen, keine Leute."
+                        )
+                    ]
+                )
+
+            elif direkte_besuche >= 5:
+                abschied = npc_variante_waehlen(
+                    "bjorn",
+                    "letzter_abschied_dauerbesuch",
+                    [
+                        "[Bjorn] Bis gleich, nehme ich an.",
+                        (
+                            "[Bjorn] Ich lasse den Hammer besser liegen.\n"
+                            "[Bjorn] Du bist bestimmt gleich wieder da."
+                        ),
+                        (
+                            "[Bjorn] Die Tür kennst du inzwischen."
+                        )
+                    ]
+                )
+
+            else:
+                abschied = npc_variante_waehlen(
+                    "bjorn",
+                    "letzter_abschied_normal",
+                    [
+                        "[Bjorn] Bis später.",
+                        "[Bjorn] Pass auf dich auf.",
+                        "[Bjorn] Wir sehen uns.",
+                        "[Bjorn] Gute Wege."
+                    ]
+                )
+
+            for zeile in abschied.split("\n"):
+                if zeile:
+                    text_ausgeben(
+                        zeile
+                    )
+                else:
+                    print()
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+            return
+
+def gegner_schaden_berechnen(starker_angriff):
+    if starker_angriff:
+        return random.randint(30, 45)
+
+    return random.randint(6, 12)
+
+def gegner_greift_an(name_gegner, lebenspunkte_spieler, schaden_gegner, flucht = False):
+    if flucht:
+        print(f"{name_gegner} erwischt dich bei der Flucht!")
+    else:
+        print(f"{name_gegner} greift dich an!")
+    lebenspunkte_spieler -= schaden_gegner
+    print(f"→ {schaden_gegner} Schaden")
+
+    return lebenspunkte_spieler
+
+def kampf(lebenspunkte_spieler, lebenspunkte_gegner, spiel_laeuft, gold, heiltränke, besiegte_gegner, ort):
+    name_gegner = random.choice(gegner_namen)
+    starker_angriff = False
+    while lebenspunkte_spieler > 0 and lebenspunkte_gegner > 0:
+        if not starker_angriff:
+            starker_angriff = random.randint(1, 100) <= 20
+        print()
+        print("=== Kampf ===")
+        print(f"{name}: {lebenspunkte_spieler} HP")
+        print(f"{name_gegner}: {lebenspunkte_gegner} HP")
+
+        if starker_angriff:
+            print()
+            print(f"{name_gegner} bereitet einen mächtigen Angriff vor!")
+            print(f"{name_gegner} spannt seine Muskeln an und holt weit aus...")
+            print()
+
+        print("1. Angreifen")
+        print(f"2. Heiltrank benutzen ({heiltränke})")
+        print("3. Verteidigen")
+        print("4. Fliehen")
+        kampf_auswahl = eingabe_menu(
+            1,
+            4,
+            sonder_tasten=()
+        )
+
+        schaden_gegner = gegner_schaden_berechnen(starker_angriff)
+
+        if kampf_auswahl == 1:
+            schaden_spieler = random.randint(spieler["waffe"]["min_schaden"], spieler["waffe"]["max_schaden"])
+            lebenspunkte_gegner = lebenspunkte_gegner - schaden_spieler
+            print()
+            print(f"Du greifst {name_gegner} an!")
+            print(f"→ {schaden_spieler} Schaden")
+            time.sleep(1)
+
+            if lebenspunkte_gegner <= 0:
+                print(f"{name_gegner} wurde besiegt!")
+            else:
+                print()
+                print(f"{name_gegner} holt zum Angriff aus...")
+                time.sleep(1.5)
+
+                lebenspunkte_spieler = gegner_greift_an(
+                name_gegner, lebenspunkte_spieler, schaden_gegner)
+                time.sleep(1.5)
+                starker_angriff = False
+
+        elif kampf_auswahl == 2:
+            if heiltränke > 0 and lebenspunkte_spieler < 100:
+                lebenspunkte_spieler, heiltränke = heiltrank_benutzen(
+                    lebenspunkte_spieler, heiltränke
+                )
+
+                gegner_angriff = random.randint(1, 100)
+
+                if gegner_angriff <= 60:
+                    time.sleep(1.5)
+                    print()
+
+                    lebenspunkte_spieler = gegner_greift_an(
+                        name_gegner,
+                        lebenspunkte_spieler,
+                        schaden_gegner
+                    )
+
+                else:
+                    print()
+                    print(f"{name_gegner} zögert und greift dich nicht an.")
+
+                starker_angriff = False
+
+            else:
+                lebenspunkte_spieler, heiltränke = heiltrank_benutzen(
+                    lebenspunkte_spieler, heiltränke
+        )
+
+        elif kampf_auswahl == 3:
+
+            schaden_gegner = schaden_gegner // 2
+            print()
+            print("Du gehst in Verteidigungsstellung.")
+            print("Der nächste Angriff verursacht nur halben Schaden.")
+            time.sleep(1.5)
+            print()
+            lebenspunkte_spieler = gegner_greift_an(
+                name_gegner, lebenspunkte_spieler, schaden_gegner)
+            starker_angriff = False
+
+        elif kampf_auswahl == 4:
+            fliehen = random.randint(1, 2)
+            if fliehen == 1:
+                print("Du bist entkommen")
+                break
+            else:
+                print("Entkommen hat nicht geklappt!")
+                lebenspunkte_spieler = gegner_greift_an(
+                    name_gegner, lebenspunkte_spieler, schaden_gegner, flucht=True)
+                starker_angriff = False
+    if lebenspunkte_gegner <= 0:
+        print()
+        print("Du hast gewonnen!")
+        gefundenes_gold = random.randint(10, 30)
+        gold = gold + gefundenes_gold
+        print(f"{name_gegner} hat {gefundenes_gold} Gold fallen gelassen!")
+        besiegte_gegner = besiegte_gegner + 1
+        if besiegte_gegner == 4:
+            print()
+            print("Du spürst eine mächtige Präsenz im Wald...")
+    elif lebenspunkte_spieler <= 0:
+        print("Du wurdest besiegt...")
+        print("Game Over")
+        spiel_laeuft = False
+    return lebenspunkte_spieler, spiel_laeuft, gold, heiltränke, besiegte_gegner, ort
+
+def truhe(gold, heiltränke, diamanten):
+    
+    truhen_wurf = random.randint(1, 100)
+    if truhen_wurf <= 60:
+        print()
+        print("Du hast eine kleine Truhe gefunden.")
+        beute = random.randint(1, 4)
+        if beute <= 3:
+            gefundenes_gold_klein = random.randint(1, 20)
+            print(f"Du findest einen Heiltrank und {gefundenes_gold_klein} Gold!")
+            heiltränke = heiltränke + 1
+            gold = gold + gefundenes_gold_klein
+        elif beute == 4:
+            print("Die Truhe ist leer.")
+    elif 61 <= truhen_wurf <= 90:
+        print()
+        print("Du hast eine mittlere Truhe gefunden.")
+        beute = random.randint(1, 4)
+        if beute <= 3:
+            gefundenes_gold_mittel = random.randint(20, 50)
+            print(f"Du findest einen Heiltrank und {gefundenes_gold_mittel} Gold!")
+            heiltränke = heiltränke + 1
+            gold = gold + gefundenes_gold_mittel
+        elif beute == 4:
+            print("Du findest nichts von Wert.")
+    elif 91 <= truhen_wurf <= 100:
+        print()
+        print("Du hast eine große Truhe gefunden.")
+        beute = random.randint(1, 100)
+        if beute <= 60:
+            gefundenes_gold_gross = random.randint(50, 100)
+            print(f"Du findest einen Heiltrank und {gefundenes_gold_gross} Gold!")
+            heiltränke = heiltränke + 1
+            gold = gold + gefundenes_gold_gross
+        elif 61 <= beute <= 85:
+            gefundenes_gold_gross = random.randint(50, 100)
+            print(f"Du findest ein Diamant und {gefundenes_gold_gross} Gold!")
+            diamanten = diamanten + 1
+            gold = gold + gefundenes_gold_gross
+        else:
+            print("Zu deiner Überraschung ist die Truhe leer.")
+
+
+    return gold, heiltränke, diamanten
+
+def bosskampf(lebenspunkte, spiel_laeuft, gold, diamanten, heiltränke, ort):
+    if spieler["waldwaechter_besiegt"]:
+        return lebenspunkte, spiel_laeuft, gold, diamanten, heiltränke, "Eichenruh"
+
+    ort_titel(
+        "Bosskampf - Waldwächter"
+    )
+
+    kampf_ergebnis = kampf_starten(
+        lebenspunkte=lebenspunkte,
+        heiltraenke=heiltränke,
+        waffe=spieler["waffe"],
+        gegner_typ="Waldwächter"
+    )
+
+    lebenspunkte = kampf_ergebnis["lebenspunkte"]
+    heiltränke = kampf_ergebnis["heiltraenke"]
+
+    if kampf_ergebnis["gewonnen"]:
+        gefundenes_gold = random.randint(70, 100)
+        print()
+        print("Der Waldwächter taumelt zurück.")
+        print("Mit einem letzten schweren Schlag sinkt er zu Boden.")
+        print()
+        print("Für einen Moment wird es vollkommen still.")
+        print("Kein Rascheln. Kein Vogelruf. Nur der Wind zwischen den Bäumen.")
+        print()
+        print("Du hast den Waldwächter besiegt!")
+
+        diamanten = diamanten + 5
+        gold = gold + gefundenes_gold
+
+        print()
+        print(f"Du erhältst {gefundenes_gold} Gold und 5 Diamanten.")
+        print()
+        print("Doch irgendetwas an diesem Ort fühlt sich noch immer seltsam an...")
+        warte_auf_taste("Weiter")
+
+        spieler["waldwaechter_besiegt"] = True
+
+        akt1_lernerfahrung(
+            "waldwaechter_koerper"
+        )
+
+        akt1_lernerfahrung(
+            "waldwaechter_erwachen"
+        )
+
+        aktive_reise = spieler.get(
+            "reise"
+        )
+
+        if isinstance(
+            aktive_reise,
+            dict
+        ):
+            ort = aktive_reise.get(
+                "gebiet",
+                "Wald"
+            )
+
+            ort_nachricht_setzen(
+                "Du lässt den Ort des Kampfes hinter dir.",
+                "Langsam kehren die gewöhnlichen "
+                "Geräusche des Waldes zurück."
+            )
+
+        else:
+            ort = "Eichenruh"
+
+            ort_nachricht_setzen(
+                "Du lässt den Ort des Kampfes hinter dir.",
+                "Nach einiger Zeit erreichst du "
+                "erschöpft Eichenruh."
+            )
+
+    elif kampf_ergebnis["besiegt"]:
+        print("Game Over")
+        spiel_laeuft = False
+
+    return lebenspunkte, spiel_laeuft, gold, diamanten, heiltränke, ort
+
+
+
+def gluecksprobe(prozent=20):
+    return random.randint(
+        1,
+        100
+    ) <= prozent
+
+
+def wald_bach_geheimweg_pruefen():
+    if wald_fund_bekannt(
+        "bach_geheimweg_entdeckt"
+    ):
+        return False
+
+    if not gluecksprobe(
+        20
+    ):
+        return False
+
+    wald_fund_setzen(
+        "bach_geheimweg_entdeckt"
+    )
+
+    print()
+
+    text_ausgeben(
+        "Für einen kurzen Moment spiegelt sich Licht "
+        "an einer Stelle, die dir zuvor nicht aufgefallen ist."
+    )
+
+    print()
+
+    design_text(
+        "Zwischen den Wurzeln zeichnet sich "
+        "ein schmaler Weg ab.",
+        design="wissen",
+        art="menue"
+    )
+
+    return True
+
+def wald_knoten_beschreibung(
+    knoten_id,
+    erstmals
+):
+    texte = {
+        "eingang": (
+            "Der überwachsene Seitenpfad führt zwischen "
+            "zwei alten Eichen hindurch.",
+
+            "Nach wenigen Schritten teilt sich das Gelände. "
+            "Links hörst du Wasser, rechts setzt sich der "
+            "alte Pfad zwischen dichtem Farn fort."
+        ),
+
+        "bachufer": (
+            "Zwischen Wurzeln und dunklen Steinen "
+            "fließt ein schmaler Bach.",
+
+            "Weiter unten wird das Wasser flacher. "
+            "Am Ufer zieht sich ein schlammiger Streifen "
+            "zwischen den Bäumen entlang."
+        ),
+
+        "verborgenes_bachufer": (
+            "Du zwängst dich zwischen zwei dicken "
+            "Wurzeln hindurch.",
+
+            "Dahinter teilt sich der Bach in einen "
+            "schmalen Seitenarm. Das Wasser fließt hier "
+            "fast lautlos zwischen Moos und Stein."
+        ),
+
+        "lagerplatz": (
+            "Unter hohen Buchen liegen die Reste "
+            "eines alten Lagers.",
+
+            "Ein verrußter Steinkreis, morsche Stoffreste "
+            "und niedergetretenes Gras zeigen, dass hier "
+            "einmal regelmäßig Menschen gerastet haben."
+        ),
+
+        "furt": (
+            "Der Bach wird hier breit und flach.",
+
+            "Mehrere Steine ragen aus dem Wasser, "
+            "während auf der anderen Seite dichtes "
+            "Unterholz beginnt."
+        ),
+
+        "schlammweg": (
+            "Der Boden wird weich und feucht.",
+
+            "Zwischen den Abdrücken von Tieren erkennst "
+            "du stellenweise ältere Spuren, die sich in "
+            "verschiedene Richtungen verlieren."
+        ),
+
+        "wildspur": (
+            "Eine schmale Wildspur windet sich zwischen "
+            "jungen Bäumen hindurch.",
+
+            "Abgebrochene Zweige und aufgewühltes Laub "
+            "zeigen, dass hier regelmäßig Tiere entlangziehen."
+        ),
+
+        "felshang": (
+            "Der Waldboden steigt plötzlich steil an.",
+
+            "Zwischen freiliegenden Wurzeln und grauen "
+            "Felsen führen mehrere schmale Passagen nach oben."
+        ),
+
+        "unterholz": (
+            "Farn und niedrige Äste stehen hier so dicht, "
+            "dass kaum noch ein richtiger Weg zu erkennen ist.",
+
+            "Erst beim genaueren Hinsehen bemerkst du "
+            "mehrere schmale Durchgänge."
+        ),
+
+        "quellmulde": (
+            "Zwischen den Wurzeln liegt eine kleine, "
+            "geschützte Mulde.",
+
+            "Klares Wasser sammelt sich dort in einem "
+            "flachen Becken. Dahinter steigt das Gelände "
+            "zu steil an, um weiterzugehen."
+        ),
+
+        "felsspalte": (
+            "Zwei große Felswände rücken immer näher "
+            "zusammen.",
+
+            "Nach wenigen Metern endet der Durchgang "
+            "vor blankem Stein."
+        ),
+
+        "steinstufen": (
+            "Unter Moos und Erde erkennst du mehrere "
+            "flache Steinstufen.",
+
+            "Sie sind eindeutig von Menschenhand gesetzt "
+            "worden und führen tiefer zwischen die Bäume."
+        ),
+
+        "wegmarken": (
+            "Mehrere niedrige Steine stehen in auffällig "
+            "regelmäßigen Abständen.",
+
+            "Verwitterte Kerben auf ihren Oberflächen "
+            "scheinen alle in dieselbe Richtung zu weisen."
+        ),
+
+        "wegstein": (
+            "Zwischen zwei alten Bäumen erhebt sich ein "
+            "hoher, halb eingesunkener Stein.",
+
+            "Moos bedeckt seine Oberfläche, doch seine Form "
+            "wirkt zu regelmäßig für einen natürlichen Felsen."
+        )
+    }
+
+    wiederholungen = {
+        "eingang":
+            "Du erkennst die erste Teilung des alten "
+            "Seitenpfades wieder.",
+
+        "bachufer":
+            "Das leise Rauschen des Bachs begleitet "
+            "dich wieder.",
+
+        "verborgenes_bachufer":
+            "Du findest den stillen Seitenarm "
+            "des Bachs wieder.",
+
+        "lagerplatz":
+            "Du erreichst erneut die Reste des "
+            "verlassenen Lagers.",
+
+        "furt":
+            "Vor dir liegt wieder die flache Furt.",
+
+        "schlammweg":
+            "Der weiche Schlammweg ist dir inzwischen "
+            "vertraut.",
+
+        "wildspur":
+            "Du erkennst die schmale Wildspur wieder.",
+
+        "felshang":
+            "Der felsige Hang erhebt sich erneut vor dir.",
+
+        "unterholz":
+            "Du findest den bekannten Durchgang durch "
+            "das dichte Unterholz.",
+
+        "quellmulde":
+            "Du erreichst wieder die verborgene Quellmulde.",
+
+        "felsspalte":
+            "Die enge Felsspalte endet noch immer vor "
+            "derselben Felswand.",
+
+        "steinstufen":
+            "Die überwachsenen Steinstufen tauchen wieder "
+            "zwischen dem Moos auf.",
+
+        "wegmarken":
+            "Du erkennst die Reihe alter Wegmarken wieder.",
+
+        "wegstein":
+            "Du stehst erneut vor dem alten Wegstein."
+    }
+
+    ort_titel(
+        f"Wald - {wald_knoten_name(knoten_id)}"
+    )
+
+    if erstmals:
+        for zeile in texte.get(
+            knoten_id,
+            ()
+        ):
+            text_ausgeben(
+                zeile,
+                art="atmosphaere"
+            )
+
+    else:
+        text_ausgeben(
+            wiederholungen.get(
+                knoten_id,
+                "Du erkennst diesen Abschnitt "
+                "des Waldes wieder."
+            ),
+            art="menue"
+        )
+
+
+def wald_weg_text(
+    start_id,
+    ziel_id
+):
+    texte = {
+        "hauptweg":
+            "Zum Hauptweg zurückkehren",
+
+        "eingang":
+            "Zum Beginn des alten Seitenpfades zurückkehren",
+
+        "bachufer":
+            "Dem Geräusch des Wassers folgen",
+
+        "verborgenes_bachufer":
+            "Zwischen den Wurzeln hindurchschlüpfen",
+
+        "lagerplatz":
+            "Dem alten Pfad zwischen den Bäumen folgen",
+
+        "furt":
+            "Zur flachen Furt weitergehen",
+
+        "schlammweg":
+            "Am schlammigen Ufer entlanggehen",
+
+        "wildspur":
+            "Der Wildspur folgen",
+
+        "felshang":
+            "Zum felsigen Hang aufsteigen",
+
+        "unterholz":
+            "Ins dichte Unterholz gehen",
+
+        "quellmulde":
+            "Der feuchten Senke zwischen den "
+            "Wurzeln folgen",
+
+        "felsspalte":
+            "Zur schmalen Felsspalte gehen",
+
+        "steinstufen":
+            "Den überwachsenen Steinstufen folgen",
+
+        "wegmarken":
+            "Den alten Steinmarkierungen folgen",
+
+        "wegstein":
+            "Dem alten Weg bis zum hohen Stein folgen"
+    }
+
+    text = texte.get(
+        ziel_id,
+        (
+            f"In Richtung "
+            f"{wald_knoten_name(ziel_id)} "
+            f"weitergehen"
+        )
+    )
+
+    if wald_ist_abkuerzung(
+        start_id,
+        ziel_id
+    ):
+        text += " [Abkürzung]"
+
+    return text
+
+def wald_fund_bekannt(fund_id):
+    funde = wald_erforschung_status()[
+        "funde"
+    ]
+
+    return bool(
+        funde.get(
+            fund_id,
+            False
+        )
+    )
+
+
+def wald_fund_setzen(
+    fund_id,
+    wert=True
+):
+    funde = wald_erforschung_status()[
+        "funde"
+    ]
+
+    funde[
+        fund_id
+    ] = wert
+
+
+def wald_hinweis_anzeigen(
+    titel,
+    text=None
+):
+    print()
+    print("-" * 34)
+
+    design_text(
+        "NEUER HINWEIS",
+        design="wissen",
+        art="menue"
+    )
+
+    print()
+    print(titel)
+
+    if text:
+        print()
+        print(text)
+
+    print("-" * 34)
+
+def wald_knoten_aktionen(knoten_id):
+    aktionen = []
+
+    # -------------------------
+    # VERBORGENER SEITENARM
+    # -------------------------
+
+    if knoten_id == "verborgenes_bachufer":
+
+        if not wald_fund_bekannt(
+            "alte_wegmarke_gefunden"
+        ):
+            aktionen.append(
+                (
+                    "bacharm_untersuchen",
+                    "Den stillen Seitenarm untersuchen"
+                )
+            )
+
+    # -------------------------
+    # VERLASSENES LAGER
+    # -------------------------
+
+    elif knoten_id == "lagerplatz":
+
+        if not wald_fund_bekannt(
+            "lager_durchsucht"
+        ):
+            aktionen.append(
+                (
+                    "lager_durchsuchen",
+                    "Das alte Lager durchsuchen"
+                )
+            )
+
+        if (
+            wald_knoten_besucht(
+                "furt"
+            )
+            and not wald_abkuerzung_offen(
+                "lager_furt"
+            )
+        ):
+            aktionen.append(
+                (
+                    "lager_zaunlinie",
+                    "Die alten Holzpfosten verfolgen"
+                )
+            )
+
+    # -------------------------
+    # QUELLMULDE
+    # -------------------------
+
+    elif knoten_id == "quellmulde":
+
+        if not wald_fund_bekannt(
+            "quellmulde_belag"
+        ):
+            aktionen.append(
+                (
+                    "quelle_untersuchen",
+                    "Die Quellmulde genauer untersuchen"
+                )
+            )
+
+    # -------------------------
+    # FELSSPALTE
+    # -------------------------
+
+    elif knoten_id == "felsspalte":
+
+        if not wald_fund_bekannt(
+            "ausgeloeschter_name"
+        ):
+            aktionen.append(
+                (
+                    "namen_untersuchen",
+                    "Die Felswand untersuchen"
+                )
+            )
+
+    # -------------------------
+    # STEINSTUFEN
+    # -------------------------
+
+    elif knoten_id == "steinstufen":
+
+        if not wald_fund_bekannt(
+            "steinstufen_untersucht"
+        ):
+            aktionen.append(
+                (
+                    "stufen_untersuchen",
+                    "Die alten Steinstufen untersuchen"
+                )
+            )
+
+        elif (
+            wald_knoten_besucht(
+                "bachufer"
+            )
+            and not wald_abkuerzung_offen(
+                "bach_steinstufen"
+            )
+        ):
+            aktionen.append(
+                (
+                    "stufen_abstieg",
+                    "Den schmalen Abstieg untersuchen"
+                )
+            )
+
+    # -------------------------
+    # WEGMARKEN
+    # -------------------------
+
+    elif knoten_id == "wegmarken":
+
+        if not wald_fund_bekannt(
+            "wegmarken_untersucht"
+        ):
+            aktionen.append(
+                (
+                    "wegmarken_untersuchen",
+                    "Die Wegmarken genauer untersuchen"
+                )
+            )
+
+    # -------------------------
+    # ALTER WEGSTEIN
+    # -------------------------
+
+    elif knoten_id == "wegstein":
+
+        if not spieler.get(
+            "wald_wegstein_untersucht",
+            False
+        ):
+            aktionen.append(
+                (
+                    "wegstein_zeichen",
+                    "Die Einkerbungen untersuchen"
+                )
+            )
+
+        elif not spieler.get(
+            "wald_fragment_gefunden",
+            False
+        ):
+            aktionen.append(
+                (
+                    "wegstein_sockel",
+                    "Den Linien bis zum Sockel folgen"
+                )
+            )
+
+        if (
+            spieler.get(
+                "wald_fragment_gefunden",
+                False
+            )
+            and not wald_abkuerzung_offen(
+                "wegstein_hauptweg"
+            )
+        ):
+            aktionen.append(
+                (
+                    "wegstein_rueckweg",
+                    "Den alten Steinen hinter dem Wegstein folgen"
+                )
+            )
+
+    return aktionen
+
+
+def wald_knoten_aktion_ausfuehren(
+    knoten_id,
+    aktion_id
+):
