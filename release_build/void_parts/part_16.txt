@@ -1,0 +1,1000 @@
+
+        elif auswahl == "q":
+            spielmenue()
+            return
+
+        elif auswahl == 1:
+            print()
+
+            text_ausgeben(
+                "Du setzt dich auf und lässt deinen Blick durch das kleine Zimmer wandern."
+            )
+
+            text_ausgeben(
+                "Dein Bett steht an der Wand, noch ungemacht vom Schlaf."
+            )
+
+            text_ausgeben(
+                "In einer Ecke steht eine alte Holztruhe."
+            )
+
+            text_ausgeben(
+                "Daneben lehnt ein Bücherregal leicht schief an der Wand."
+            )
+
+            text_ausgeben(
+                "Durch das Fenster fällt warmes Morgenlicht auf den Holzboden."
+            )
+
+            print()
+
+            warte_auf_taste()
+
+            spieler["prolog_status"] = "haus_erkundet"
+            
+            return
+
+    # -------------------------
+    # STUFE 2: HAUS ERKUNDET
+    # -------------------------
+
+    elif prolog_status == "haus_erkundet":
+        menue_trenner()
+
+        print("1. Bücherregal ansehen")
+        print("2. Alte Truhe untersuchen")
+        print("3. Aus dem Fenster schauen")
+        print("4. Haus verlassen")
+
+        print()
+        print("[S] Status")
+        print("[I] Inventar")
+        print("[J] Questlog/Erfolge")
+        print("[Q] Speichern / Menü")
+
+        auswahl = eingabe_menu(
+            1,
+            4,
+            sonder_tasten=("s", "i", "j", "q")
+        )
+
+        if auswahl == "s":
+            status()
+            return
+
+        elif auswahl == "i":
+            inventar()
+            return
+
+        elif auswahl == "j":
+            questlog()
+            return
+
+        elif auswahl == "q":
+            spielmenue()
+            return
+
+        # Bücherregal
+        elif auswahl == 1:
+            
+            print()
+
+            text_ausgeben(
+                "Du trittst vor das alte Bücherregal."
+            )
+
+            text_ausgeben(
+                "Zwischen einigen abgegriffenen Büchern stehen kleine Erinnerungsstücke und allerlei Krimskrams."
+            )
+
+            text_ausgeben(
+                "Einige der Bücher hast du seit Jahren nicht mehr geöffnet."
+            )
+            warte_auf_taste()
+            return
+
+        # Truhe
+        elif auswahl == 2:
+            print()
+
+            text_ausgeben(
+                "Du öffnest die alte Holztruhe."
+            )
+
+            text_ausgeben(
+                "Darin liegen zusammengefaltete Kleidung, eine alte Decke und einige Dinge, für die du bisher keinen besseren Platz gefunden hast."
+            )
+
+            text_ausgeben(
+                "Nichts davon scheint heute besonders wichtig zu sein."
+            )
+            warte_auf_taste()
+            return
+
+        # Fenster
+        elif auswahl == 3:
+            print()
+
+            text_ausgeben(
+                "Du trittst ans Fenster und blickst hinaus."
+            )
+
+            text_ausgeben(
+                "Über einigen Schornsteinen steigt bereits dünner Rauch auf."
+            )
+
+            text_ausgeben(
+                "Vom Marktplatz dringen Stimmen herüber."
+            )
+
+            text_ausgeben(
+                "Aus Richtung der Schmiede hörst du regelmäßig Bjorns Hammer."
+            )
+
+            text_ausgeben(
+                "Eichenruh beginnt einen weiteren gewöhnlichen Tag."
+            )
+            warte_auf_taste()
+            return
+
+        # Erst jetzt darf der Spieler hinaus
+        elif auswahl == 4:
+            spieler["prolog_status"] = "dorf_freigeschaltet"
+            spieler["ort"] = "Eichenruh"
+
+            ort_nachricht_setzen(
+                "Du ziehst dich um und öffnest die Tür.",
+                "Kühle Morgenluft schlägt dir entgegen.",
+                "Vor dir liegt Eichenruh."
+            )
+
+            return
+
+def spielerhaus():
+    ort_titel("Dein Haus")
+
+    ort_nachricht_anzeigen()
+
+    if spieler.get("prolog_status") in [
+        "aufgewacht",
+        "haus_erkundet"
+    ]:
+        prolog_haus()
+        return
+
+    menue_trenner()
+    print("1. Bücherregal anschauen")
+    print("2. Kochen")
+    print("3. Inventar öffnen")
+    print("4. Lager öffnen")
+    print("5. Schlafen")
+    print("6. Spiel speichern")
+    print("7. Optionen")
+    print("8. Speichern & Hauptmenü")
+    print("9. Haus verlassen")
+
+    haus_auswahl = eingabe_menu(
+        1,
+        9,
+        sonder_tasten=()
+    )
+
+    if haus_auswahl == 1:
+        if prolog_laeuft():
+            ort_titel("Dein Haus")
+
+            text_ausgeben(
+                "Du trittst vor das alte Bücherregal."
+            )
+
+            text_ausgeben(
+                "Zwischen abgegriffenen Büchern stehen kleine Erinnerungsstücke und allerlei Krimskrams."
+            )
+
+            text_ausgeben(
+                "Im Moment hast du allerdings wenig Lust, dich in eines der alten Bücher zu vertiefen."
+            )
+
+            warte_auf_taste()
+
+        else:
+            buecherregal()
+
+    elif haus_auswahl == 2:
+        kochen()
+
+    elif haus_auswahl == 4:
+        print("Noch nicht verfügbar")
+        warte_auf_taste()
+
+    elif haus_auswahl == 3:
+        inventar()
+
+    elif haus_auswahl == 5:
+        if spieler["lebenspunkte"] < 100:
+            print()
+            print("Du legst dich in dein Bett und ruhst dich eine Weile aus.")
+            print("Du fühlst dich wieder vollständig erholt.")
+
+            spieler["lebenspunkte"] = 100
+
+            print("Deine Lebenspunkte wurden vollständig wiederhergestellt.")
+        else:
+            print("Du fühlst dich bereits vollständig erholt.")
+        warte_auf_taste()
+
+    elif haus_auswahl == 6:
+        spiel_speichern(spieler)
+        warte_auf_taste()
+
+    elif haus_auswahl == 7:
+        optionen()
+
+    elif haus_auswahl == 8:
+        if spiel_speichern(spieler):
+            print()
+            print("Du kehrst zum Hauptmenü zurück.")
+
+            warte_auf_taste("Zum Hauptmenü")
+
+            zum_hauptmenue()
+            return
+
+        else:
+            warte_auf_taste()
+
+    elif haus_auswahl == 9:
+        spieler["ort"] = "Eichenruh"
+
+        ort_nachricht_setzen(
+            "Du trittst hinaus.",
+            "Eichenruh... ein ruhiges kleines Dorf."
+    )
+
+def startwaffe_waehlen():
+    ort_titel("Bjorns Schmiede")
+
+    text_ausgeben(
+        "Bjorn öffnet eine längliche Holzkiste "
+        "neben seiner Werkbank."
+    )
+
+    print()
+    text_ausgeben(
+        "[Bjorn] Nichts Besonderes. "
+        "Aber besser als mit bloßen Händen herumzulaufen."
+    )
+
+    print()
+    print("1. Schweres Handbeil")
+    print("   Wuchtig, aber etwas schwerfällig.")
+    print()
+    print("2. Beschlagener Wanderstab")
+    print("   Ausgewogen und gut zum Abstandhalten.")
+    print()
+    print("3. Langes Jagdmesser")
+    print("   Leicht und für schnelle, präzise Bewegungen geeignet.")
+
+    auswahl = eingabe_menu(
+        1,
+        3,
+        sonder_tasten=()
+    )
+
+    if auswahl == 1:
+        neue_waffe = {
+            "name": "Schweres Handbeil",
+            "min_schaden": 8,
+            "max_schaden": 16,
+            "verkaufswert": 5,
+            "typ": "Beil",
+            "wendigkeit": 1,
+            "parade": 1,
+            "reichweite": 1
+        }
+
+    elif auswahl == 2:
+        neue_waffe = {
+            "name": "Beschlagener Wanderstab",
+            "min_schaden": 10,
+            "max_schaden": 14,
+            "verkaufswert": 5,
+            "typ": "Stab",
+            "wendigkeit": 2,
+            "parade": 3,
+            "reichweite": 3
+        }
+
+    else:
+        neue_waffe = {
+            "name": "Langes Jagdmesser",
+            "min_schaden": 11,
+            "max_schaden": 13,
+            "verkaufswert": 5,
+            "typ": "Messer",
+            "wendigkeit": 3,
+            "parade": 1,
+            "reichweite": 1
+        }
+
+    spieler["waffe"] = neue_waffe
+
+    print()
+    design_text(
+        "NEUE WAFFE",
+        design="positiv",
+        art="ereignis"
+    )
+
+    print(neue_waffe["name"])
+    print(
+        f"Schaden: {neue_waffe['min_schaden']} - "
+        f"{neue_waffe['max_schaden']}"
+    )
+
+    print()
+    print(
+        "Du befestigst die Waffe an deinem Gürtel."
+    )
+    
+def waffeninventar():
+    aktuelle_waffe = spieler.get("waffe")
+
+    if aktuelle_waffe:
+        print(
+            f"Ausgerüstet: {aktuelle_waffe['name']} "
+            f"({aktuelle_waffe['min_schaden']}-"
+            f"{aktuelle_waffe['max_schaden']} Schaden)"
+        )
+    else:
+        print("Ausgerüstet: Keine")
+
+    if len(spieler["waffen_inventar"]) == 0:
+        print()
+        print("Du hast keine weiteren Waffen.")
+        warte_auf_taste()
+        return
+
+    for i, waffe in enumerate(spieler["waffen_inventar"]):
+        print(
+            f"{i + 1}. {waffe['name']} "
+            f"({waffe['min_schaden']}-"
+            f"{waffe['max_schaden']} Schaden)"
+        )
+
+    print(f"{len(spieler['waffen_inventar']) + 1}. Zurück")
+
+    auswahl = eingabe_menu(
+        1,
+        len(spieler["waffen_inventar"]) + 1,
+        sonder_tasten=()
+    )
+
+    if auswahl == len(spieler["waffen_inventar"]) + 1:
+        return
+
+    neue_waffe = spieler["waffen_inventar"].pop(auswahl - 1)
+
+    alte_waffe = spieler["waffe"]
+
+    spieler["waffe"] = neue_waffe
+
+    if alte_waffe is not None:
+        spieler["waffen_inventar"].append(alte_waffe)
+
+    print()
+    print(f"Du rüstest {neue_waffe['name']} aus.")
+
+    if alte_waffe is not None:
+        print(f"{alte_waffe['name']} wurde ins Inventar gelegt.")
+    else:
+        print("Du bist jetzt bewaffnet.")
+
+    warte_auf_taste()
+
+def waffe_verkaufen():
+    while True:
+        ort_titel(
+            "Bjorns Schmiede - Waffen verkaufen"
+        )
+
+        print(
+            f"Gold: {spieler['gold']}"
+        )
+
+        print()
+
+        if len(
+            spieler["waffen_inventar"]
+        ) == 0:
+            print(
+                "Du hast keine Waffe, "
+                "die du verkaufen kannst."
+            )
+
+            warte_auf_taste(
+                "Zurück"
+            )
+
+            return
+
+        for i, waffe in enumerate(
+            spieler["waffen_inventar"]
+        ):
+            if (
+                waffe["name"]
+                == "Hammer des Weges"
+            ):
+                print(
+                    f"{i + 1}. {waffe['name']} "
+                    "- unverkäuflich"
+                )
+
+            else:
+                print(
+                    f"{i + 1}. {waffe['name']} "
+                    f"- {waffe['verkaufswert']} Gold"
+                )
+
+        zurueck_nummer = (
+            len(
+                spieler["waffen_inventar"]
+            ) + 1
+        )
+
+        print()
+        print(
+            f"{zurueck_nummer}. Zurück"
+        )
+
+        auswahl = eingabe_menu(
+            1,
+            zurueck_nummer,
+            sonder_tasten=()
+        )
+
+        if auswahl == zurueck_nummer:
+            return
+
+        waffe = spieler[
+            "waffen_inventar"
+        ][
+            auswahl - 1
+        ]
+
+        if (
+            waffe["name"]
+            == "Hammer des Weges"
+        ):
+            design_text(
+                "Diese Waffe kannst du nicht verkaufen.",
+                design="warnung",
+                art="menue"
+            )
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+            continue
+
+        waffe = spieler[
+            "waffen_inventar"
+        ].pop(
+            auswahl - 1
+        )
+
+        spieler["gold"] += (
+            waffe["verkaufswert"]
+        )
+
+        design_text(
+            f"{waffe['name']} verkauft",
+            design="positiv",
+            art="menue"
+        )
+
+        print()
+        print(
+            f"Du erhältst "
+            f"{waffe['verkaufswert']} Gold."
+        )
+
+        print(
+            f"Gold: {spieler['gold']}"
+        )
+
+        warte_auf_taste(
+            "Weiter"
+        )
+
+def ressourcen_vorkommen_status(vorkommen_id):
+    if vorkommen_id not in RESSOURCEN_VORKOMMEN:
+        return None
+
+    alle_vorkommen = spieler.setdefault(
+        "ressourcen_vorkommen",
+        {}
+    )
+
+    status = alle_vorkommen.setdefault(
+        vorkommen_id,
+        {}
+    )
+
+    daten = RESSOURCEN_VORKOMMEN[
+        vorkommen_id
+    ]
+
+    status.setdefault(
+        "vorrat",
+        daten["maximum"]
+    )
+
+    status.setdefault(
+        "regeneration",
+        0
+    )
+
+    return status
+
+
+def ressourcen_vorkommen_regenerieren(
+    vorkommen_id,
+    schritte=1
+):
+    status = ressourcen_vorkommen_status(
+        vorkommen_id
+    )
+
+    if status is None:
+        return 0
+
+    daten = RESSOURCEN_VORKOMMEN[
+        vorkommen_id
+    ]
+
+    maximum = daten[
+        "maximum"
+    ]
+
+    if status["vorrat"] >= maximum:
+        status["vorrat"] = maximum
+        status["regeneration"] = 0
+        return 0
+
+    status["regeneration"] += schritte
+
+    regeneriert = 0
+
+    while (
+        status["regeneration"]
+        >= daten["regeneration_schritte"]
+        and status["vorrat"] < maximum
+    ):
+        status["regeneration"] -= (
+            daten["regeneration_schritte"]
+        )
+
+        status["vorrat"] += 1
+        regeneriert += 1
+
+    if status["vorrat"] >= maximum:
+        status["vorrat"] = maximum
+        status["regeneration"] = 0
+
+    return regeneriert
+
+def holz_sammeln():
+    ort_titel("Wald - Holzsuche")
+
+    vorkommen_id = "wald_holz"
+
+    status = ressourcen_vorkommen_status(
+        vorkommen_id
+    )
+
+    daten = RESSOURCEN_VORKOMMEN[
+        vorkommen_id
+    ]
+
+    if status["vorrat"] <= 0:
+        print(
+            "In diesem Teil des Waldes findest du "
+            "kaum noch brauchbares Totholz."
+        )
+
+        print()
+        print(
+            "Der Abschnitt braucht etwas Zeit, "
+            "bevor sich wieder genug trockenes Holz "
+            "finden lässt."
+        )
+
+        warte_auf_taste()
+        return
+
+    text_ausgeben(
+        "Du verlässt den Weg für einen Moment und suchst "
+        "zwischen Wurzeln und trockenem Unterholz."
+    )
+
+    text_ausgeben(
+        "Du achtest darauf, nur trockenes Holz mitzunehmen, "
+        "das sich später gut entzünden lässt."
+    )
+
+    gefundene_menge = min(
+        random.randint(
+            daten["fund_min"],
+            daten["fund_max"]
+        ),
+        status["vorrat"]
+    )
+
+    item_hinzufuegen(
+        daten["item_id"],
+        gefundene_menge
+    )
+
+    status["vorrat"] -= (
+        gefundene_menge
+    )
+
+    print()
+
+    design_text(
+        f"{gefundene_menge}x Holz gesammelt",
+        design="positiv",
+        art="menue"
+    )
+
+    print(
+        f"Holz insgesamt: "
+        f"{item_anzahl('holz')}"
+    )
+
+    if status["vorrat"] == 0:
+        print()
+        print(
+            "Viel brauchbares Totholz ist hier "
+            "vorerst nicht mehr übrig."
+        )
+
+    elif status["vorrat"] == 1:
+        print()
+        print(
+            "In diesem Teil des Waldes wird "
+            "brauchbares Totholz langsam knapp."
+        )
+
+    warte_auf_taste()
+
+def lagerfeuer():
+    ort_titel("Lagerfeuer")
+
+    holz_kosten = 2
+    heilung = 25
+
+    print(
+        f"Für ein Lagerfeuer brauchst du "
+        f"{holz_kosten} Holz."
+    )
+
+    print(
+        f"Du besitzt: "
+        f"{item_anzahl('holz')} Holz"
+    )
+
+    print()
+
+    if not item_besitzt(
+        "holz",
+        holz_kosten
+    ):
+        print(
+            "Du hast nicht genug trockenes Holz."
+        )
+
+        warte_auf_taste()
+        return
+
+    print("1. Lagerfeuer entzünden")
+    print("2. Zurück")
+
+    auswahl = eingabe_menu(
+        1,
+        2,
+        sonder_tasten=()
+    )
+
+    if auswahl == 2:
+        return
+
+    item_entfernen(
+        "holz",
+        holz_kosten
+    )
+
+    ort_titel("Lagerfeuer")
+
+    text_ausgeben(
+        "Du sammelst das trockene Holz zu einer "
+        "kleinen Feuerstelle."
+    )
+
+    text_ausgeben(
+        "Nach einigen Versuchen greifen die Flammen."
+    )
+
+    print()
+
+    print(
+        f"Verbleibendes Holz: "
+        f"{item_anzahl('holz')}"
+    )
+
+    warte_auf_taste(
+        "Am Feuer Platz nehmen"
+    )
+
+    geruht = False
+
+    while True:
+        ort_titel("Lagerfeuer")
+
+        print(
+            f"Lebenspunkte: "
+            f"{spieler['lebenspunkte']}/100"
+        )
+
+        print()
+        print(
+            "Das Feuer brennt ruhig vor dir."
+        )
+
+        print()
+        print("1. Am Feuer ausruhen")
+        print("2. Am Feuer kochen")
+        print("3. Feuer verlassen")
+
+        feuer_auswahl = eingabe_menu(
+            1,
+            3,
+            sonder_tasten=()
+        )
+
+        if feuer_auswahl == 1:
+            if geruht:
+                print()
+                print(
+                    "Du hast dich an diesem Feuer "
+                    "bereits ausgeruht."
+                )
+
+                warte_auf_taste()
+                continue
+
+            if spieler["lebenspunkte"] >= 100:
+                print()
+                print(
+                    "Du bist bereits vollständig erholt."
+                )
+
+                warte_auf_taste()
+                continue
+
+            alte_lebenspunkte = spieler[
+                "lebenspunkte"
+            ]
+
+            spieler["lebenspunkte"] = min(
+                100,
+                spieler["lebenspunkte"] + heilung
+            )
+
+            geheilt = (
+                spieler["lebenspunkte"]
+                - alte_lebenspunkte
+            )
+
+            geruht = True
+
+            print()
+
+            text_ausgeben(
+                "Du setzt dich in die Wärme und ruhst "
+                "dich eine Weile aus."
+            )
+
+            print()
+
+            design_text(
+                f"Du regenerierst {geheilt} Lebenspunkte.",
+                design="positiv",
+                art="menue"
+            )
+
+            print(
+                f"Lebenspunkte: "
+                f"{spieler['lebenspunkte']}/100"
+            )
+
+            warte_auf_taste()
+
+        elif feuer_auswahl == 2:
+            kochen(
+                titel="Kochen am Lagerfeuer"
+            )
+
+        elif feuer_auswahl == 3:
+            return
+
+def gegenstaende_inventar():
+    while True:
+        ort_titel("Inventar - Gegenstände")
+
+        inventar_items = spieler.get(
+            "inventar_items",
+            {}
+        )
+
+        sichtbare_items = []
+
+        for item_id, anzahl in inventar_items.items():
+            if item_id in ITEMS:
+                sichtbare_items.append(
+                    (item_id, anzahl)
+                )
+
+        if not sichtbare_items:
+            print(
+                "Du trägst momentan keine "
+                "Gegenstände bei dir."
+            )
+
+            warte_auf_taste()
+            return
+
+        print("Wähle einen Gegenstand:")
+        print()
+
+        for nummer, (item_id, anzahl) in enumerate(
+            sichtbare_items,
+            start=1
+        ):
+            item_daten = ITEMS[item_id]
+
+            if anzahl > 1:
+                print(
+                    f"{nummer}. "
+                    f"{item_daten['name']} x{anzahl}"
+                )
+
+            else:
+                print(
+                    f"{nummer}. "
+                    f"{item_daten['name']}"
+                )
+
+            print(
+                f"   {item_daten['typ']}"
+            )
+
+        zurueck_nummer = len(sichtbare_items) + 1
+
+        print()
+        print(f"{zurueck_nummer}. Zurück")
+
+        auswahl = eingabe_menu(
+            1,
+            zurueck_nummer,
+            sonder_tasten=()
+        )
+
+        if auswahl == zurueck_nummer:
+            return
+
+        item_id, anzahl = sichtbare_items[
+            auswahl - 1
+        ]
+
+        item_daten = ITEMS[item_id]
+
+        ort_titel(item_daten["name"])
+
+        print(
+            f"Typ: {item_daten['typ']}"
+        )
+
+        print(
+            f"Anzahl: {anzahl}"
+        )
+
+        print()
+        print(
+            item_daten["beschreibung"]
+        )
+
+        inhalt = item_daten.get(
+            "inhalt"
+        )
+
+        if inhalt:
+            print()
+
+            design_text(
+                "Inhalt:",
+                design="wissen",
+                art="menue"
+            )
+
+            print()
+
+            for zeile in inhalt:
+                print(
+                    zeile
+                )
+
+        if (
+            item_id == "mareks_routenmappe"
+            and routenkenntnis_bekannt(
+                "koenigsring"
+            )
+        ):
+            print()
+
+            design_text(
+                "Routenkenntnis: Königsring",
+                design="wissen",
+                art="menue"
+            )
+
+            print(
+                "Bei Reisen zwischen Eichenruh und Letzthafen "
+                "kannst du die vertraute Strecke zügig zurücklegen."
+            )
+
+        heilung = item_daten.get(
+            "heilung",
+            0
+        )
+
+        status_eintraege = item_daten.get(
+            "status_effekte",
+            []
+        )
+
+        if not isinstance(
+            status_eintraege,
+            list
+        ):
+            status_eintraege = []
+
+        if heilung > 0:
+            print()
+            print(
+                f"Heilung: {heilung} HP"
+            )
+
+        for effekt in status_eintraege:
+            if not isinstance(
+                effekt,
+                dict
+            ):
+                continue
+
+            status_id = effekt.get(
+                "id"
+            )
+
+            definition = STATUS_EFFEKTE.get(
+                status_id
+            )
+
+            if not definition:
+                continue
+
+            print()
+
+            design_text(
