@@ -1,0 +1,3 @@
+release_build/**/*.txt text eol=lf
+release_build/**/*.py text eol=lf
+release_build/**/*.json text eol=lf
