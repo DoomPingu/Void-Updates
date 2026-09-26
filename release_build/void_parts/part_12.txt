@@ -1,0 +1,1000 @@
+
+    if slot not in range(
+        1,
+        ANZAHL_SPEICHER_SLOTS + 1
+    ):
+        return (
+            False,
+            ValueError(
+                "Ungültiger Speicherplatz."
+            )
+        )
+
+    speicher_datei = (
+        speicherdatei_pfad(slot)
+    )
+
+    temp_datei = (
+        speicher_datei + ".tmp"
+    )
+
+    try:
+        with open(
+            temp_datei,
+            "w",
+            encoding="utf-8"
+        ) as datei:
+            json.dump(
+                speicher_daten,
+                datei,
+                ensure_ascii=False,
+                indent=4
+            )
+
+        os.replace(
+            temp_datei,
+            speicher_datei
+        )
+
+    except (
+        OSError,
+        TypeError,
+        ValueError
+    ) as fehler:
+
+        if os.path.exists(
+            temp_datei
+        ):
+            try:
+                os.remove(
+                    temp_datei
+                )
+            except OSError:
+                pass
+
+        return False, fehler
+
+    return True, None
+
+
+def spielstand_backup_erstellen(
+    alte_version,
+    slot=None
+):
+    if slot is None:
+        slot = AKTIVER_SPEICHER_SLOT
+
+    if slot is None:
+        return (
+            None,
+            ValueError(
+                "Kein aktiver Speicherplatz ausgewählt."
+            )
+        )
+
+    if slot not in range(
+        1,
+        ANZAHL_SPEICHER_SLOTS + 1
+    ):
+        return (
+            None,
+            ValueError(
+                "Ungültiger Speicherplatz."
+            )
+        )
+
+    speicher_datei = (
+        speicherdatei_pfad(slot)
+    )
+
+    zeitstempel = time.strftime(
+        "%Y%m%d-%H%M%S"
+    )
+
+    basis, _endung = os.path.splitext(
+        speicher_datei
+    )
+
+    backup_datei = (
+        f"{basis}_backup_v"
+        f"{alte_version}_"
+        f"{zeitstempel}.json"
+    )
+
+    nummer = 2
+
+    while os.path.exists(
+        backup_datei
+    ):
+        backup_datei = (
+            f"{basis}_backup_v"
+            f"{alte_version}_"
+            f"{zeitstempel}_"
+            f"{nummer}.json"
+        )
+
+        nummer += 1
+
+    try:
+        with open(
+            speicher_datei,
+            "rb"
+        ) as quelle:
+            inhalt = quelle.read()
+
+        with open(
+            backup_datei,
+            "xb"
+        ) as ziel:
+            ziel.write(
+                inhalt
+            )
+
+    except OSError as fehler:
+        return None, fehler
+
+    return backup_datei, None
+
+
+def migration_1_zu_2(
+    spieler_daten
+):
+    # -------------------------
+    # GRUNDSTRUKTUREN
+    # -------------------------
+
+    inventar = spieler_daten.setdefault(
+        "inventar_items",
+        {}
+    )
+
+    rezepte = spieler_daten.setdefault(
+        "rezepte_gelernt",
+        []
+    )
+
+    erfolge = spieler_daten.setdefault(
+        "erfolge_freigeschaltet",
+        []
+    )
+
+    funde = spieler_daten.setdefault(
+        "besondere_funde",
+        {}
+    )
+
+    routen = spieler_daten.setdefault(
+        "routenkenntnis",
+        []
+    )
+
+    if not isinstance(
+        inventar,
+        dict
+    ):
+        raise ValueError(
+            "Ungültige Inventardaten."
+        )
+
+    if not isinstance(
+        rezepte,
+        list
+    ):
+        raise ValueError(
+            "Ungültige Rezeptdaten."
+        )
+
+    if not isinstance(
+        erfolge,
+        list
+    ):
+        raise ValueError(
+            "Ungültige Erfolgsdaten."
+        )
+
+    if not isinstance(
+        funde,
+        dict
+    ):
+        raise ValueError(
+            "Ungültige Funddaten."
+        )
+
+    if not isinstance(
+        routen,
+        list
+    ):
+        raise ValueError(
+            "Ungültige Routendaten."
+        )
+
+    spieler_daten.setdefault(
+        "quest_ein_name_fehlt",
+        "nicht_entdeckt"
+    )
+
+    spieler_daten.setdefault(
+        "quest_wiegenlied",
+        "nicht_entdeckt"
+    )
+
+    # -------------------------
+    # KÖHLER → BJORN
+    # -------------------------
+
+    if (
+        "koehler_nachricht_bjorn"
+        not in spieler_daten
+    ):
+        if spieler_daten.get(
+            "prolog_status"
+        ) == "prolog_abgeschlossen":
+            spieler_daten[
+                "koehler_nachricht_bjorn"
+            ] = "offen"
+
+        else:
+            spieler_daten[
+                "koehler_nachricht_bjorn"
+            ] = "nicht_erhalten"
+
+    # -------------------------
+    # LETZTHAFEN
+    # -------------------------
+
+    letzthafen = spieler_daten.setdefault(
+        "letzthafen_status",
+        {}
+    )
+
+    if not isinstance(
+        letzthafen,
+        dict
+    ):
+        raise ValueError(
+            "Ungültige Letzthafen-Daten."
+        )
+
+    letzthafen.setdefault(
+        "angekommen",
+        False
+    )
+
+    letzthafen.setdefault(
+        "besuchte_bereiche",
+        []
+    )
+
+    spuren = letzthafen.setdefault(
+        "spuren",
+        {}
+    )
+
+    if not isinstance(
+        spuren,
+        dict
+    ):
+        raise ValueError(
+            "Ungültige Letzthafen-Spuren."
+        )
+
+    for spur in (
+        "sera_marek",
+        "marek_getroffen",
+        "register_marek",
+        "marek_adresse_bekannt",
+        "oros_abschrift",
+        "marek_zimmer_betreten",
+        "rueckkehrkerben",
+        "wegmuenzen_gefunden",
+        "elian_hinweis",
+        "elian_getroffen",
+        "brueder_begegnung",
+        "marek_notizbuch"
+    ):
+        spuren.setdefault(
+            spur,
+            False
+        )
+
+    wiegenlied = letzthafen.setdefault(
+        "wiegenlied",
+        {}
+    )
+
+    if not isinstance(
+        wiegenlied,
+        dict
+    ):
+        raise ValueError(
+            "Ungültige Wiegenlied-Daten."
+        )
+
+    for status in (
+        "melodie_gehoert",
+        "edda_haus_bekannt",
+        "edda_getroffen",
+        "namenstein_lina_gelesen",
+        "laterne_hinweis",
+        "truhe_untersucht",
+        "sera_hinweis",
+        "namenstein_hinweis",
+        "register_hinweis",
+        "truhe_geoeffnet",
+        "truhe_inhalt_untersucht"
+    ):
+        wiegenlied.setdefault(
+            status,
+            False
+        )
+
+    # -------------------------
+    # ALTE BELOHNUNGEN NACHHOLEN
+    # -------------------------
+
+    # Hilda bereits abgeschlossen:
+    # Rezept darf bei einem alten Save
+    # nicht verloren gehen.
+    if (
+        spieler_daten.get(
+            "quest_hilda"
+        ) == "abgeschlossen"
+        and "gemuesesuppe"
+        not in rezepte
+    ):
+        rezepte.append(
+            "gemuesesuppe"
+        )
+
+    # Marek bereits abgeschlossen:
+    # neue dauerhafte Belohnungen nachtragen.
+    if spieler_daten.get(
+        "quest_ein_name_fehlt"
+    ) == "abgeschlossen":
+
+        if (
+            "koenigsring"
+            not in routen
+        ):
+            routen.append(
+                "koenigsring"
+            )
+
+        if inventar.get(
+            "mareks_routenmappe",
+            0
+        ) < 1:
+            inventar[
+                "mareks_routenmappe"
+            ] = 1
+
+        spuren[
+            "marek_notizbuch"
+        ] = True
+
+    # -------------------------
+    # WIEGENLIED-ZUSTÄNDE
+    # -------------------------
+
+    quest_wiegenlied = (
+        spieler_daten.get(
+            "quest_wiegenlied"
+        )
+    )
+
+    if quest_wiegenlied in (
+        "edda_suchen",
+        "lied_rekonstruieren",
+        "truhe_geoeffnet",
+        "abgeschlossen"
+    ):
+        wiegenlied[
+            "edda_haus_bekannt"
+        ] = True
+
+    if quest_wiegenlied in (
+        "lied_rekonstruieren",
+        "truhe_geoeffnet",
+        "abgeschlossen"
+    ):
+        wiegenlied[
+            "edda_getroffen"
+        ] = True
+
+        wiegenlied[
+            "laterne_hinweis"
+        ] = True
+
+    if quest_wiegenlied in (
+        "truhe_geoeffnet",
+        "abgeschlossen"
+    ):
+        wiegenlied[
+            "truhe_geoeffnet"
+        ] = True
+
+    if (
+        quest_wiegenlied
+        == "abgeschlossen"
+    ):
+        wiegenlied[
+            "truhe_inhalt_untersucht"
+        ] = True
+
+        if inventar.get(
+            "lina_wiegenlied_abschrift",
+            0
+        ) < 1:
+            inventar[
+                "lina_wiegenlied_abschrift"
+            ] = 1
+
+        funde[
+            "linas_wiegenlied"
+        ] = "abgeschrieben"
+
+        if (
+            "ein_lied_das_blieb"
+            not in erfolge
+        ):
+            erfolge.append(
+                "ein_lied_das_blieb"
+            )
+
+    return spieler_daten
+
+
+SAVE_MIGRATIONEN = {
+    1: migration_1_zu_2
+}
+
+
+def spielstand_migrieren(
+    speicher_daten
+):
+    version = speicher_daten.get(
+        "version",
+        1
+    )
+
+    spieler_daten = speicher_daten[
+        "spieler"
+    ]
+
+    while version < SAVE_VERSION:
+
+        migration = SAVE_MIGRATIONEN.get(
+            version
+        )
+
+        if migration is None:
+            raise ValueError(
+                "Für diesen Spielstand fehlt "
+                "eine notwendige Migration."
+            )
+
+        spieler_daten = migration(
+            spieler_daten
+        )
+
+        version += 1
+
+        speicher_daten[
+            "version"
+        ] = version
+
+        speicher_daten[
+            "spieler"
+        ] = spieler_daten
+
+    return speicher_daten
+
+def spiel_speichern(spieler):
+    speicher_daten = {
+        "version": SAVE_VERSION,
+        "spieler": spieler
+    }
+
+    erfolgreich, fehler = (
+        speicherdatei_sicher_schreiben(
+            speicher_daten
+        )
+    )
+
+    if not erfolgreich:
+        print()
+        print(
+            "Speichern fehlgeschlagen."
+        )
+
+        print(
+            f"Fehler: {fehler}"
+        )
+
+        return False
+
+    print()
+
+    design_text(
+        "SPIEL GESPEICHERT",
+        design="positiv",
+        art="menue"
+    )
+
+    return True
+
+def speicherplatz_text(slot):
+    speicher_datei = (
+        speicherdatei_pfad(slot)
+    )
+
+    if not os.path.exists(
+        speicher_datei
+    ):
+        return (
+            f"{slot}. Leer"
+        )
+
+    try:
+        with open(
+            speicher_datei,
+            "r",
+            encoding="utf-8"
+        ) as datei:
+            speicher_daten = json.load(
+                datei
+            )
+
+        if not isinstance(
+            speicher_daten,
+            dict
+        ):
+            raise ValueError
+
+        spieler_daten = (
+            speicher_daten.get(
+                "spieler"
+            )
+        )
+
+        if not isinstance(
+            spieler_daten,
+            dict
+        ):
+            raise ValueError
+
+        name = (
+            spieler_daten.get(
+                "name"
+            )
+            or "Unbekannt"
+        )
+
+        ort = (
+            spieler_daten.get(
+                "ort"
+            )
+            or "Unbekannter Ort"
+        )
+
+        return (
+            f"{slot}. "
+            f"{name} - {ort}"
+        )
+
+    except (
+        OSError,
+        json.JSONDecodeError,
+        ValueError
+    ):
+        return (
+            f"{slot}. "
+            "[Beschädigter Spielstand]"
+        )
+
+def spiel_laden(slot=None):
+    global AKTIVER_SPEICHER_SLOT
+
+    if slot is None:
+        slot = AKTIVER_SPEICHER_SLOT
+
+    if slot is None:
+        print()
+        print(
+            "Kein Speicherplatz ausgewählt."
+        )
+
+        warte_auf_taste()
+        return None
+
+    if slot not in range(
+        1,
+        ANZAHL_SPEICHER_SLOTS + 1
+    ):
+        print()
+        print(
+            "Ungültiger Speicherplatz."
+        )
+
+        warte_auf_taste()
+        return None
+
+    speicher_datei = (
+        speicherdatei_pfad(slot)
+    )
+
+    if not os.path.exists(
+        speicher_datei
+    ):
+        print()
+        print(
+            "Es gibt noch keinen Spielstand."
+        )
+
+        warte_auf_taste()
+
+        return None
+
+    try:
+        with open(
+            speicher_datei,
+            "r",
+            encoding="utf-8"
+        ) as datei:
+            speicher_daten = json.load(
+                datei
+            )
+
+        if not isinstance(
+            speicher_daten,
+            dict
+        ):
+            raise ValueError(
+                "Ungültiger Spielstand"
+            )
+
+        if "spieler" not in speicher_daten:
+            raise ValueError(
+                "Spielerdaten fehlen"
+            )
+
+        geladener_spieler = (
+            speicher_daten[
+                "spieler"
+            ]
+        )
+
+        if not isinstance(
+            geladener_spieler,
+            dict
+        ):
+            raise ValueError(
+                "Ungültige Spielerdaten"
+            )
+
+        save_version = (
+            speicher_daten.get(
+                "version",
+                1
+            )
+        )
+
+        if (
+            isinstance(
+                save_version,
+                bool
+            )
+            or not isinstance(
+                save_version,
+                int
+            )
+        ):
+            raise ValueError(
+                "Ungültige Spielstand-Version"
+            )
+
+    except (
+        OSError,
+        json.JSONDecodeError,
+        ValueError
+    ) as fehler:
+        print()
+
+        print(
+            "Der Spielstand konnte "
+            "nicht geladen werden."
+        )
+
+        print(
+            f"Fehler: {fehler}"
+        )
+
+        warte_auf_taste()
+
+        return None
+
+    # -------------------------
+    # SAVE AUS DER ZUKUNFT
+    # -------------------------
+
+    if save_version > SAVE_VERSION:
+        print()
+
+        design_text(
+            "SPIELSTAND NICHT KOMPATIBEL",
+            design="warnung",
+            art="menue"
+        )
+
+        print()
+
+        print(
+            "Dieser Spielstand verwendet ein "
+            "neueres Speicherformat."
+        )
+
+        print()
+
+        print(
+            f"Spielstand-Version: "
+            f"{save_version}"
+        )
+
+        print(
+            f"Unterstützte Version: "
+            f"{SAVE_VERSION}"
+        )
+
+        print()
+
+        print(
+            "Der Spielstand wurde nicht verändert."
+        )
+
+        warte_auf_taste(
+            "Zurück"
+        )
+
+        return None
+
+    # -------------------------
+    # SAVE ZU ALT
+    # -------------------------
+
+    if save_version < MIN_SAVE_VERSION:
+        print()
+
+        design_text(
+            "ALTER SPIELSTAND",
+            design="warnung",
+            art="menue"
+        )
+
+        print()
+
+        print(
+            "Dieser Spielstand ist zu alt, "
+            "um automatisch aktualisiert zu werden."
+        )
+
+        print()
+
+        print(
+            f"Spielstand-Version: "
+            f"{save_version}"
+        )
+
+        print(
+            f"Mindestens benötigt: "
+            f"{MIN_SAVE_VERSION}"
+        )
+
+        print()
+
+        print(
+            "Der Spielstand wurde nicht verändert."
+        )
+
+        warte_auf_taste(
+            "Zurück"
+        )
+
+        return None
+
+    migration_von = None
+    backup_datei = None
+
+    # -------------------------
+    # ALTER SAVE → MIGRATION
+    # -------------------------
+
+    if save_version < SAVE_VERSION:
+
+        backup_datei, backup_fehler = (
+        spielstand_backup_erstellen(
+                        save_version,
+                        slot=slot
+                    )
+        )
+
+        if backup_datei is None:
+            print()
+
+            design_text(
+                "SPIELSTAND NICHT AKTUALISIERT",
+                design="warnung",
+                art="menue"
+            )
+
+            print()
+
+            print(
+                "Vor der Aktualisierung konnte "
+                "kein Backup erstellt werden."
+            )
+
+            print()
+
+            print(
+                f"Fehler: {backup_fehler}"
+            )
+
+            print()
+
+            print(
+                "Der ursprüngliche Spielstand "
+                "wurde nicht verändert."
+            )
+
+            warte_auf_taste(
+                "Zurück"
+            )
+
+            return None
+
+        migration_von = save_version
+
+        try:
+            speicher_daten = (
+                spielstand_migrieren(
+                    speicher_daten
+                )
+            )
+
+        except ValueError as fehler:
+            print()
+
+            design_text(
+                "MIGRATION FEHLGESCHLAGEN",
+                design="warnung",
+                art="menue"
+            )
+
+            print()
+
+            print(
+                f"Fehler: {fehler}"
+            )
+
+            print()
+
+            print(
+                "Das Backup des alten "
+                "Spielstands bleibt erhalten."
+            )
+
+            warte_auf_taste(
+                "Zurück"
+            )
+
+            return None
+
+        erfolgreich, fehler = (
+        speicherdatei_sicher_schreiben(
+                        speicher_daten,
+                        slot=slot
+                    )
+        )
+
+        if not erfolgreich:
+            print()
+
+            design_text(
+                "MIGRATION NICHT GESPEICHERT",
+                design="warnung",
+                art="menue"
+            )
+
+            print()
+
+            print(
+                f"Fehler: {fehler}"
+            )
+
+            print()
+
+            print(
+                "Das Backup des alten "
+                "Spielstands bleibt erhalten."
+            )
+
+            warte_auf_taste(
+                "Zurück"
+            )
+
+            return None
+
+        geladener_spieler = (
+            speicher_daten[
+                "spieler"
+            ]
+        )
+
+    geladener_spieler["spiel_laeuft"] = True
+
+    geladener_spieler.setdefault("textgeschwindigkeit", "normal")
+    geladener_spieler.setdefault("menue_eingabe", "enter")
+    geladener_spieler.setdefault("bildschirm_leeren", True)
+    geladener_spieler.setdefault("ort_nachricht", None)
+    geladener_spieler.setdefault("reise", None)
+    if geladener_spieler.get(
+        "ort"
+    ) == "reise":
+        alte_reise = geladener_spieler.get(
+            "reise"
+        )
+
+        if isinstance(
+            alte_reise,
+            dict
+        ):
+            geladener_spieler["ort"] = (
+                alte_reise.get(
+                    "gebiet",
+                    "Eichenruh"
+                )
+            )
+
+        else:
+            geladener_spieler[
+                "ort"
+            ] = "Eichenruh"
+    geladener_spieler.setdefault("besuchte_orte",[])
+    geladener_spieler.setdefault("dialog_themen", {})
+    geladener_spieler.setdefault(
+        "quest_ein_name_fehlt",
+        "nicht_entdeckt"
+    )
+
+    geladener_spieler.setdefault(
+        "quest_wiegenlied",
+        "nicht_entdeckt"
+    )
+
+    if "koehler_nachricht_bjorn" not in geladener_spieler:
+        if geladener_spieler.get(
+            "prolog_status"
+        ) == "prolog_abgeschlossen":
+            geladener_spieler[
+                "koehler_nachricht_bjorn"
+            ] = "offen"
+        else:
+            geladener_spieler[
+                "koehler_nachricht_bjorn"
+            ] = "nicht_erhalten"
+
+    geladener_spieler.setdefault("inventar_items", {})
+    geladener_spieler.setdefault(
+        "rezepte_gelernt",
+        []
+    )   
+    geladener_spieler.setdefault(
+        "ressourcen_vorkommen",
+        {}
+    )
+    geladener_spieler.setdefault(
+        "erfolge_freigeschaltet",
+        []
+    )
+
+    geladener_spieler.setdefault(
