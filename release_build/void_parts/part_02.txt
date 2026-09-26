@@ -1,0 +1,1000 @@
+                    ),
+                    (
+                        "Zwischen Wurzeln und flachen Steinen läuft "
+                        "ein schmaler Bach durch eine natürliche Senke."
+                    ),
+                    (
+                        "Jemand hat einige größere Steine so gelegt, "
+                        "dass man trockenen Fußes darüber hinwegkommt."
+                    )
+                ]
+            },
+
+            {
+                "id": "koehlerei_kohlespuren",
+                "schritt": 8,
+                "richtung": "Eichenruh>Köhlerei",
+                "einmalig": True,
+                "titel": "[Spuren der Köhler]",
+                "design": "wissen",
+                "text": [
+                    (
+                        "Zwischen den Fahrspuren liegen kleine schwarze "
+                        "Holzstücke."
+                    ),
+                    (
+                        "Als du eines mit dem Schuh zur Seite schiebst, "
+                        "zerbricht es zu feinem schwarzem Staub."
+                    ),
+                    (
+                        "Die Köhlerei kann nicht mehr weit entfernt sein."
+                    )
+                ]
+            },
+
+            {
+                "id": "hilda_verlassener_karren",
+                "schritt": 6,
+                "richtung": "Eichenruh>Köhlerei",
+                "einmalig": True,
+
+                "bedingung": {
+                    "typ": "quest_status",
+                    "id": "quest_hilda",
+                    "status": "aktiv"
+                },
+
+                "aktion": "hilda_karren"
+            }
+        ],
+
+
+                "schritt_texte": {
+            "Eichenruh>Köhlerei": [
+                (
+                    "Die letzten Häuser Eichenruhs bleiben hinter dir. "
+                    "Der Weg führt zwischen kleinen Feldern und "
+                    "niedrigen Weidezäunen hindurch."
+                ),
+                (
+                    "Die Felder werden schmaler. "
+                    "Am Wegesrand wachsen hohe Gräser und vereinzelte "
+                    "Birken werfen ihre Schatten über den Boden."
+                ),
+                (
+                    "Vor dir beginnt der Wald. "
+                    "Der breite Weg verschwindet zwischen jungen Eichen "
+                    "und dichtem Haselgebüsch."
+                ),
+                (
+                    "Unter den Bäumen wird es merklich kühler. "
+                    "Feuchtes Laub bedeckt den Boden neben dem "
+                    "festgetretenen Waldweg."
+                ),
+                (
+                    "Der Weg senkt sich leicht ab. "
+                    "Zwischen Wurzeln hörst du irgendwo in der Nähe "
+                    "Wasser über Steine laufen."
+                ),
+                (
+                    "Der Wald steht hier dichter. "
+                    "Nur einzelne helle Flecken fallen durch das "
+                    "Blätterdach auf den Weg."
+                ),
+                (
+                    "Eine umgestürzte alte Eiche liegt einige Schritte "
+                    "abseits des Weges. Moose und kleine Pilze haben "
+                    "den Stamm längst überwachsen."
+                ),
+                (
+                    "Zwischen den Bäumen tauchen erste dunkle Spuren "
+                    "von Holzkohle auf. Offenbar wird dieser Weg "
+                    "regelmäßig von den Köhlern benutzt."
+                ),
+                (
+                    "Der Waldweg wird breiter. "
+                    "Tiefe, ältere Fahrspuren ziehen sich durch den "
+                    "trockeneren Boden."
+                ),
+                (
+                    "Ein schwacher Rauchgeruch liegt in der Luft. "
+                    "Zwischen den Baumstämmen hängt stellenweise "
+                    "ein dünner grauer Schleier."
+                ),
+                (
+                    "Die Bäume stehen weiter auseinander. "
+                    "Vor dir erkennst du zwischen den Stämmen die "
+                    "ersten schwarzen Erdmeiler."
+                ),
+                (
+                    "Der Wald öffnet sich zu einer breiten Lichtung. "
+                    "Rauch steigt langsam über den Meilern auf. "
+                    "Du hast die Köhlerei erreicht."
+                )
+            ],
+
+            "Köhlerei>Eichenruh": [
+                (
+                    "Du lässt die rauchenden Erdmeiler hinter dir. "
+                    "Der schwere Geruch nach Holzkohle begleitet dich "
+                    "noch ein Stück in den Wald."
+                ),
+                (
+                    "Die Lichtung verschwindet hinter den Bäumen. "
+                    "Nur dünne Rauchfäden sind noch zwischen den "
+                    "Ästen zu erkennen."
+                ),
+                (
+                    "Du folgst den alten Fahrspuren zurück. "
+                    "Der breite Waldweg führt stetig zwischen "
+                    "Eichen und Birken hindurch."
+                ),
+                (
+                    "Die letzten schwarzen Kohlespuren am Wegesrand "
+                    "werden seltener. Der Geruch nach feuchtem Laub "
+                    "überwiegt wieder."
+                ),
+                (
+                    "Neben dem Weg liegt die umgestürzte alte Eiche. "
+                    "Moos bedeckt ihren Stamm wie ein grüner Teppich."
+                ),
+                (
+                    "Der Wald wird dichter. "
+                    "Das Blätterdach lässt nur wenige helle Flecken "
+                    "bis auf den Boden fallen."
+                ),
+                (
+                    "Aus der Senke neben dem Weg hörst du wieder "
+                    "das leise Plätschern von Wasser zwischen Steinen."
+                ),
+                (
+                    "Der Boden steigt langsam an. "
+                    "Zwischen den Bäumen wird das Licht vor dir "
+                    "allmählich heller."
+                ),
+                (
+                    "Die jungen Eichen werden seltener. "
+                    "Vor dir zeichnet sich bereits der Waldrand ab."
+                ),
+                (
+                    "Du trittst aus dem Wald. "
+                    "Hohe Gräser und erste Weidezäune säumen "
+                    "wieder den Weg."
+                ),
+                (
+                    "Zwischen kleinen Feldern führt der Weg weiter. "
+                    "In der Ferne erkennst du bereits einzelne "
+                    "Dächer Eichenruhs."
+                ),
+                (
+                    "Die vertrauten Häuser kommen näher. "
+                    "Stimmen und Arbeitsgeräusche tragen über die Felder. "
+                    "Du hast Eichenruh erreicht."
+                )
+            ]
+        }
+    },
+
+    frozenset(("Eichenruh", "Letzthafen")): {
+        "name": "Königsring",
+        "weg_id": "koenigsring",
+        "schnellreise": True,
+        "gebiet": "Wald",
+        "schritte": 7,
+        "zufallsereignisse": False,
+
+        "kampfbegegnungen": {
+            "aktiv": True,
+            "chance": 0.10,
+            "garantie_nach": 9,
+            "cooldown": 4
+        },
+
+        "abzweigungen": [
+            {
+                "id": "alte_wegstation",
+                "schritt": 4,
+                "ziel": "alte_wegstation",
+
+                "option": (
+                    "Die alte Wegstation untersuchen"
+                ),
+
+                "text": [
+                    (
+                        "Zwischen Efeu und jungen Bäumen stehen "
+                        "die Reste eines alten Gebäudes."
+                    ),
+                    (
+                        "Ein überwucherter Seitenweg führt "
+                        "von der Straße dorthin."
+                    )
+                ],
+
+                "hinweis": {
+                    "bedingung": {
+                        "typ": "besonderer_fund_status",
+                        "id": "altes_kartenstueck",
+                        "status": "zugeordnet"
+                    },
+
+                    "titel": "[Kartenhinweis]",
+
+                    "text": [
+                        (
+                            "Die Mauerreste stimmen mit dem kleinen "
+                            "Gebäudesymbol auf deinem Kartenstück überein."
+                        ),
+                        (
+                            "Das muss die alte Wegstation sein."
+                        )
+                    ]
+                },
+
+                "rueckkehr_hinweis": (
+                    "wegstation_archiv_kartenstueck"
+                ),
+
+                "ankunft_zeilen": [
+                    (
+                        "Du verlässt den Königsring und folgst "
+                        "dem überwucherten Seitenweg."
+                    ),
+                    (
+                        "Zwischen den Bäumen erhebt sich die "
+                        "Ruine einer alten Wegstation."
+                    )
+                ]
+            },
+
+            {
+                "id": "waldwaechter_praesenz",
+                "schritt": 5,
+                "ziel": "Bossraum",
+
+                "bedingung": {
+                    "typ": "alle",
+                    "bedingungen": [
+                        {
+                            "typ": "spieler_wert_min",
+                            "id": "besiegte_gegner",
+                            "grenze": 4
+                        },
+                        {
+                            "typ": "quest_status",
+                            "id": "waldwaechter_besiegt",
+                            "status": False
+                        }
+                    ]
+                },
+
+                "option": (
+                    "Der mächtigen Präsenz folgen"
+                ),
+
+                "text": [
+                    (
+                        "Die Geräusche des Waldes werden plötzlich "
+                        "leiser."
+                    ),
+                    (
+                        "Selbst die Vögel zwischen den Kronen "
+                        "verstummen."
+                    ),
+                    (
+                        "Etwas Schweres bewegt sich abseits "
+                        "des Königsrings zwischen den Bäumen."
+                    )
+                ],
+
+                "ankunft_zeilen": [
+                    (
+                        "Du verlässt den Königsring und folgst "
+                        "der mächtigen Präsenz tiefer in den Wald."
+                    ),
+                    (
+                        "Mit jedem Schritt werden die gewöhnlichen "
+                        "Geräusche des Waldes schwächer."
+                    )
+                ]
+            }
+        ],
+
+        "schritt_texte": {
+            "Eichenruh>Letzthafen": [
+                (
+                    "Die letzten Häuser Eichenruhs bleiben hinter dir. "
+                    "Unter Gras und Erde sind stellenweise noch die "
+                    "breiten Steine einer alten Straße zu erkennen."
+                ),
+                (
+                    "Felder und Weidezäune werden seltener. "
+                    "Der Königsring führt zwischen alten Eichen "
+                    "weiter nach Osten."
+                ),
+                (
+                    "Der Wald rückt näher an die Straße heran. "
+                    "Zwischen Wurzeln und Moos tauchen immer wieder "
+                    "verwitterte Randsteine auf."
+                ),
+                (
+                    "Zwischen den Bäumen erkennst du Mauerreste. "
+                    "Ein alter Seitenweg führt von der Straße weg."
+                ),
+                (
+                    "Der Königsring steigt langsam an. "
+                    "Der Wind zwischen den Bäumen wird kühler."
+                ),
+                (
+                    "Die Baumkronen werden lichter. "
+                    "In der Luft liegt ein schwacher Geruch nach "
+                    "Salz und feuchtem Stein."
+                ),
+                (
+                    "Vor dir öffnet sich der Wald. "
+                    "Jenseits der Straße zeichnen sich im Nebel "
+                    "erste Dächer vor hohen Klippen ab."
+                )
+            ],
+
+            "Letzthafen>Eichenruh": [
+                (
+                    "Die Dächer Letzthafens verschwinden langsam "
+                    "hinter dir im Nebel."
+                ),
+                (
+                    "Der salzige Geruch der Klippen wird schwächer, "
+                    "während der Königsring wieder zwischen "
+                    "die Bäume führt."
+                ),
+                (
+                    "Die Straße fällt langsam ab. "
+                    "Alte Randsteine begleiten deinen Weg."
+                ),
+                (
+                    "Zwischen den Bäumen liegen wieder die "
+                    "Mauerreste der alten Wegstation."
+                ),
+                (
+                    "Der Wald wird lichter und die ersten offenen "
+                    "Flächen erscheinen zwischen den Bäumen."
+                ),
+                (
+                    "Weidezäune und kleine Felder tauchen "
+                    "am Rand der Straße auf."
+                ),
+                (
+                    "Vor dir erscheinen die vertrauten "
+                    "Dächer Eichenruhs."
+                )
+            ]
+        }
+    },
+
+    frozenset(
+        (
+            "Eichenruh",
+            "verlassenes_dorf"
+        )
+    ): {
+        "name": "Pfad des Vergessens",
+        "weg_id": "pfad_des_vergessens",
+        "gebiet": "Wald",
+        "schritte": 12,
+        "zufallsereignisse": False,
+
+        "kampfbegegnungen": {
+            "aktiv": True,
+            "chance": 0.14,
+            "garantie_nach": 8,
+            "cooldown": 3
+        },
+
+        "ereignisse": [
+            {
+                "id": "pfad_alter_wegstein",
+                "schritt": 4,
+                "richtung": (
+                    "Eichenruh>verlassenes_dorf"
+                ),
+                "einmalig": True,
+                "titel": "[Alter Wegstein]",
+                "design": "wissen",
+                "text": [
+                    (
+                        "Am Rand des Pfades ragt ein "
+                        "flacher Stein aus dem Moos."
+                    ),
+                    (
+                        "Mehrere eingeritzte Linien sind "
+                        "fast vollständig verwittert."
+                    ),
+                    (
+                        "Du erkennst, dass sie einmal "
+                        "eine Richtung angezeigt haben müssen, "
+                        "kannst das Zeichen aber nicht mehr lesen."
+                    )
+                ]
+            },
+
+            {
+                "id": "pfad_stille",
+                "schritt": 9,
+                "richtung": (
+                    "Eichenruh>verlassenes_dorf"
+                ),
+                "einmalig": True,
+                "titel": "[Ungewöhnliche Stille]",
+                "design": "warnung",
+                "text": [
+                    (
+                        "Für einige Augenblicke verstummen "
+                        "die Vögel zwischen den Bäumen."
+                    ),
+                    (
+                        "Auch der Wind scheint schwächer "
+                        "zu werden."
+                    ),
+                    (
+                        "Dann raschelt irgendwo im Unterholz "
+                        "wieder Laub und der Wald klingt "
+                        "so gewöhnlich wie zuvor."
+                    )
+                ]
+            }
+        ],
+
+        "abzweigungen": [
+            {
+                "id": "alter_seitenpfad",
+                "weg_id": "alter_seitenpfad",
+
+                "schritte": {
+                    "Eichenruh>verlassenes_dorf": 7,
+                    "verlassenes_dorf>Eichenruh": 6
+                },
+
+                "aktion": "alter_seitenpfad",
+
+                "option": (
+                    "Den überwucherten Seitenweg untersuchen"
+                ),
+
+                "option_bekannt": (
+                    "Dem Alten Seitenpfad folgen"
+                ),
+
+                "text": [
+                    (
+                        "Zwischen Farn und jungen Bäumen zweigt "
+                        "ein schmaler, fast überwucherter Weg ab."
+                    ),
+                    (
+                        "Er wirkt deutlich älter als der Pfad, "
+                        "dem du bisher gefolgt bist."
+                    )
+                ],
+
+                "bekannt_text": [
+                    (
+                        "Zwischen den Bäumen erkennst du wieder "
+                        "den Eingang zum Alten Seitenpfad."
+                    )
+                ]
+            }
+        ],
+
+        "schritt_texte": {
+            "Eichenruh>verlassenes_dorf": [
+                (
+                    "Die letzten Häuser Eichenruhs "
+                    "bleiben hinter dir. "
+                    "Zwischen Feldern führt ein schmaler "
+                    "Weg Richtung Wald."
+                ),
+                (
+                    "Die Weidezäune werden seltener. "
+                    "Gras wächst zwischen den Resten "
+                    "alter Wegsteine."
+                ),
+                (
+                    "Der Wald schließt sich langsam "
+                    "um den Pfad. "
+                    "Das Licht zwischen den Bäumen "
+                    "wird gedämpfter."
+                ),
+                (
+                    "Moos bedeckt große Teile des Weges. "
+                    "Nur einzelne flache Steine zeigen, "
+                    "dass hier einmal eine richtige "
+                    "Straße verlaufen sein muss."
+                ),
+                (
+                    "Der Pfad führt tiefer zwischen "
+                    "alte Eichen und dichtes Unterholz."
+                ),
+                (
+                    "Wurzeln haben den Boden aufgebrochen. "
+                    "An manchen Stellen ist kaum noch "
+                    "zu erkennen, wo der Weg beginnt "
+                    "und der Wald endet."
+                ),
+                (
+                    "Zwischen Farn und jungen Bäumen "
+                    "erkennst du die Reste einer "
+                    "alten Weggabelung."
+                ),
+                (
+                    "Der Wald wirkt hier älter. "
+                    "Verwitterte Steine stehen halb "
+                    "versunken zwischen den Stämmen."
+                ),
+                (
+                    "Zwischen den Bäumen tauchen die "
+                    "Reste einer niedrigen Mauer auf. "
+                    "Sie verschwindet wenige Meter "
+                    "später wieder im Unterholz."
+                ),
+                (
+                    "Der Pfad wird schmaler. "
+                    "Frische Spuren sind kaum noch "
+                    "zu erkennen."
+                ),
+                (
+                    "Vor dir wird der Wald langsam lichter. "
+                    "Zwischen den Stämmen zeichnen sich "
+                    "dunkle Formen ab."
+                ),
+                (
+                    "Verfallene Dächer erscheinen "
+                    "zwischen den Bäumen. "
+                    "Du hast das verlassene Dorf erreicht."
+                )
+            ],
+
+            "verlassenes_dorf>Eichenruh": [
+                (
+                    "Du lässt die verlassenen Häuser "
+                    "hinter dir und folgst dem alten "
+                    "Pfad zurück in den Wald."
+                ),
+                (
+                    "Die letzten Dächer verschwinden "
+                    "zwischen den Stämmen."
+                ),
+                (
+                    "Der schmale Weg führt wieder "
+                    "zwischen alten Eichen hindurch."
+                ),
+                (
+                    "Neben dem Pfad tauchen erneut "
+                    "die Reste der niedrigen Mauer auf."
+                ),
+                (
+                    "Verwitterte Steine stehen zwischen "
+                    "Farn und Wurzeln."
+                ),
+                (
+                    "Du erreichst die alte Weggabelung, "
+                    "deren Seitenpfade fast vollständig "
+                    "vom Wald verschluckt wurden."
+                ),
+                (
+                    "Wurzeln ziehen sich über die "
+                    "alten Wegsteine."
+                ),
+                (
+                    "Der Wald wird langsam weniger dicht."
+                ),
+                (
+                    "Zwischen dem Moos sind wieder "
+                    "deutlichere Reste des alten "
+                    "Weges zu erkennen."
+                ),
+                (
+                    "Zwischen den Bäumen erscheinen "
+                    "erste offene Wiesen."
+                ),
+                (
+                    "Weidezäune und Felder begleiten "
+                    "den Weg zurück Richtung Eichenruh."
+                ),
+                (
+                    "Vor dir erscheinen die vertrauten "
+                    "Dächer Eichenruhs."
+                )
+            ]
+        }
+    },
+}
+
+
+def text_taste_pruefen():
+    if os.name != "nt":
+        return False
+
+    import msvcrt
+
+    enter_gedrueckt = False
+
+    while msvcrt.kbhit():
+        taste = msvcrt.getwch()
+
+        # Strg+C weiterhin erlauben
+        if taste == "\x03":
+            raise KeyboardInterrupt
+
+        # Sondertasten bestehen unter Windows aus zwei Zeichen
+        if taste in ("\x00", "\xe0"):
+            if msvcrt.kbhit():
+                msvcrt.getwch()
+            continue
+
+        if taste in ("\r", "\n"):
+            enter_gedrueckt = True
+
+    return enter_gedrueckt
+
+TEXTVERLAUF_MAX = 200
+
+
+def textverlauf_hinzufuegen(text):
+    if (
+        "spieler" not in globals()
+        or not isinstance(spieler, dict)
+    ):
+        return
+
+    text = str(text).strip()
+
+    if not text:
+        return
+
+    verlauf = spieler.setdefault(
+        "textverlauf",
+        []
+    )
+
+    verlauf.append(
+        text
+    )
+
+    if len(verlauf) > TEXTVERLAUF_MAX:
+        del verlauf[
+            :-TEXTVERLAUF_MAX
+        ]
+
+
+def textverlauf_anzeigen():
+    verlauf = spieler.get(
+        "textverlauf",
+        []
+    )
+
+    if not verlauf:
+        ort_titel(
+            "Textverlauf"
+        )
+
+        print(
+            "Noch keine Storytexte vorhanden."
+        )
+
+        warte_auf_taste(
+            "Zurück"
+        )
+
+        return
+
+    eintraege_pro_seite = 8
+
+    letzte_seite = (
+        len(verlauf) - 1
+    ) // eintraege_pro_seite
+
+    seite = letzte_seite
+
+    while True:
+        ort_titel(
+            f"Textverlauf - "
+            f"Seite {seite + 1}/"
+            f"{letzte_seite + 1}"
+        )
+
+        start = (
+            seite
+            * eintraege_pro_seite
+        )
+
+        ende = min(
+            start
+            + eintraege_pro_seite,
+            len(verlauf)
+        )
+
+        for eintrag in verlauf[
+            start:ende
+        ]:
+            print(
+                eintrag
+            )
+
+            print()
+
+        menue_trenner()
+
+        optionen = []
+
+        if seite > 0:
+            optionen.append(
+                (
+                    "aelter",
+                    "Ältere Texte"
+                )
+            )
+
+        if seite < letzte_seite:
+            optionen.append(
+                (
+                    "neuer",
+                    "Neuere Texte"
+                )
+            )
+
+        optionen.append(
+            (
+                "zurueck",
+                "Zurück"
+            )
+        )
+
+        for nummer, (_, text) in enumerate(
+            optionen,
+            start=1
+        ):
+            print(
+                f"{nummer}. {text}"
+            )
+
+        auswahl = eingabe_menu(
+            1,
+            len(optionen),
+            sonder_tasten=()
+        )
+
+        aktion = optionen[
+            auswahl - 1
+        ][0]
+
+        if aktion == "aelter":
+            seite -= 1
+
+        elif aktion == "neuer":
+            seite += 1
+
+        elif aktion == "zurueck":
+            return
+
+def text_ausgeben(text="", art="atmosphaere", stil=None, farbe=None):
+    global TEXT_SKIP_AKTIV
+
+    text = spieler_name_formatieren(
+        text
+    )
+
+    if art == "atmosphaere":
+        textverlauf_hinzufuegen(
+            text
+        )
+
+    if "spieler" in globals() and isinstance(spieler, dict):
+        tempo = spieler.get(
+            "textgeschwindigkeit",
+            STANDARD_EINSTELLUNGEN["textgeschwindigkeit"]
+        )
+    else:
+        tempo = STANDARD_EINSTELLUNGEN["textgeschwindigkeit"]
+
+    faktor = TEXT_FAKTOREN.get(tempo, 1.0)
+
+    stil_start = ""
+    stil_ende = ""
+
+    if ANSI_STILE_AKTIV:
+        if stil in ANSI_STILE:
+            stil_start += ANSI_STILE[stil]
+
+        if farbe in ANSI_STILE:
+            stil_start += ANSI_STILE[farbe]
+
+        if stil_start:
+            stil_ende = ANSI_STILE["reset"]
+
+    if TEXT_SKIP_AKTIV and art != "atmosphaere":
+        warte_auf_taste("Weiter")
+
+    # Wurde ein Storyblock übersprungen,
+    # erscheinen alle folgenden Atmosphärentexte
+    # bis zur nächsten Bestätigung sofort.
+    if TEXT_SKIP_AKTIV and art == "atmosphaere":
+        print(
+            f"{stil_start}{text}{stil_ende}"
+        )
+        return
+
+    # Menüs und Status: sofort
+    if art == "menue":
+        print(f"{stil_start}{text}{stil_ende}")
+        return
+
+    # Alle Texteffekte deaktiviert
+    if faktor == 0:
+        print(f"{stil_start}{text}{stil_ende}")
+        return
+
+    # Atmosphäre und Dialoge:
+    # Buchstabe für Buchstabe
+    if art == "atmosphaere":
+        pause = TEXT_BASIS["atmosphaere"] * faktor
+
+        print(stil_start, end="", flush=True)
+
+        position = 0
+
+        while position < len(text):
+
+            if text_taste_pruefen():
+                print(
+                    text[position:],
+                    end="",
+                    flush=True
+                )
+
+                TEXT_SKIP_AKTIV = True
+
+                position = len(text)
+
+                time.sleep(0.10)
+                text_taste_pruefen()
+
+                break
+
+            print(
+                text[position],
+                end="",
+                flush=True
+            )
+
+            position += 1
+            time.sleep(pause)
+
+        # Eventuelle Tastendrücke während der Ausgabe entfernen
+        text_taste_pruefen()
+
+        print(stil_ende)
+
+    # Kampf:
+    # Satz sofort, danach kurze Pause
+    elif art == "kampf":
+        print(f"{stil_start}{text}{stil_ende}")
+        time.sleep(TEXT_BASIS["kampf"] * faktor)
+
+    # Wichtige Ereignisse:
+    # kurze Pause vorher und längere danach
+    elif art == "ereignis":
+        time.sleep(0.4 * faktor)
+        print(f"{stil_start}{text}{stil_ende}")
+        time.sleep(TEXT_BASIS["ereignis"] * faktor)
+
+    else:
+        print(f"{stil_start}{text}{stil_ende}")
+
+def basis_ordner():
+    if getattr(sys, "frozen", False):
+        return os.path.dirname(sys.executable)
+
+    return os.path.dirname(os.path.abspath(__file__))
+
+def design_text(text, design="normal", art="menue"):
+    einstellung = TEXT_DESIGN.get(
+        design,
+        TEXT_DESIGN["normal"]
+    )
+
+    text_ausgeben(
+        text,
+        art=art,
+        stil=einstellung["stil"],
+        farbe=einstellung["farbe"]
+    )
+
+ANZAHL_SPEICHER_SLOTS = 3
+
+AKTIVER_SPEICHER_SLOT = None
+
+ALTE_SPEICHER_DATEI = os.path.join(
+    basis_ordner(),
+    "void_save.json"
+)
+
+
+def speicherdatei_pfad(slot):
+    return os.path.join(
+        basis_ordner(),
+        f"void_save_{slot}.json"
+    )
+
+def alten_spielstand_importieren():
+    if not os.path.exists(
+        ALTE_SPEICHER_DATEI
+    ):
+        return None
+
+    for slot in range(
+        1,
+        ANZAHL_SPEICHER_SLOTS + 1
+    ):
+        neue_datei = (
+            speicherdatei_pfad(
+                slot
+            )
+        )
+
+        if os.path.exists(
+            neue_datei
+        ):
+            continue
+
+        try:
+            os.replace(
+                ALTE_SPEICHER_DATEI,
+                neue_datei
+            )
+
+        except OSError:
+            return None
+
+        return slot
+
+    return None
+
+EINSTELLUNGS_DATEI = os.path.join(
+    basis_ordner(),
+    "void_settings.json"
+)
+
+SAVE_VERSION = 2
+MIN_SAVE_VERSION = 1
+
+
+def einstellungen_laden():
+    if not os.path.exists(
+        EINSTELLUNGS_DATEI
+    ):
+        return False
+
+    try:
+        with open(
+            EINSTELLUNGS_DATEI,
+            "r",
+            encoding="utf-8"
+        ) as datei:
+            daten = json.load(
+                datei
+            )
+
+        if not isinstance(
+            daten,
+            dict
+        ):
+            return False
+
+    except (
+        OSError,
+        json.JSONDecodeError
+    ):
+        return False
+
+    textgeschwindigkeit = daten.get(
+        "textgeschwindigkeit"
+    )
