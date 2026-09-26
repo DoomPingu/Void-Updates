@@ -1,0 +1,1000 @@
+                            ),
+                            (
+                                "[Hilda] Du hoffst wohl, dass der Händler "
+                                "irgendwann einfach hinter dir auftaucht."
+                            )
+                        ]
+                    )
+
+                    for zeile in begruessung.split("\n"):
+                        if zeile:
+                            text_ausgeben(
+                                zeile
+                            )
+                        else:
+                            print()
+
+                else:
+                    text_ausgeben(
+                        "[Hilda] Meine Lieferung fehlt noch immer."
+                    )
+
+                    text_ausgeben(
+                        "[Hilda] Wenn du sowieso in den Wald gehst, "
+                        "halt die Augen offen."
+                    )
+
+            else:
+                text_ausgeben(
+                    "[Hilda] Noch etwas?"
+                )
+
+            print()
+
+            optionen = []
+
+            if "lieferung_inhalt" not in themen_dieses_gespraech:
+                optionen.append(
+                    (
+                        "lieferung_inhalt",
+                        "Was genau sollte geliefert werden?"
+                    )
+                )
+
+            if "haendler" not in themen_dieses_gespraech:
+                optionen.append(
+                    (
+                        "haendler",
+                        "Weißt du etwas über den Händler?"
+                    )
+                )
+
+            optionen.append(
+                (
+                    "ende",
+                    "Gespräch beenden"
+                )
+            )
+
+            for nummer, (aktion_id, text) in enumerate(
+                optionen,
+                start=1
+            ):
+                if aktion_id in (
+                    "lieferung_inhalt",
+                    "haendler"
+                ):
+                    text = dialog_option(
+                        "hilda",
+                        aktion_id,
+                        text
+                    )
+
+                print(
+                    f"{nummer}. {text}"
+                )
+
+            hilda_auswahl = eingabe_menu(
+                1,
+                len(optionen),
+                sonder_tasten=()
+            )
+
+            aktion = optionen[
+                hilda_auswahl - 1
+            ][0]
+
+            erste_runde = False
+
+            if aktion != "ende":
+                themen_dieses_gespraech.add(
+                    aktion
+                )
+
+            print()
+
+            if aktion == "lieferung_inhalt":
+                text_ausgeben(
+                    f'[{spieler["name"]}] '
+                    "Was genau sollte geliefert werden?"
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Hilda] Mehl, Kräuter, Stoffe. "
+                    "Der übliche Kram."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Hilda] Nichts davon ist besonders wertvoll."
+                )
+
+                text_ausgeben(
+                    "[Hilda] Gerade deshalb verstehe ich nicht, "
+                    "warum der Wagen nicht angekommen ist."
+                )
+
+                dialog_thema_markieren(
+                    "hilda",
+                    "lieferung_inhalt"
+                )
+
+                warte_auf_taste(
+                    "Weiter"
+                )
+
+            elif aktion == "haendler":
+                text_ausgeben(
+                    f'[{spieler["name"]}] '
+                    "Weißt du etwas über den Händler?"
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Hilda] Er kommt regelmäßig nach Eichenruh."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Hilda] Normalerweise könnte man die Uhr "
+                    "nach ihm stellen."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Hilda] Dass er einfach nicht auftaucht, "
+                    "passt überhaupt nicht zu ihm."
+                )
+
+                dialog_thema_markieren(
+                    "hilda",
+                    "haendler"
+                )
+
+                warte_auf_taste(
+                    "Weiter"
+                )
+
+            elif aktion == "ende":
+                hilda_abschied()
+                return
+
+            continue
+
+
+        # -------------------------
+        # KARREN GEFUNDEN
+        # -------------------------
+
+        elif spieler["quest_hilda"] == "karren_gefunden":
+            print()
+
+            text_ausgeben(
+                "Hilda sieht dich bereits aus der Entfernung kommen."
+            )
+
+            print()
+            text_ausgeben(
+                "[Hilda] Du hast etwas gefunden, stimmt's?"
+            )
+
+            print()
+            text_ausgeben(
+                "Du erzählst ihr vom verlassenen Karren im Wald."
+            )
+
+            text_ausgeben(
+                "Hildas Gesicht wird ernst."
+            )
+
+            print()
+            text_ausgeben(
+                "[Hilda] Verlassen? Und vom Händler..."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Sie verstummt mitten im Satz."
+            )
+
+            print()
+            text_ausgeben(
+                "[Hilda] Welcher Händler?"
+            )
+
+            seite_wechseln(
+                "Marktplatz von Eichenruh",
+                "Hilda"
+            )
+
+            text_ausgeben(
+                "Du erinnerst sie daran, dass sie selbst dich "
+                "gebeten hat, nach ihm Ausschau zu halten."
+            )
+
+            print()
+            text_ausgeben(
+                "Hilda runzelt die Stirn."
+            )
+
+            print()
+            text_ausgeben(
+                "[Hilda] Die Lieferung fehlt. Das weiß ich."
+            )
+
+            text_ausgeben(
+                "[Hilda] Mehl, Kräuter, Stoffe. "
+                "Die Bestellung steht seit Tagen in meinem Buch."
+            )
+
+            print()
+            text_ausgeben(
+                "[Hilda] Aber wer sie bringen sollte..."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Sie zieht ein abgegriffenes Auftragsbuch "
+                "unter dem Stand hervor und blättert hastig darin."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Zwischen Mengen, Preisen und Warenlisten "
+                "bleibt eine einzelne Zeile merkwürdig leer."
+            )
+
+            print()
+
+            design_text(
+                "Name des Lieferanten: —",
+                design="wissen",
+                art="menue"
+            )
+
+            print()
+            text_ausgeben(
+                "[Hilda] Das ist meine Handschrift."
+            )
+
+            text_ausgeben(
+                "[Hilda] Ich weiß nur nicht mehr, "
+                "wessen Namen ich dort eintragen wollte."
+            )
+
+            if item_besitzt(
+                "fahrtenbuch_haendler"
+            ):
+                print()
+
+                text_ausgeben(
+                    "Du legst das Fahrtenbuch aus dem Karren "
+                    "auf ihren Stand."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "Hilda fährt mit einem Finger über "
+                    "die letzten unruhigen Zeilen."
+                )
+
+                print()
+                text_ausgeben(
+                    "[Hilda] Ich erkenne die Schrift nicht."
+                )
+
+                text_ausgeben(
+                    "[Hilda] Aber wenn dieses Buch wirklich "
+                    "zu meinem Händler gehörte..."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "Sie beendet den Satz nicht."
+                )
+
+            seite_wechseln(
+                "Marktplatz von Eichenruh",
+                "Hilda"
+            )
+
+            text_ausgeben(
+                "Hilda schiebt dir einige Münzen zu."
+            )
+
+            print()
+            text_ausgeben(
+                "[Hilda] Du hast den Karren gefunden. "
+                "Dafür schulde ich dir trotzdem etwas."
+            )
+
+            spieler["gold"] += 20
+
+            print()
+            text_ausgeben(
+                "Hilda greift noch einmal unter ihren Stand."
+            )
+
+            print()
+            text_ausgeben(
+                "Diesmal zieht sie einen kleinen, "
+                "zusammengefalteten Zettel hervor."
+            )
+
+            print()
+            text_ausgeben(
+                "[Hilda] Und nimm das gleich mit."
+            )
+
+            text_ausgeben(
+                "[Hilda] Zwei Karotten, ein Bündel Kräuter."
+            )
+
+            text_ausgeben(
+                "[Hilda] Selbst du solltest es schaffen, "
+                "daraus eine Suppe zu machen."
+            )
+
+            rezept_lernen(
+                "gemuesesuppe"
+            )
+
+            spieler[
+                "quest_hilda"
+            ] = "abgeschlossen"
+
+            quest_meldung(
+                "abgeschlossen",
+                "Die verschwundene Lieferung",
+                belohnungen=[
+                    "20 Gold",
+                    "Rezept: Einfache Gemüsesuppe"
+                ]
+            )
+
+            seite_wechseln(
+                "Marktplatz von Eichenruh"
+            )
+
+            text_ausgeben(
+                "Als du das Fahrtenbuch wieder einsteckst, "
+                "bleibt ein unangenehmer Gedanke zurück."
+            )
+
+            text_ausgeben(
+                "Hilda hat nicht die fehlende Lieferung vergessen."
+            )
+
+            text_ausgeben(
+                "Sie hat den Menschen vergessen, "
+                "der sie bringen sollte."
+            )
+
+            spieler[
+                "quest_ein_name_fehlt"
+            ] = "tomas_befragen"
+
+            quest_meldung(
+                "neu",
+                "Ein Name fehlt",
+                "Sprich mit Tomas über Hildas "
+                "verschwundenen Händler."
+            )
+
+            dialog_thema_markieren(
+                "hilda",
+                "haendler_erinnerung"
+            )
+
+            themen_dieses_gespraech.add(
+                "haendler_erinnerung"
+            )
+
+            warte_auf_taste("Weiter")
+
+            erste_runde = False
+
+            continue
+
+        # -------------------------
+        # QUEST ABGESCHLOSSEN
+        # -------------------------
+
+        elif spieler["quest_hilda"] == "abgeschlossen":
+            print()
+
+            ereignis_begruessung = False
+
+            if (
+                erste_runde
+                and spieler.get(
+                    "quest_ein_name_fehlt"
+                ) == "abgeschlossen"
+                and not npc_reaktion_gezeigt(
+                    "hilda",
+                    "marek_abschluss"
+                )
+            ):
+                text_ausgeben(
+                    f'[{spieler["name"]}] '
+                    "Ich habe den Händler gefunden."
+                )
+
+                text_ausgeben(
+                    f'[{spieler["name"]}] '
+                    "Er heißt Marek Voss. Er ist in Letzthafen."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "Hilda wird ungewöhnlich still."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Hilda] Marek Voss."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "Sie zieht ihr Auftragsbuch unter "
+                    "dem Stand hervor."
+                )
+
+                text_ausgeben(
+                    "Die leere Zeile ist noch immer dort."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Hilda] Sag den Namen noch einmal."
+                )
+
+                print()
+
+                text_ausgeben(
+                    f'[{spieler["name"]}] Marek Voss.'
+                )
+
+                print()
+
+                text_ausgeben(
+                    "Hilda schreibt den Namen langsam "
+                    "in die freie Zeile."
+                )
+
+                print()
+
+                design_text(
+                    "Name des Lieferanten: Marek Voss",
+                    design="wissen",
+                    art="menue"
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Hilda] Jetzt steht er wenigstens wieder da."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Hilda] Ich wünschte nur, ich könnte behaupten, "
+                    "ich hätte mich an ihn erinnert."
+                )
+
+                npc_reaktion_markieren(
+                    "hilda",
+                    "marek_abschluss"
+                )
+
+                dialog_thema_markieren(
+                    "hilda",
+                    "marek_erinnerung"
+                )
+
+                themen_dieses_gespraech.add(
+                    "marek_erinnerung"
+                )
+
+                warte_auf_taste(
+                    "Weiter"
+                )
+
+                ereignis_begruessung = True
+
+            if erste_runde and not ereignis_begruessung:
+                direkte_besuche = npc_status(
+                    "hilda"
+                ).get(
+                    "direkte_besuche",
+                    0
+                )
+
+                if spieler["lebenspunkte"] <= 50:
+                    begruessung = npc_variante_waehlen(
+                        "hilda",
+                        "letzte_begruessung_verletzt",
+                        [
+                            (
+                                "[Hilda] Bei allen Wegen, "
+                                "was ist denn mit dir passiert?"
+                            ),
+                            (
+                                "[Hilda] Du siehst fürchterlich aus.\n"
+                                "[Hilda] Und nein, das war kein Kompliment."
+                            ),
+                            (
+                                "[Hilda] Wenn du gleich umkippst, "
+                                "dann bitte nicht vor meinem Stand."
+                            )
+                        ]
+                    )
+
+                elif direkte_besuche >= 5:
+                    begruessung = npc_variante_waehlen(
+                        "hilda",
+                        "letzte_dauerbesuch_begruessung",
+                        [
+                            "[Hilda] Schon wieder?",
+                            (
+                                "[Hilda] Wenn du noch öfter auftauchst, "
+                                "stelle ich dir einen eigenen Hocker hin."
+                            ),
+                            (
+                                "[Hilda] Kaufst du irgendwann auch etwas "
+                                "oder sammelst du nur Gespräche?"
+                            )
+                        ]
+                    )
+
+                else:
+                    begruessung = npc_begruessung_waehlen(
+                        "hilda",
+                        [
+                            "[Hilda] Da ist ja mein Waldläufer.",
+                            "[Hilda] Was gibt's?",
+                            "[Hilda] Wieder zurück?",
+                            "[Hilda] Na? Alles noch an seinem Platz?",
+                            (
+                                "[Hilda] Keine Sorge. "
+                                "Heute ist noch keine Lieferung verschwunden."
+                            )
+                        ]
+                    )
+
+                for zeile in begruessung.split("\n"):
+                    if zeile:
+                        text_ausgeben(
+                            zeile
+                        )
+                    else:
+                        print()
+
+            elif not erste_runde:
+                text_ausgeben(
+                    "[Hilda] Noch etwas?"
+                )
+
+            print()
+            hauptquest_status = spieler.get(
+                "quest_ein_name_fehlt",
+                "nicht_entdeckt"
+            )
+
+            optionen = []
+
+            if "etwas_neues" not in themen_dieses_gespraech:
+                optionen.append(
+                    (
+                        "etwas_neues",
+                        "Gibt es etwas Neues?"
+                    )
+                )
+
+            erinnerungs_thema = None
+
+            if hauptquest_status == "abgeschlossen":
+                erinnerungs_thema = (
+                    "marek_erinnerung"
+                )
+
+                haendler_text = (
+                    "Erinnerst du dich an Marek Voss?"
+                )
+
+            elif hauptquest_status != "nicht_entdeckt":
+                erinnerungs_thema = (
+                    "haendler_erinnerung"
+                )
+
+                haendler_text = (
+                    "Erinnerst du dich inzwischen an den Händler?"
+                )
+
+            if (
+                erinnerungs_thema is not None
+                and erinnerungs_thema
+                not in themen_dieses_gespraech
+            ):
+                optionen.append(
+                    (
+                        erinnerungs_thema,
+                        haendler_text
+                    )
+                )
+
+            optionen.append(
+                (
+                    "ende",
+                    "Gespräch beenden"
+                )
+            )
+
+            for nummer, (aktion_id, text) in enumerate(
+                optionen,
+                start=1
+            ):
+                if aktion_id in (
+                    "etwas_neues",
+                    "haendler_erinnerung",
+                    "marek_erinnerung"
+                ):
+                    text = dialog_option(
+                        "hilda",
+                        aktion_id,
+                        text
+                    )
+
+                print(
+                    f"{nummer}. {text}"
+                )
+
+            hilda_auswahl = eingabe_menu(
+                1,
+                len(optionen),
+                sonder_tasten=()
+            )
+
+            aktion = optionen[
+                hilda_auswahl - 1
+            ][0]
+
+            erste_runde = False
+
+            if aktion != "ende":
+                themen_dieses_gespraech.add(
+                    aktion
+                )
+
+            print()
+
+            if aktion == "etwas_neues":
+                text_ausgeben(
+                    f'[{spieler["name"]}] '
+                    "Gibt es etwas Neues?"
+                )
+
+                print()
+
+                if hauptquest_status == "abgeschlossen":
+                    text_ausgeben(
+                        "[Hilda] Im Moment nicht."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "[Hilda] Mareks Name steht noch immer "
+                        "in meinem Buch."
+                    )
+
+                    text_ausgeben(
+                        "[Hilda] Für diese Woche reicht mir das "
+                        "schon als gute Nachricht."
+                    )
+
+                elif hauptquest_status != "nicht_entdeckt":
+                    text_ausgeben(
+                        "[Hilda] Nichts Neues."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "[Hilda] Und bevor du fragst: "
+                        "Nein, der Name ist mir nicht "
+                        "plötzlich wieder eingefallen."
+                    )
+
+                else:
+                    text_ausgeben(
+                        "[Hilda] Nichts, worüber du dir "
+                        "den Kopf zerbrechen musst."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "[Hilda] Und für Eichenruh ist das "
+                        "zur Abwechslung ganz angenehm."
+                    )
+
+                dialog_thema_markieren(
+                    "hilda",
+                    "etwas_neues"
+                )
+
+                warte_auf_taste(
+                    "Weiter"
+                )
+
+            elif aktion in (
+                "haendler_erinnerung",
+                "marek_erinnerung"
+            ):
+                if aktion == "marek_erinnerung":
+                    text_ausgeben(
+                        f'[{spieler["name"]}] '
+                        "Erinnerst du dich an Marek Voss?"
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "Hilda sieht kurz auf ihr Auftragsbuch."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "[Hilda] An den Namen?"
+                    )
+
+                    text_ausgeben(
+                        "[Hilda] Ja. Weil er dort steht."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "[Hilda] An den Mann selbst?"
+                    )
+
+                    text_ausgeben(
+                        "[Hilda] Nein."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "[Hilda] Und genau das gefällt mir "
+                        "überhaupt nicht."
+                    )
+
+                else:
+                    text_ausgeben(
+                        f'[{spieler["name"]}] '
+                        "Erinnerst du dich inzwischen an den Händler?"
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "Hilda schüttelt langsam den Kopf."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "[Hilda] Nein."
+                    )
+
+                    text_ausgeben(
+                        "[Hilda] Ich weiß, dass jemand fehlt."
+                    )
+
+                    text_ausgeben(
+                        "[Hilda] Ich weiß, was er bringen sollte."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "[Hilda] Nur der Mensch selbst ist weg."
+                    )
+
+                dialog_thema_markieren(
+                    "hilda",
+                    aktion
+                )
+
+                warte_auf_taste(
+                    "Weiter"
+                )
+
+            elif aktion == "ende":
+                hilda_abschied()
+                return
+            
+def dialog_tomas():
+    npc_besuch_starten(
+        "tomas"
+    )
+
+    erste_runde = True
+    nach_prolog_besuch = None
+    themen_dieses_gespraech = set()
+
+    while True:
+        ort_titel("Marktplatz von Eichenruh")
+        dialog_titel("Tomas")
+
+        prolog_status = spieler.get("prolog_status")
+
+        # -------------------------
+        # JORIS WIRD GESUCHT
+        # -------------------------
+
+        if prolog_status in [
+            "joris_suche",
+            "joris_hinweise_komplett"
+        ]:
+            hinweise = spieler.get(
+                "prolog_joris_hinweise",
+                {}
+            )
+
+            text_ausgeben(
+                "Tomas sitzt auf seiner Bank und betrachtet "
+                "das Treiben auf dem Marktplatz."
+            )
+
+            print()
+            print(
+                "1. " + dialog_option(
+                    "tomas",
+                    "joris_gesehen",
+                    "Hast du Joris heute gesehen?"
+                )
+            )
+
+            print(
+                "2. " + dialog_option(
+                    "tomas",
+                    "kurz_reden",
+                    "Ich wollte nur kurz mit dir reden."
+                )
+            )
+
+            print("3. Gespräch beenden")
+
+            tomas_auswahl = eingabe_menu(
+                1,
+                3,
+                sonder_tasten=()
+            )
+
+            print()
+
+            if tomas_auswahl == 1:
+                if not hinweise.get("tomas", False):
+                    text_ausgeben(
+                        "[Tomas] Joris? Natürlich."
+                    )
+
+                    print()
+                    text_ausgeben(
+                        "[Tomas] Der Junge hat sich heute Morgen "
+                        "ein langes Hanfseil von mir geliehen."
+                    )
+
+                    print()
+                    text_ausgeben(
+                        "[Tomas] Wofür genau, hat er mir nicht gesagt."
+                    )
+
+                    text_ausgeben(
+                        "[Tomas] Danach ist er jedenfalls nicht "
+                        "zurück auf den Markt gegangen."
+                    )
+
+                    print()
+                    text_ausgeben(
+                        "[Tomas] Ich habe ihn hinter Bjorns Schmiede "
+                        "verschwinden sehen."
+                    )
+
+                    prolog_joris_hinweis("tomas")
+
+                else:
+                    text_ausgeben(
+                        "[Tomas] Ein Hanfseil. "
+                        "Danach ist er hinter Bjorns Schmiede verschwunden."
+                    )
+                dialog_thema_markieren(
+                    "tomas",
+                    "joris_gesehen"
+                )
+                warte_auf_taste("Weiter")
+
+            elif tomas_auswahl == 2:
+                text_ausgeben(
+                    "[Tomas] Dann setz dich. "
+                    "Beobachten lässt sich das Dorf auch zu zweit."
+                )
+                dialog_thema_markieren(
+                    "tomas",
+                    "kurz_reden"
+                )
+                warte_auf_taste("Weiter")
+
+            elif tomas_auswahl == 3:
+                return
+
+            continue
+
+        # -------------------------
+        # NORMALER PROLOG-DIALOG
+        # -------------------------
+
+        if prolog_laeuft():
+            text_ausgeben(
+                "Tomas sitzt auf seiner üblichen Bank "
+                "am Rand des Marktplatzes."
+            )
+
+            text_ausgeben(
+                "Neben ihm lehnt sein knorriger Spazierstock."
+            )
+
+            print()
+            text_ausgeben("[Tomas] Morgen.")
+
+            print()
+            print(
+                "1. " + dialog_option(
+                    "tomas",
+                    "frueh_hier",
+                    "Du sitzt aber früh hier."
+                )
+            )
+
+            print(
+                "2. " + dialog_option(
+                    "tomas",
+                    "dorf_beobachten",
+                    "Beobachtest du wieder das ganze Dorf?"
+                )
+            )
+
+            print("3. Gespräch beenden")
+
+            tomas_auswahl = eingabe_menu(
+                1,
+                3,
+                sonder_tasten=()
+            )
+
+            print()
+
+            if tomas_auswahl == 1:
+                text_ausgeben(
+                    "[Tomas] In meinem Alter wacht man früh auf, "
+                    "ob man will oder nicht."
