@@ -1,7 +1,7 @@
 {
     "version": "2.2.0",
     "name": "Alpha 2.2",
-    "sha256": "5C8154003DB8F05E00D7A49653FA26AF906C8F8C5C5897D817CA639AA7D018FF",
+    "sha256": "3514118237115203AD356D505DE3D41605B61D5F70B24269206D4AB122924767",
     "download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v2.2.0/void_update_2.2.0.zip",
     "patch_notes": [
         "Gebietskarten fuer den Alten Seitenpfad und die Alte Wegstation",
