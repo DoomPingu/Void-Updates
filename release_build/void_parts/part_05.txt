@@ -1,0 +1,999 @@
+    ]
+
+    aktion = abzweigung.get(
+        "aktion"
+    )
+
+    if aktion == "alter_seitenpfad":
+
+        if weg_status(
+            "alter_seitenpfad"
+        ) != "entdeckt":
+
+            weg_entdecken(
+                "alter_seitenpfad"
+            )
+
+        else:
+            weg_als_gesehen_markieren(
+                "alter_seitenpfad"
+            )
+
+        wald_seitenpfad_navigieren()
+
+        ort_titel(
+            f'Reise - {reise_daten.get(
+                "name",
+                reise_daten["gebiet"]
+            )}'
+        )
+
+        print(
+            f'{reise_daten["start"]} → '
+            f'{reise_daten["ziel"]}'
+        )
+
+        menue_trenner()
+
+        text_ausgeben(
+            "Du kehrst auf den Hauptweg zurück.",
+            art="menue"
+        )
+
+        return False
+
+    spieler[
+        "ort"
+    ] = abzweigung["ziel"]
+
+    ort_nachricht_setzen(
+        *abzweigung.get(
+            "ankunft_zeilen",
+            []
+        )
+    )
+
+    return True
+
+def reise_ort_name(ort):
+    sonder_namen = {
+        "verlassenes_dorf": "Verlassenes Dorf"
+    }
+
+    if ort in sonder_namen:
+        return sonder_namen[ort]
+
+    return str(
+        ort
+    ).replace(
+        "_",
+        " "
+    ).title()
+
+
+def reise_umkehren():
+    reise_daten = spieler.get(
+        "reise"
+    )
+
+    if not isinstance(
+        reise_daten,
+        dict
+    ):
+        return False
+
+    start = reise_daten[
+        "start"
+    ]
+
+    ziel = reise_daten[
+        "ziel"
+    ]
+
+    gesamt_schritte = reise_daten[
+        "gesamt_schritte"
+    ]
+
+    aktueller_schritt = reise_daten[
+        "aktueller_schritt"
+    ]
+
+    start_name = reise_ort_name(
+        start
+    )
+
+    ziel_name = reise_ort_name(
+        ziel
+    )
+
+    ort_titel(
+        "Reise umkehren"
+    )
+
+    print(
+        f"Aktuelles Ziel: {ziel_name}"
+    )
+
+    print(
+        f"Zurück nach: {start_name}"
+    )
+
+    print(
+        f"Position: "
+        f"{aktueller_schritt}/"
+        f"{gesamt_schritte}"
+    )
+
+    menue_trenner()
+
+    print(
+        "1. Umkehren"
+    )
+
+    print(
+        f"2. Weiter Richtung "
+        f"{ziel_name}"
+    )
+
+    auswahl = eingabe_menu(
+        1,
+        2,
+        sonder_tasten=()
+    )
+
+    if auswahl == 2:
+        return False
+
+    ankunft_texte = (
+        reise_daten.setdefault(
+            "ankunft_texte",
+            {}
+        )
+    )
+
+    ankunft_texte.setdefault(
+        ziel,
+        list(
+            reise_daten.get(
+                "ankunft_zeilen",
+                []
+            )
+        )
+    )
+
+    ankunft_texte.setdefault(
+        start,
+        [
+            (
+                f"Du erreichst wieder "
+                f"{start_name}."
+            )
+        ]
+    )
+
+    # Noch keinen Schritt gegangen:
+    # direkt zum Ausgangsort zurück.
+    if aktueller_schritt <= 0:
+        spieler[
+            "reise"
+        ] = None
+
+        spieler[
+            "ort"
+        ] = start
+
+        ort_nachricht_setzen(
+            "Du entscheidest dich umzukehren.",
+            (
+                f"Du kehrst nach "
+                f"{start_name} zurück."
+            )
+        )
+
+        return True
+
+    # Richtung wechseln.
+    reise_daten[
+        "start"
+    ] = ziel
+
+    reise_daten[
+        "ziel"
+    ] = start
+
+    # Position auf derselben Strecke spiegeln.
+    reise_daten[
+        "aktueller_schritt"
+    ] = (
+        gesamt_schritte
+        - aktueller_schritt
+    )
+
+    # Abzweigungen dürfen auf dem Rückweg
+    # erneut angeboten werden.
+    reise_daten[
+        "angebotene_abzweigungen"
+    ] = []
+
+    reise_daten[
+        "ankunft_zeilen"
+    ] = list(
+        ankunft_texte[
+            start
+        ]
+    )
+
+    ort_nachricht_setzen(
+        "Du bleibst stehen und kehrst um.",
+        (
+            f"Du gehst nun zurück in "
+            f"Richtung {start_name}."
+        )
+    )
+
+    return True
+
+
+def reise_kampfbegegnung_pruefen(
+    reise_daten
+):
+    strecken_daten = (
+        reise_strecken_daten(
+            reise_daten
+        )
+    )
+
+    kampf_daten = (
+        strecken_daten.get(
+            "kampfbegegnungen",
+            {}
+        )
+    )
+
+    if not isinstance(
+        kampf_daten,
+        dict
+    ):
+        return False
+
+    if not kampf_daten.get(
+        "aktiv",
+        False
+    ):
+        return False
+
+    # Der ruhige Prolog bleibt kampffrei.
+    if (
+        kampf_daten.get(
+            "erst_nach_prolog",
+            False
+        )
+        and spieler.get(
+            "prolog_status"
+        ) != "prolog_abgeschlossen"
+    ):
+        return False
+
+    # Ohne Waffe keine zufällige
+    # Kampfbegegnung starten.
+    if not spieler.get(
+        "waffe"
+    ):
+        return False
+
+    kampf_status = (
+        spieler.setdefault(
+            "reise_kampf_status",
+            {}
+        )
+    )
+
+    kampf_status.setdefault(
+        "schritte_ohne_kampf",
+        0
+    )
+
+    kampf_status.setdefault(
+        "cooldown",
+        0
+    )
+
+    # Nach einem Kampf einige Schritte Ruhe.
+    if kampf_status[
+        "cooldown"
+    ] > 0:
+        kampf_status[
+            "cooldown"
+        ] -= 1
+
+        return False
+
+    kampf_status[
+        "schritte_ohne_kampf"
+    ] += 1
+
+    chance = kampf_daten.get(
+        "chance",
+        0
+    )
+
+    garantie_nach = kampf_daten.get(
+        "garantie_nach",
+        0
+    )
+
+    zufall_trifft = (
+        isinstance(
+            chance,
+            (int, float)
+        )
+        and random.random() < chance
+    )
+
+    garantie_trifft = (
+        isinstance(
+            garantie_nach,
+            int
+        )
+        and garantie_nach > 0
+        and kampf_status[
+            "schritte_ohne_kampf"
+        ] >= garantie_nach
+    )
+
+    if not (
+        zufall_trifft
+        or garantie_trifft
+    ):
+        return False
+
+    kampf_status[
+        "schritte_ohne_kampf"
+    ] = 0
+
+    kampf_status[
+        "cooldown"
+    ] = max(
+        0,
+        int(
+            kampf_daten.get(
+                "cooldown",
+                0
+            )
+        )
+    )
+
+    ort_titel(
+        "Wald - Begegnung"
+    )
+
+    text_ausgeben(
+        "Ein Geräusch abseits des Weges "
+        "lässt dich stehen bleiben."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Etwas bewegt sich zwischen "
+        "den Bäumen."
+    )
+
+    print()
+
+    kampf_ergebnis = kampf_starten(
+        lebenspunkte=spieler[
+            "lebenspunkte"
+        ],
+        heiltraenke=spieler[
+            "heiltränke"
+        ],
+        waffe=spieler[
+            "waffe"
+        ]
+    )
+
+    spieler[
+        "lebenspunkte"
+    ] = kampf_ergebnis[
+        "lebenspunkte"
+    ]
+
+    spieler[
+        "heiltränke"
+    ] = kampf_ergebnis[
+        "heiltraenke"
+    ]
+
+    if kampf_ergebnis.get(
+        "gewonnen",
+        False
+    ):
+        spieler[
+            "besiegte_gegner"
+        ] += 1
+
+    elif kampf_ergebnis.get(
+        "besiegt",
+        False
+    ):
+        print()
+
+        design_text(
+            "Game Over",
+            design="gefahr",
+            art="menue"
+        )
+
+        spieler[
+            "spiel_laeuft"
+        ] = False
+
+    return True
+
+
+def reise_fortsetzen():
+    global TEXT_SKIP_AKTIV
+    reise_daten = spieler.get("reise")
+
+    if not reise_daten:
+        return
+
+    start = reise_daten["start"]
+    ziel = reise_daten["ziel"]
+    gebiet = reise_daten["gebiet"]
+    gesamt_schritte = reise_daten["gesamt_schritte"]
+
+    zufallsereignisse = reise_daten.get(
+        "zufallsereignisse",
+        True
+    )
+
+    reise_name = reise_daten.get(
+        "name",
+        gebiet
+    )
+
+    erster_angezeigter_schritt = True
+
+    for schritt in range(
+        reise_daten["aktueller_schritt"] + 1,
+        gesamt_schritte + 1
+    ):
+        reise_daten["aktueller_schritt"] = schritt
+
+        TEXT_SKIP_AKTIV = False
+
+        ort_titel(
+            gebiet
+        )
+
+        if erster_angezeigter_schritt:
+            ort_nachricht_anzeigen()
+            erster_angezeigter_schritt = False
+
+        print(f"{start} → {ziel}")
+        print()
+
+        design_text(
+            f"Schritt {schritt}/{gesamt_schritte}",
+            design="wissen",
+            art="menue"
+        )
+
+        menue_trenner()
+
+        richtung = f"{start}>{ziel}"
+
+        strecke = frozenset((start, ziel))
+
+        schritt_texte = REISE_STRECKEN.get(
+            strecke,
+            {}
+        ).get(
+            "schritt_texte",
+            {}
+        ).get(
+            richtung,
+            []
+        )
+
+        print()
+
+        if schritt - 1 < len(schritt_texte):
+            text_ausgeben(
+                schritt_texte[schritt - 1],
+                art="atmosphaere"
+            )
+
+        else:
+            text_ausgeben(
+                f"Du folgst dem Weg weiter in Richtung {ziel}.",
+                art="atmosphaere"
+            )
+
+        if reise_bekannte_abzweigung_vorhanden(
+            reise_daten,
+            schritt
+        ):
+            menue_trenner()
+
+            print("1. Weitergehen")
+            print("2. Umgebung erkunden [!]")
+
+            schritt_auswahl = eingabe_menu(
+                1,
+                2,
+                sonder_tasten=()
+            )
+
+            if schritt_auswahl == 2:
+                if reise_abzweigungen_pruefen(
+                    reise_daten,
+                    schritt,
+                    ziel,
+                    erkundung=True
+                ):
+                    status_schritte_abschliessen()
+                    return
+
+                print()
+
+                warte_auf_taste(
+                    "Weitergehen"
+                )
+
+        else:
+            warte_auf_taste(
+                "Weitergehen"
+            )
+
+        if gebiet in (
+            "Wald",
+            "Waldweg"
+        ):
+            ressourcen_vorkommen_regenerieren(
+                "wald_holz"
+            )
+
+        festes_ereignis = (
+            reise_ereignisse_pruefen(
+                reise_daten,
+                schritt
+            )
+        )
+
+        kampfbegegnung = False
+
+        if not festes_ereignis:
+            kampfbegegnung = (
+                reise_kampfbegegnung_pruefen(
+                    reise_daten
+                )
+            )
+
+        if not spieler[
+            "spiel_laeuft"
+        ]:
+            return
+
+
+        if (
+            zufallsereignisse
+            and not festes_ereignis
+            and not kampfbegegnung
+        ):
+            spieler["gold"], spieler["heiltränke"], spieler["diamanten"], \
+            spieler["lebenspunkte"], spieler["spiel_laeuft"], \
+            spieler["besiegte_gegner"], spieler["ort"] = zufallsereignis(
+                spieler["gold"],
+                spieler["heiltränke"],
+                spieler["diamanten"],
+                spieler["lebenspunkte"],
+                spieler["spiel_laeuft"],
+                spieler["besiegte_gegner"],
+                spieler["ort"]
+            )
+
+            if not spieler["spiel_laeuft"]:
+                return
+
+            if spieler["fackel_dauer"] > 0:
+                spieler["fackel_dauer"] -= 1
+
+                if spieler["fackel_dauer"] == 0:
+                    print()
+                    print(
+                        "Deine Fackel flackert ein letztes Mal auf "
+                        "und erlischt."
+                    )
+            warte_auf_taste("Weiterreisen")
+
+
+        if reise_abzweigungen_pruefen(
+            reise_daten,
+            schritt,
+            ziel
+        ):
+            status_schritte_abschliessen()
+            return
+
+        if not status_schritte_abschliessen():
+            return
+
+        if schritt < gesamt_schritte:
+            return
+
+
+    ankunft_zeilen = reise_daten["ankunft_zeilen"]
+
+    spieler["reise"] = None
+    spieler["ort"] = ziel
+
+    ort_nachricht_setzen(
+        *ankunft_zeilen
+    )
+
+
+def prolog_ort_besucht(ort_name):
+
+    if spieler.get("prolog_status") != "dorf_freigeschaltet":
+        return
+
+    besuchte_orte = spieler.get("prolog_besuchte_orte", {})
+
+    if ort_name not in besuchte_orte:
+        return
+
+    if besuchte_orte[ort_name]:
+        return
+
+    besuchte_orte[ort_name] = True
+
+    anzahl_besucht = sum(besuchte_orte.values())
+
+    if anzahl_besucht == 3:
+        spieler["prolog_status"] = "dorf_kennengelernt"
+
+def prolog_laeuft():
+    return spieler.get("prolog_status") != "prolog_abgeschlossen"
+
+def prolog_joris_hinweis(quelle):
+    hinweise = spieler.setdefault(
+        "prolog_joris_hinweise",
+        {
+            "mara": False,
+            "tomas": False
+        }
+    )
+
+    if quelle not in hinweise:
+        return
+
+    if hinweise[quelle]:
+        return
+
+    hinweise[quelle] = True
+
+    if all(hinweise.values()):
+        spieler["prolog_status"] = "joris_hinweise_komplett"
+
+        quest_meldung(
+            "update",
+            "Der verlorene Lehrling",
+            "Berichte Bjorn, was du über Joris herausgefunden hast."
+        )
+
+def quest_meldung(
+    status,
+    name,
+    ziel=None,
+    belohnungen=None
+):
+    print()
+    print("=" * 34)
+
+    if status == "neu":
+        design_text(
+            "NEUE QUEST",
+            design="quest_neu",
+            art="ereignis"
+        )
+
+    elif status == "update":
+        design_text(
+            "QUEST AKTUALISIERT",
+            design="quest_update",
+            art="ereignis"
+        )
+
+    elif status == "abgeschlossen":
+        design_text(
+            "QUEST ABGESCHLOSSEN",
+            design="quest_abgeschlossen",
+            art="ereignis"
+        )
+
+    design_text(
+        name,
+        design="wichtig",
+        art="menue"
+    )
+
+    # -------------------------
+    # QUESTZIEL
+    # -------------------------
+
+    if ziel:
+        print()
+
+        design_text(
+            "Ziel:",
+            design="wissen",
+            art="menue"
+        )
+
+        print(
+            ziel
+        )
+
+    # -------------------------
+    # BELOHNUNGEN
+    # -------------------------
+
+    if (
+        status == "abgeschlossen"
+        and belohnungen
+    ):
+        if isinstance(
+            belohnungen,
+            str
+        ):
+            belohnungen = [
+                belohnungen
+            ]
+
+        print()
+
+        design_text(
+            "Belohnungen:",
+            design="wissen",
+            art="menue"
+        )
+
+        for belohnung in belohnungen:
+            print(
+                f"- {belohnung}"
+            )
+
+    print("=" * 34)
+    print()
+
+def dialog_thema_bekannt(npc, thema):
+    return spieler.get(
+        "dialog_themen",
+        {}
+    ).get(
+        npc,
+        {}
+    ).get(
+        thema,
+        False
+    )
+
+
+def dialog_option(npc, thema, text):
+    if dialog_thema_bekannt(npc, thema):
+        return f"{text} [Wiederholen]"
+
+    return text
+
+
+def dialog_thema_markieren(npc, thema):
+    dialog_themen = spieler.setdefault(
+        "dialog_themen",
+        {}
+    )
+
+    npc_themen = dialog_themen.setdefault(
+        npc,
+        {}
+    )
+
+    npc_themen[thema] = True
+
+def npc_status(npc):
+    alle_npcs = spieler.setdefault(
+        "npc_status",
+        {}
+    )
+
+    daten = alle_npcs.setdefault(
+        npc,
+        {
+            "besuche": 0,
+            "reaktionen": [],
+            "themen": []
+        }
+    )
+
+    return daten
+
+
+def npc_besuch_starten(npc):
+    daten = npc_status(npc)
+
+    daten["besuche"] += 1
+
+    return daten["besuche"]
+
+
+def npc_thema_bekannt(npc, thema):
+    return thema in npc_status(
+        npc
+    )["themen"]
+
+
+def npc_thema_markieren(npc, thema):
+    daten = npc_status(npc)
+
+    if thema not in daten["themen"]:
+        daten["themen"].append(
+            thema
+        )
+
+
+def npc_reaktion_gezeigt(npc, reaktion):
+    return reaktion in npc_status(
+        npc
+    )["reaktionen"]
+
+
+def npc_reaktion_markieren(npc, reaktion):
+
+    daten = npc_status(npc)
+
+    if reaktion not in daten["reaktionen"]:
+        daten["reaktionen"].append(
+            reaktion
+        )
+
+def npc_variante_waehlen(
+    npc,
+    schluessel,
+    varianten
+):
+    daten = npc_status(
+        npc
+    )
+
+    letzte_variante = daten.get(
+        schluessel
+    )
+
+    moegliche_varianten = [
+        variante
+        for variante in varianten
+        if variante != letzte_variante
+    ]
+
+    if not moegliche_varianten:
+        moegliche_varianten = varianten
+
+    variante = random.choice(
+        moegliche_varianten
+    )
+
+    daten[
+        schluessel
+    ] = variante
+
+    return variante
+
+def npc_begruessung_waehlen(
+    npc,
+    begruessungen
+):
+    daten = npc_status(
+        npc
+    )
+
+    letzte_begruessung = daten.get(
+        "letzte_begruessung"
+    )
+
+    moegliche_begruessungen = [
+        begruessung
+        for begruessung in begruessungen
+        if begruessung != letzte_begruessung
+    ]
+
+    if not moegliche_begruessungen:
+        moegliche_begruessungen = begruessungen
+
+    begruessung = random.choice(
+        moegliche_begruessungen
+    )
+
+    daten[
+        "letzte_begruessung"
+    ] = begruessung
+
+    return begruessung
+
+def weg_status(weg_id):
+    
+    return spieler.get(
+        "wege_status",
+        {}
+    ).get(
+        weg_id,
+        "unbekannt"
+    )
+
+
+def weg_bemerken(weg_id):
+    wege_status = spieler.setdefault(
+        "wege_status",
+        {}
+    )
+
+    if wege_status.get(
+        weg_id,
+        "unbekannt"
+    ) == "unbekannt":
+        wege_status[weg_id] = "bemerkt"
+
+
+def weg_entdecken(weg_id):
+    if weg_id not in WEGE:
+        return False
+
+    wege_status = spieler.setdefault(
+        "wege_status",
+        {}
+    )
+
+    war_bereits_entdeckt = (
+        wege_status.get(weg_id)
+        == "entdeckt"
+    )
+
+    wege_status[weg_id] = "entdeckt"
+
+    if not war_bereits_entdeckt:
+        neue_wege = spieler.setdefault(
+            "neue_wege",
+            []
+        )
+
+        if weg_id not in neue_wege:
+            neue_wege.append(
+                weg_id
+            )
+
+        print()
+        print("-" * 34)
+
+        design_text(
+            "NEUER WEG ENTDECKT",
+            design="wissen",
+            art="menue"
+        )
+
+        print(
+            WEGE[weg_id]["name"]
+        )
+
+        print("-" * 34)
+        print()
+
+    return True
+
+
+def weg_ist_neu(weg_id):
+    return weg_id in spieler.get(
+        "neue_wege",
+        []
+    )
+
