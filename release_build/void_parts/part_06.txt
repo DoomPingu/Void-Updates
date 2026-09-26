@@ -1,0 +1,999 @@
+def weg_als_gesehen_markieren(weg_id):
+    neue_wege = spieler.setdefault(
+        "neue_wege",
+        []
+    )
+
+    if weg_id in neue_wege:
+        neue_wege.remove(
+            weg_id
+        )
+
+def routenkenntnis_bekannt(weg_id):
+    return weg_id in spieler.get(
+        "routenkenntnis",
+        []
+    )
+
+
+def routenkenntnis_lernen(weg_id):
+    if weg_id not in WEGE:
+        return False
+
+    bekannte_routen = spieler.setdefault(
+        "routenkenntnis",
+        []
+    )
+
+    if weg_id in bekannte_routen:
+        return False
+
+    bekannte_routen.append(
+        weg_id
+    )
+
+    print()
+    print("-" * 34)
+
+    design_text(
+        "ROUTE VERTRAUT",
+        design="wissen",
+        art="menue"
+    )
+
+    print(
+        WEGE[weg_id]["name"]
+    )
+
+    print()
+    print(
+        "Du kennst diese Strecke jetzt gut genug, "
+        "um sie auf Wunsch zügig zurückzulegen."
+    )
+
+    print("-" * 34)
+    print()
+
+    return True
+
+def letzthafen_status():
+    daten = spieler.setdefault(
+        "letzthafen_status",
+        {}
+    )
+
+    daten.setdefault(
+        "angekommen",
+        False
+    )
+
+    daten.setdefault(
+        "besuchte_bereiche",
+        []
+    )
+
+    spuren = daten.setdefault(
+        "spuren",
+        {}
+    )
+
+    spuren.setdefault(
+        "sera_marek",
+        False
+    )
+
+    spuren.setdefault(
+        "marek_getroffen",
+        False
+    )
+
+    spuren.setdefault(
+        "register_marek",
+        False
+    )
+
+    spuren.setdefault(
+        "marek_adresse_bekannt",
+        False
+    )
+
+    spuren.setdefault(
+        "oros_abschrift",
+        False
+    )
+
+    spuren.setdefault(
+        "marek_zimmer_betreten",
+        False
+    )
+
+    spuren.setdefault(
+        "rueckkehrkerben",
+        False
+    )
+
+    spuren.setdefault(
+        "wegmuenzen_gefunden",
+        False
+    )
+
+    spuren.setdefault(
+        "elian_hinweis",
+        False
+    )
+
+    spuren.setdefault(
+        "elian_getroffen",
+        False
+    )
+
+    spuren.setdefault(
+        "brueder_begegnung",
+        False
+    )
+
+    spuren.setdefault(
+        "marek_notizbuch",
+        False
+    )
+
+    wiegenlied = daten.setdefault(
+        "wiegenlied",
+        {}
+    )
+
+    wiegenlied.setdefault(
+        "melodie_gehoert",
+        False
+    )
+
+    wiegenlied.setdefault(
+        "edda_haus_bekannt",
+        False
+    )
+
+    wiegenlied.setdefault(
+        "edda_getroffen",
+        False
+    )
+
+    wiegenlied.setdefault(
+        "namenstein_lina_gelesen",
+        False
+    )
+
+    wiegenlied.setdefault(
+        "laterne_hinweis",
+        False
+    )
+
+    wiegenlied.setdefault(
+        "truhe_untersucht",
+        False
+    )
+
+    wiegenlied.setdefault(
+        "sera_hinweis",
+        False
+    )
+
+    wiegenlied.setdefault(
+        "namenstein_hinweis",
+        False
+    )
+
+    wiegenlied.setdefault(
+        "register_hinweis",
+        False
+    )
+
+    wiegenlied.setdefault(
+        "truhe_geoeffnet",
+        False
+    )
+
+    wiegenlied.setdefault(
+        "truhe_inhalt_untersucht",
+        False
+    )
+
+    return daten
+
+
+def letzthafen_bereich_betreten(bereich_id):
+    daten = letzthafen_status()
+
+    besuchte_bereiche = daten[
+        "besuchte_bereiche"
+    ]
+
+    erstmals = (
+        bereich_id not in besuchte_bereiche
+    )
+
+    if erstmals:
+        besuchte_bereiche.append(
+            bereich_id
+        )
+
+    return erstmals
+
+
+def letzthafen_bereich_anzeigen(
+    bereich_id,
+    titel,
+    *zeilen
+):
+    erstmals = letzthafen_bereich_betreten(
+        bereich_id
+    )
+
+    ort_titel(
+        titel
+    )
+
+    text_art = (
+        "atmosphaere"
+        if erstmals
+        else "menue"
+    )
+
+    for zeile in zeilen:
+        text_ausgeben(
+            zeile,
+            art=text_art
+        )
+
+        print()
+
+    warte_auf_taste(
+        "Zurück nach Letzthafen"
+    )
+
+def dialog_sera():
+    while True:
+        ort_titel(
+            "Zum letzten Licht"
+        )
+
+        dialog_titel(
+            "Sera"
+        )
+
+        daten = letzthafen_status()
+        spuren = daten[
+            "spuren"
+        ]
+
+        quest_status = spieler.get(
+            "quest_ein_name_fehlt"
+        )
+
+        marek_name_bekannt = (
+            spuren.get(
+                "sera_marek",
+                False
+            )
+            or spuren.get(
+                "register_marek",
+                False
+            )
+            or besonderer_fund_status(
+                "stationsregister"
+            ) == "gelesen"
+        )
+
+        text_ausgeben(
+            "Die Wirtin stellt einen Becher unter "
+            "den Tresen und sieht zu dir auf."
+        )
+
+        print()
+
+        # -------------------------
+        # MAREK WIRD GESUCHT
+        # -------------------------
+
+        if quest_status == "marek_spur_suchen":
+
+            if marek_name_bekannt:
+                marek_text = (
+                    "Ich suche Marek Voss."
+                )
+
+            else:
+                marek_text = (
+                    "Ich suche einen Fuhrmann aus Letzthafen."
+                )
+
+            print(
+                "1. " + dialog_option(
+                    "sera",
+                    "marek_voss",
+                    marek_text
+                )
+            )
+
+            print(
+                "2. " + dialog_option(
+                    "sera",
+                    "notizbuecher",
+                    "Warum tragen hier so viele Leute Notizbücher?"
+                )
+            )
+
+            print(
+                "3. Gespräch beenden"
+            )
+
+            sera_auswahl = eingabe_menu(
+                1,
+                3,
+                sonder_tasten=()
+            )
+
+            print()
+
+            # -------------------------
+            # MAREK
+            # -------------------------
+
+            if sera_auswahl == 1:
+                dialog_thema_markieren(
+                    "sera",
+                    "marek_voss"
+                )
+
+                if not spuren.get(
+                    "sera_marek",
+                    False
+                ):
+
+                    if marek_name_bekannt:
+                        text_ausgeben(
+                            f'[{spieler["name"]}] '
+                            "Ich suche Marek Voss."
+                        )
+
+                    else:
+                        text_ausgeben(
+                            f'[{spieler["name"]}] '
+                            "Ich suche einen Fuhrmann aus Letzthafen."
+                        )
+
+                        print()
+
+                        text_ausgeben(
+                            "Du erzählst von Hildas Lieferung, "
+                            "dem verlassenen Karren und der Spur "
+                            "zurück nach Letzthafen."
+                        )
+
+                        print()
+
+                        text_ausgeben(
+                            "[Sera] Dann suchst du Marek Voss."
+                        )
+
+                    print()
+
+                    text_ausgeben(
+                        "[Sera] Marek? Ja. "
+                        "Der kommt regelmäßig hier vorbei."
+                    )
+
+                    text_ausgeben(
+                        "[Sera] Normalerweise sitzt er genau "
+                        "da drüben und beschwert sich darüber, "
+                        "dass mein Eintopf zu viel Salz hat."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "Sera deutet auf einen kleinen Tisch "
+                        "am Fenster."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "[Sera] Als er zuletzt hier auftauchte, "
+                        "fragte er mich, ob wir uns schon einmal "
+                        "begegnet wären."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "[Sera] Dann legte er genau den Betrag "
+                        "für sein übliches Zimmer auf den Tresen."
+                    )
+
+                    text_ausgeben(
+                        "[Sera] Ohne nach dem Preis zu fragen."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        '[Sera] Ich sagte: '
+                        '"Wie immer, oben links."'
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        '[Sera] Er sah mich an und fragte nur: '
+                        '"Wie immer?"'
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "Für einen Moment schaut Sera zu dem "
+                        "leeren Tisch am Fenster."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "[Sera] Heute Morgen habe ich ihn unten "
+                        "am Gezeitensteg gesehen."
+                    )
+
+                    text_ausgeben(
+                        "[Sera] Er half den Fischern beim Tauwerk, "
+                        "als wäre nichts gewesen."
+                    )
+
+                    spuren[
+                        "sera_marek"
+                    ] = True
+
+                    quest_meldung(
+                        "update",
+                        "Ein Name fehlt",
+                        "Sera sah Marek zuletzt am Gezeitensteg."
+                    )
+
+                else:
+                    text_ausgeben(
+                        "[Sera] Wie gesagt: Marek war heute Morgen "
+                        "am Gezeitensteg."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "[Sera] Wenn er nicht mehr dort ist, "
+                        "frag die Leute unten am Wasser."
+                    )
+
+                warte_auf_taste(
+                    "Weiter"
+                )
+
+            # -------------------------
+            # NOTIZBÜCHER
+            # -------------------------
+
+            elif sera_auswahl == 2:
+                dialog_thema_markieren(
+                    "sera",
+                    "notizbuecher"
+                )
+
+                text_ausgeben(
+                    "[Sera] Die Bücher?"
+                )
+
+                print()
+                text_ausgeben(
+                    "[Sera] Ladungen, Schulden, Gezeiten, "
+                    "Bestellungen. In einem Hafen kommt einiges "
+                    "zusammen."
+                )
+
+                print()
+                text_ausgeben(
+                    "[Sera] Ein Sturm reicht, und am nächsten "
+                    "Morgen behauptet dir jemand, er habe dir "
+                    "nie drei Kisten versprochen."
+                )
+
+                print()
+                text_ausgeben(
+                    "[Sera] Also schreibt man auf, was wichtig ist."
+                )
+
+                print()
+                text_ausgeben(
+                    "[Sera] Seit ich denken kann, macht man das "
+                    "in Letzthafen so."
+                )
+
+                warte_auf_taste(
+                    "Weiter"
+                )
+
+            elif sera_auswahl == 3:
+                return
+
+            continue
+
+        # -------------------------
+        # NORMALER DIALOG
+        # -------------------------
+
+        wiegenlied = letzthafen_status()[
+            "wiegenlied"
+        ]
+
+        wiegenlied_aktiv = spieler.get(
+            "quest_wiegenlied"
+        ) in (
+            "lied_rekonstruieren",
+            "truhe_geoeffnet",
+            "abgeschlossen"
+        )
+
+        optionen = [
+            (
+                "Warum tragen hier so viele Leute Notizbücher?",
+                "notizbuecher"
+            )
+        ]
+
+        if wiegenlied_aktiv:
+            optionen.append(
+                (
+                    "Kennst du Eddas Wiegenlied?",
+                    "wiegenlied"
+                )
+            )
+
+        optionen.append(
+            (
+                "Gespräch beenden",
+                "ende"
+            )
+        )
+
+        for nummer, (
+            text,
+            aktion
+        ) in enumerate(
+            optionen,
+            start=1
+        ):
+            if aktion == "notizbuecher":
+                text = dialog_option(
+                    "sera",
+                    "notizbuecher",
+                    text
+                )
+
+            elif aktion == "wiegenlied":
+                text = dialog_option(
+                    "sera",
+                    "wiegenlied",
+                    text
+                )
+
+            print(
+                f"{nummer}. {text}"
+            )
+
+        sera_auswahl = eingabe_menu(
+            1,
+            len(optionen),
+            sonder_tasten=()
+        )
+
+        aktion = optionen[
+            sera_auswahl - 1
+        ][1]
+
+        print()
+
+        if aktion == "notizbuecher":
+            dialog_thema_markieren(
+                "sera",
+                "notizbuecher"
+            )
+
+            text_ausgeben(
+                "[Sera] Ladungen, Schulden, Gezeiten, "
+                "Bestellungen."
+            )
+
+            text_ausgeben(
+                "[Sera] In einem Hafen ist es billiger, "
+                "etwas aufzuschreiben, als später darüber "
+                "zu streiten."
+            )
+
+            print()
+            text_ausgeben(
+                "[Sera] Seit ich denken kann, macht man das "
+                "in Letzthafen so."
+            )
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+        elif aktion == "wiegenlied":
+            dialog_thema_markieren(
+                "sera",
+                "wiegenlied"
+            )
+
+            if not wiegenlied.get(
+                "sera_hinweis",
+                False
+            ):
+                text_ausgeben(
+                    "[Sera] Eddas Lied?"
+                )
+
+                print()
+                text_ausgeben(
+                    "[Sera] Früher hat man es hier häufiger gehört."
+                )
+
+                print()
+                text_ausgeben(
+                    "[Sera] Den Anfang kenne ich noch."
+                )
+
+                print()
+
+                text_ausgeben(
+                    '[Sera] "Wenn die Laterne brennt, '
+                    'zieht die Möwe heim ..."'
+                )
+
+                print()
+                text_ausgeben(
+                    "[Sera] Danach bekomme ich nur noch Wasser "
+                    "und Morgenlicht durcheinander."
+                )
+
+                wiegenlied[
+                    "sera_hinweis"
+                ] = True
+
+            else:
+                text_ausgeben(
+                    "[Sera] Mehr bekomme ich wirklich nicht zusammen."
+                )
+
+                print()
+                text_ausgeben(
+                    '[Sera] "Wenn die Laterne brennt, '
+                    'zieht die Möwe heim ..."'
+                )
+
+            print()
+
+            design_text(
+                "Hinweis: Auf die Laterne folgt die Möwe.",
+                design="wissen",
+                art="menue"
+            )
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+        elif aktion == "ende":
+            return
+        
+
+def letzthafen_letztes_licht():
+    while True:
+        erstmals = letzthafen_bereich_betreten(
+            "letztes_licht"
+        )
+
+        ort_titel(
+            "Zum letzten Licht"
+        )
+
+        # -------------------------
+        # ERSTER BESUCH
+        # -------------------------
+
+        if erstmals:
+            text_ausgeben(
+                "Die alte Signallaterne über dem Eingang "
+                "schaukelt leise im Wind."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Das Gebäude wirkt älter als die meisten "
+                "Häuser ringsum. Dicke Steinwände tragen "
+                "noch die Spuren salziger Jahre."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Drinnen ist es warm. Eine niedrige Gaststube "
+                "öffnet sich zum Meer hin, während eine schmale "
+                "Treppe zu den Zimmern im oberen Stock führt."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Hinter dem Tresen arbeitet eine Frau mit "
+                "hochgesteckten dunklen Haaren."
+            )
+
+        # -------------------------
+        # SPÄTERE BESUCHE
+        # -------------------------
+
+        else:
+            text_ausgeben(
+                "Die Gaststube liegt ruhig hinter den dicken "
+                "Steinwänden. Draußen schlägt der Wind gegen "
+                "die alte Signallaterne.",
+                art="menue"
+            )
+
+        menue_trenner()
+
+        print(
+            "1. Mit der Wirtin reden"
+        )
+
+        print(
+            "2. Dich in der Gaststube umsehen"
+        )
+
+        print(
+            "3. Zurück nach Letzthafen"
+        )
+
+        auswahl = eingabe_menu(
+            1,
+            3,
+            sonder_tasten=()
+        )
+
+        # -------------------------
+        # SERA
+        # -------------------------
+
+        if auswahl == 1:
+            dialog_sera()
+
+        # -------------------------
+        # GASTSTUBE
+        # -------------------------
+
+        elif auswahl == 2:
+            ort_titel(
+                "Zum letzten Licht"
+            )
+
+            text_ausgeben(
+                "Mehrere schwere Holztische stehen dicht "
+                "an den Wänden."
+            )
+
+            text_ausgeben(
+                "Über einem alten Kamin hängen verblichene "
+                "Seekarten, Tauwerk und ein ausgedientes "
+                "Signalhorn."
+            )
+
+            spuren = letzthafen_status()[
+                "spuren"
+            ]
+
+            if spuren.get(
+                "sera_marek",
+                False
+            ):
+                print()
+
+                text_ausgeben(
+                    "Der kleine Tisch am Fenster steht leer."
+                )
+
+                text_ausgeben(
+                    "Laut Sera sitzt Marek dort sonst regelmäßig."
+                )
+
+            warte_auf_taste(
+                "Zurück"
+            )
+
+        elif auswahl == 3:
+            return
+
+def marek_erstbegegnung():
+    daten = letzthafen_status()
+
+    spuren = daten[
+        "spuren"
+    ]
+
+    if spuren.get(
+        "marek_getroffen",
+        False
+    ):
+        return
+
+    ort_titel(
+        "Gezeitensteg"
+    )
+
+    marek_name_bekannt = (
+        spuren.get(
+            "sera_marek",
+            False
+        )
+        or spuren.get(
+            "register_marek",
+            False
+        )
+        or besonderer_fund_status(
+            "stationsregister"
+        ) == "gelesen"
+    )
+
+    if marek_name_bekannt:
+        text_ausgeben(
+            "Du fragst zwischen Fischern und Trägern "
+            "nach Marek Voss."
+        )
+
+        print()
+
+        text_ausgeben(
+            "[Fischer] Marek? Dort drüben. "
+            "Bei den Kisten."
+        )
+
+    else:
+        text_ausgeben(
+            "Du fragst einen der Fischer nach einem "
+            "Fuhrmann aus Letzthafen, dessen Karren "
+            "auf dem Weg nach Eichenruh zurückblieb."
+        )
+
+        print()
+
+        text_ausgeben(
+            "[Fischer] Das klingt nach Marek Voss."
+        )
+
+        text_ausgeben(
+            "[Fischer] Der steht dort drüben bei den Kisten."
+        )
+
+    print()
+
+    text_ausgeben(
+        "Ein Mann kniet neben einem Stapel Fässer und "
+        "zieht ein Tau durch eine einfache Schlaufe."
+    )
+
+    text_ausgeben(
+        "Als eine der Kisten auf dem nassen Holz verrutscht, "
+        "greift er nach dem Seil, zieht einmal daran und "
+        "sichert die Ladung, ohne hinzusehen."
+    )
+
+    print()
+
+    text_ausgeben(
+        "[Fischer] Siehst du? Behauptet, er wisse nicht mehr, "
+        "was er gearbeitet hat, aber beim Tauwerk macht ihm "
+        "hier kaum einer etwas vor."
+    )
+
+    print()
+
+    text_ausgeben(
+        f'[{spieler["name"]}] Marek Voss?'
+    )
+
+    print()
+
+    text_ausgeben(
+        "Der Mann richtet sich langsam auf."
+    )
+
+    print()
+
+    text_ausgeben(
+        "[Marek] So nennen sie mich hier jedenfalls."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Du erzählst ihm von Hildas ausgebliebener Lieferung, "
+        "dem verlassenen Karren und dem Fahrtenbuch."
+    )
+
+    print()
+
+    text_ausgeben(
+        "[Marek] Eichenruh sagt mir nichts."
+    )
+
+    text_ausgeben(
+        "[Marek] Hilda auch nicht."
+    )
+
+    print()
+
+    text_ausgeben(
+        "[Marek] Aber wenn du mir einen Wagen hinstellst, "
+        "kann ich dir sagen, wie du ihn belädst."
+    )
+
+    text_ausgeben(
+        "[Marek] Ich weiß, wann eine Achse Spiel hat, "
+        "wie viel ein Pferd ziehen sollte und welcher "
+        "Knoten bei Regen hält."
+    )
+
+    print()
+
+    text_ausgeben(
+        "[Marek] Ich weiß nur nicht mehr, "
+        "wo ich das gelernt habe."
+    )
+
+    seite_wechseln(
+        "Gezeitensteg",
+        "Marek Voss"
+    )
+
+    # -------------------------
+    # SERA BEREITS BEFRAGT
+    # -------------------------
+
+    if spuren.get(
+        "sera_marek",
+        False
+    ):
+        print()
+
+        text_ausgeben(
+            f'[{spieler["name"]}] Sera sagt, du hättest hier '
+            "immer dasselbe Zimmer genommen."
+        )
+
+        print()
+
+        text_ausgeben(
+            "[Marek] Das hat sie mir auch gesagt."
+        )
+
+        text_ausgeben(
+            "[Marek] Ich wusste sogar, wie viel "
+            "das Zimmer kostet."
+        )
+
+        print()
+
+        text_ausgeben(
+            "[Marek] Nur erinnern kann ich mich an "
+            "keinen einzigen Aufenthalt."
+        )
+
+    # -------------------------
+    # WEGSTATION BEREITS UNTERSUCHT
+    # -------------------------
