@@ -1,13 +1,13 @@
 {
-    "version": "2.1.0",
-    "name": "Alpha 2.1",
-    "sha256": "8699CDB1F65D8912CE03AA7359CB0AE57CDE81DE7A4794029A8B0DD8C1FF343D",
-    "download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v2.1.0/void_update_2.1.0.zip",
+    "version": "2.2.0",
+    "name": "Alpha 2.2",
+    "sha256": "5C8154003DB8F05E00D7A49653FA26AF906C8F8C5C5897D817CA639AA7D018FF",
+    "download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v2.2.0/void_update_2.2.0.zip",
     "patch_notes": [
-        "Neue Orte und Erkundungsbereiche",
-        "Wald und Erkundung weiter ausgebaut",
-        "Inventar- und Gegenstandssystem verbessert",
-        "Mehrere Bugfixes und Stabilitätsverbesserungen"
+        "Gebietskarten fuer den Alten Seitenpfad und die Alte Wegstation",
+        "Erkundungsfunde und Hinweise klarer dargestellt",
+        "Besondere Funde zeigen moegliche weitere Ansaetze",
+        "Weitere UI-, Navigations- und Stabilitaetsverbesserungen"
     ],
     "launcher_version": "1.2.8",
     "launcher_sha256": "980F63F5D48AF345F6272B666472B932618E9D17B7879687763181CE7A8C12F1",
