@@ -1,0 +1,1000 @@
+
+        ort_titel(
+            "Letzthafen"
+        )
+
+        ort_nachricht_anzeigen()
+
+        # -------------------------
+        # ERSTER BESUCH
+        # -------------------------
+
+        if not daten["angekommen"]:
+
+            text_ausgeben(
+                "Der Königsring verliert zwischen den ersten "
+                "Häusern langsam seine alten Pflastersteine."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Vor dir klammert sich Letzthafen an hohe, "
+                "graue Klippen über dem Meer."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Kalter Nebel zieht zwischen den Dächern hindurch. "
+                "In der Luft liegen Salz, feuchtes Holz und Tang."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Fast jeder, an dem du vorbeikommst, trägt ein "
+                "kleines Buch oder zusammengefaltete Zettel bei sich."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Niemand scheint dieser Gewohnheit besondere "
+                "Beachtung zu schenken."
+            )
+
+            daten[
+                "angekommen"
+            ] = True
+
+            # Hauptquest beim Erreichen von Letzthafen
+            if spieler.get(
+                "quest_ein_name_fehlt"
+            ) == "letzthafen_suchen":
+
+                spieler[
+                    "quest_ein_name_fehlt"
+                ] = "marek_spur_suchen"
+
+                quest_meldung(
+                    "update",
+                    "Ein Name fehlt",
+                    "Suche in Letzthafen nach Hinweisen "
+                    "auf den verschwundenen Händler."
+                )
+
+        # -------------------------
+        # SPÄTERE BESUCHE
+        # -------------------------
+
+        else:
+            text_ausgeben(
+                "Nebel zieht zwischen den Häusern. "
+                "Vom Gezeitensteg dringen Möwenrufe "
+                "und das Knarren von Tauwerk herauf.",
+                art="menue"
+            )
+
+        menue_trenner()
+
+        print("1. Zum letzten Licht")
+        print("2. Haus der Listen")
+        print("3. Gezeitensteg")
+        print("4. Namenstein")
+        print("5. Klippenweg und Leuchtfeuer")
+        print("6. Zurück nach Eichenruh")
+
+        print()
+
+        print("[S] Status")
+        print("[I] Inventar")
+        print("[J] Questlog/Erfolge")
+        print("[Q] Speichern / Menü")
+
+        auswahl = eingabe_menu(
+            1,
+            6,
+            sonder_tasten=(
+                "s",
+                "i",
+                "j",
+                "q"
+            )
+        )
+
+        # -------------------------
+        # ZUM LETZTEN LICHT
+        # -------------------------
+
+        if auswahl == 1:
+            letzthafen_letztes_licht()
+
+        # -------------------------
+        # HAUS DER LISTEN
+        # -------------------------
+
+        elif auswahl == 2:
+            letzthafen_haus_der_listen()
+
+        # -------------------------
+        # GEZEITENSTEG
+        # -------------------------
+
+        elif auswahl == 3:
+            letzthafen_gezeitensteg()
+
+        # -------------------------
+        # NAMENSTEIN
+        # -------------------------
+
+        elif auswahl == 4:
+            letzthafen_namenstein()
+
+        # -------------------------
+        # KLIPPENWEG
+        # -------------------------
+
+        elif auswahl == 5:
+            letzthafen_klippenweg()
+
+        # -------------------------
+        # ZURÜCK NACH EICHENRUH
+        # -------------------------
+
+        elif auswahl == 6:
+            reise(
+                "Eichenruh",
+                "Die vertrauten Dächer Eichenruhs "
+                "erscheinen wieder vor dir.",
+                gebiet_modus=True
+            )
+
+            return
+
+        # -------------------------
+        # STANDARDMENÜS
+        # -------------------------
+
+        elif auswahl == "s":
+            status()
+
+        elif auswahl == "i":
+            inventar()
+
+        elif auswahl == "j":
+            questlog()
+
+        elif auswahl == "q":
+            spielmenue()
+
+def wald_erforschung_status():
+    daten = spieler.setdefault(
+        "wald_erforschung",
+        {}
+    )
+
+    daten.setdefault(
+        "aktueller_knoten",
+        None
+    )
+
+    daten.setdefault(
+        "besuchte_knoten",
+        []
+    )
+
+    daten.setdefault(
+        "abkuerzungen",
+        []
+    )
+
+    daten.setdefault(
+        "funde",
+        {}
+    )
+
+    return daten
+
+
+def wald_knoten_name(knoten_id):
+    if knoten_id == "hauptweg":
+        return "Hauptweg"
+
+    knoten = WALD_SEITENPFAD_KNOTEN.get(
+        knoten_id
+    )
+
+    if not knoten:
+        return knoten_id
+
+    return knoten["name"]
+
+
+def wald_knoten_betreten(knoten_id):
+    if knoten_id not in WALD_SEITENPFAD_KNOTEN:
+        return False
+
+    daten = wald_erforschung_status()
+
+    daten[
+        "aktueller_knoten"
+    ] = knoten_id
+
+    besuchte_knoten = daten[
+        "besuchte_knoten"
+    ]
+
+    erstmals = (
+        knoten_id not in besuchte_knoten
+    )
+
+    if erstmals:
+        besuchte_knoten.append(
+            knoten_id
+        )
+
+    return erstmals
+
+
+def wald_knoten_besucht(knoten_id):
+    daten = wald_erforschung_status()
+
+    return knoten_id in daten[
+        "besuchte_knoten"
+    ]
+
+def wald_gebietskarte_anzeigen():
+    daten = wald_erforschung_status()
+
+    aktueller_knoten = daten.get(
+        "aktueller_knoten"
+    )
+
+    besuchte_knoten = set(
+        daten.get(
+            "besuchte_knoten",
+            []
+        )
+    )
+
+    # -------------------------
+    # SICHTBARKEIT
+    # -------------------------
+
+    def knoten_sichtbar(knoten_id):
+        if knoten_id in besuchte_knoten:
+            return True
+
+        for besucht_id in besuchte_knoten:
+            if knoten_id in wald_verbindungen(
+                besucht_id
+            ):
+                return True
+
+        return False
+
+    # -------------------------
+    # KARTENFELD
+    # -------------------------
+
+    def feld(knoten_id):
+        if not knoten_sichtbar(
+            knoten_id
+        ):
+            return None
+
+        if knoten_id not in besuchte_knoten:
+            return "[?]"
+
+        name = WALD_SEITENPFAD_KARTENNAMEN[
+            knoten_id
+        ]
+
+        if knoten_id == aktueller_knoten:
+            return f">{name}<"
+
+        return f"[{name}]"
+
+    # -------------------------
+    # ZEICHENBEREICH
+    # -------------------------
+
+    breite = 60
+    hoehe = 13
+
+    karte = [
+        [" "] * breite
+        for _ in range(hoehe)
+    ]
+
+    # -------------------------
+    # VERBINDUNGSLINIEN
+    # -------------------------
+
+    def mittelpunkt(knoten_id):
+        text = feld(
+            knoten_id
+        )
+
+        if text is None:
+            return None
+
+        zeile, spalte = (
+            WALD_SEITENPFAD_KARTENPOSITIONEN[
+                knoten_id
+            ]
+        )
+
+        return (
+            zeile,
+            spalte + len(text) // 2
+        )
+
+    def linie_setzen(
+        zeile,
+        spalte,
+        zeichen
+    ):
+        if not (
+            0 <= zeile < hoehe
+            and 0 <= spalte < breite
+        ):
+            return
+
+        if karte[zeile][spalte] == " ":
+            karte[zeile][spalte] = zeichen
+
+    def verbindung_zeichnen(
+        start_id,
+        ziel_id
+    ):
+        start = mittelpunkt(
+            start_id
+        )
+
+        ziel = mittelpunkt(
+            ziel_id
+        )
+
+        if (
+            start is None
+            or ziel is None
+        ):
+            return
+
+        start_zeile, start_spalte = start
+        ziel_zeile, ziel_spalte = ziel
+
+        # Gleiche Höhe
+        if start_zeile == ziel_zeile:
+            von = min(
+                start_spalte,
+                ziel_spalte
+            )
+
+            bis = max(
+                start_spalte,
+                ziel_spalte
+            )
+
+            for spalte in range(
+                von + 1,
+                bis
+            ):
+                linie_setzen(
+                    start_zeile,
+                    spalte,
+                    "─"
+                )
+
+            return
+
+        # Gleiche Spalte
+        if start_spalte == ziel_spalte:
+            von = min(
+                start_zeile,
+                ziel_zeile
+            )
+
+            bis = max(
+                start_zeile,
+                ziel_zeile
+            )
+
+            for zeile in range(
+                von + 1,
+                bis
+            ):
+                linie_setzen(
+                    zeile,
+                    start_spalte,
+                    "│"
+                )
+
+            return
+
+        # Unterschiedliche Höhe und Spalte:
+        # zuerst waagerecht, dann senkrecht.
+        schritt = (
+            1
+            if ziel_spalte > start_spalte
+            else -1
+        )
+
+        for spalte in range(
+            start_spalte + schritt,
+            ziel_spalte,
+            schritt
+        ):
+            linie_setzen(
+                start_zeile,
+                spalte,
+                "─"
+            )
+
+        schritt = (
+            1
+            if ziel_zeile > start_zeile
+            else -1
+        )
+
+        for zeile in range(
+            start_zeile + schritt,
+            ziel_zeile,
+            schritt
+        ):
+            linie_setzen(
+                zeile,
+                ziel_spalte,
+                "│"
+            )
+
+    # Nur Verbindungen anzeigen,
+    # die der Spieler bereits erkennen kann.
+    gezeichnete_verbindungen = set()
+
+    for start_id in besuchte_knoten:
+        for ziel_id in wald_verbindungen(
+            start_id
+        ):
+            if (
+                start_id
+                not in WALD_SEITENPFAD_KARTENPOSITIONEN
+                or ziel_id
+                not in WALD_SEITENPFAD_KARTENPOSITIONEN
+            ):
+                continue
+
+            if not knoten_sichtbar(
+                ziel_id
+            ):
+                continue
+
+            verbindung = frozenset(
+                (
+                    start_id,
+                    ziel_id
+                )
+            )
+
+            if verbindung in gezeichnete_verbindungen:
+                continue
+
+            gezeichnete_verbindungen.add(
+                verbindung
+            )
+
+            verbindung_zeichnen(
+                start_id,
+                ziel_id
+            )
+
+    for (
+        knoten_id,
+        position
+    ) in WALD_SEITENPFAD_KARTENPOSITIONEN.items():
+
+        text = feld(
+            knoten_id
+        )
+
+        if text is None:
+            continue
+
+        zeile, spalte = position
+
+        for index, zeichen in enumerate(
+            text
+        ):
+            x = spalte + index
+
+            if (
+                0 <= zeile < hoehe
+                and 0 <= x < breite
+            ):
+                karte[
+                    zeile
+                ][x] = zeichen
+
+    # -------------------------
+    # KARTE AUSGEBEN
+    # -------------------------
+
+    ort_titel(
+        "Gebietskarte - Alter Seitenpfad"
+    )
+
+    print()
+    sichtbare_zeilen = [
+        index
+        for index, zeile in enumerate(karte)
+        if any(
+            zeichen != " "
+            for zeichen in zeile
+        )
+    ]
+
+    if sichtbare_zeilen:
+        erste_zeile = min(
+            sichtbare_zeilen
+        )
+
+        letzte_zeile = max(
+            sichtbare_zeilen
+        )
+
+        sichtbarer_bereich = karte[
+            erste_zeile:
+            letzte_zeile + 1
+        ]
+
+        belegte_spalten = []
+
+        for zeile in sichtbarer_bereich:
+            for index, zeichen in enumerate(
+                zeile
+            ):
+                if zeichen != " ":
+                    belegte_spalten.append(
+                        index
+                    )
+
+        if belegte_spalten:
+            erste_spalte = min(
+                belegte_spalten
+            )
+
+            letzte_spalte = max(
+                belegte_spalten
+            )
+
+            for zeile in sichtbarer_bereich:
+                print(
+                    "  "
+                    + "".join(
+                        zeile[
+                            erste_spalte:
+                            letzte_spalte + 1
+                        ]
+                    ).rstrip()
+                )
+
+    # -------------------------
+    # AKTUELLER STANDORT
+    # -------------------------
+
+    if aktueller_knoten:
+        print()
+        print("-" * 34)
+
+        print(
+            "Standort: "
+            + wald_knoten_name(
+                aktueller_knoten
+            )
+        )
+
+        print()
+
+    print()
+    print("-" * 34)
+    print()
+
+    print(
+        ">XX< = Dein Standort"
+    )
+
+    print(
+        "[XX] = Erkundeter Bereich"
+    )
+
+    print(
+        "[?] = Bekannter, noch nicht erkundeter Weg"
+    )
+
+    warte_auf_taste(
+        "Zurück"
+    )
+
+def wald_abkuerzung_offen(abkuerzung_id):
+    daten = wald_erforschung_status()
+
+    return abkuerzung_id in daten[
+        "abkuerzungen"
+    ]
+
+
+def wald_abkuerzung_freischalten(
+    abkuerzung_id
+):
+    if (
+        abkuerzung_id
+        not in WALD_SEITENPFAD_ABKUERZUNGEN
+    ):
+        return False
+
+    daten = wald_erforschung_status()
+
+    abkuerzungen = daten[
+        "abkuerzungen"
+    ]
+
+    if abkuerzung_id in abkuerzungen:
+        return False
+
+    abkuerzungen.append(
+        abkuerzung_id
+    )
+
+    abkuerzung = (
+        WALD_SEITENPFAD_ABKUERZUNGEN[
+            abkuerzung_id
+        ]
+    )
+
+    von_name = wald_knoten_name(
+        abkuerzung["von"]
+    )
+
+    nach_name = wald_knoten_name(
+        abkuerzung["nach"]
+    )
+
+    print()
+    print("-" * 34)
+
+    design_text(
+        "NEUE ABKÜRZUNG ENTDECKT",
+        design="wissen",
+        art="menue"
+    )
+
+    print(
+        abkuerzung["name"]
+    )
+
+    print(
+        f"{von_name} ↔ {nach_name}"
+    )
+
+    print("-" * 34)
+    print()
+
+    return True
+
+
+def wald_verbindungen(knoten_id):
+    knoten = WALD_SEITENPFAD_KNOTEN.get(
+        knoten_id
+    )
+
+    if not knoten:
+        return []
+
+    verbindungen = list(
+        knoten.get(
+            "wege",
+            []
+        )
+    )
+
+    for (
+        abkuerzung_id,
+        abkuerzung
+    ) in WALD_SEITENPFAD_ABKUERZUNGEN.items():
+
+        if not wald_abkuerzung_offen(
+            abkuerzung_id
+        ):
+            continue
+
+        von = abkuerzung["von"]
+        nach = abkuerzung["nach"]
+
+        if (
+            knoten_id == von
+            and nach not in verbindungen
+        ):
+            verbindungen.append(
+                nach
+            )
+
+        elif (
+            knoten_id == nach
+            and von not in verbindungen
+        ):
+            verbindungen.append(
+                von
+            )
+
+    # Der Wegstein ist beim ersten Durchgang
+    # noch nicht als Weg erkennbar.
+    if knoten_id == "wegmarken":
+        funde = wald_erforschung_status()[
+            "funde"
+        ]
+
+        if not funde.get(
+            "wegmarken_untersucht",
+            False
+        ):
+            if "wegstein" in verbindungen:
+                verbindungen.remove(
+                    "wegstein"
+                )
+
+    if (
+        knoten_id == "bachufer"
+        and wald_fund_bekannt(
+            "bach_geheimweg_entdeckt"
+        )
+        and "verborgenes_bachufer"
+        not in verbindungen
+    ):
+        verbindungen.append(
+            "verborgenes_bachufer"
+        )
+
+    return verbindungen
+
+
+def wald_ist_abkuerzung(
+    start_id,
+    ziel_id
+):
+    for (
+        abkuerzung_id,
+        abkuerzung
+    ) in WALD_SEITENPFAD_ABKUERZUNGEN.items():
+
+        if not wald_abkuerzung_offen(
+            abkuerzung_id
+        ):
+            continue
+
+        verbindung = {
+            abkuerzung["von"],
+            abkuerzung["nach"]
+        }
+
+        if {
+            start_id,
+            ziel_id
+        } == verbindung:
+            return True
+
+    return False
+
+def item_anzahl(item_id):
+    return spieler.get(
+        "inventar_items",
+        {}
+    ).get(
+        item_id,
+        0
+    )
+
+
+def item_besitzt(item_id, anzahl=1):
+    return item_anzahl(item_id) >= anzahl
+
+
+def item_hinzufuegen(item_id, anzahl=1):
+    if item_id not in ITEMS:
+        return False
+
+    inventar_items = spieler.setdefault(
+        "inventar_items",
+        {}
+    )
+
+    inventar_items[item_id] = (
+        inventar_items.get(item_id, 0)
+        + anzahl
+    )
+
+    return True
+
+
+def item_entfernen(item_id, anzahl=1):
+    inventar_items = spieler.setdefault(
+        "inventar_items",
+        {}
+    )
+
+    vorhandene_anzahl = inventar_items.get(
+        item_id,
+        0
+    )
+
+    if vorhandene_anzahl < anzahl:
+        return False
+
+    neue_anzahl = vorhandene_anzahl - anzahl
+
+    if neue_anzahl <= 0:
+        inventar_items.pop(
+            item_id,
+            None
+        )
+
+    else:
+        inventar_items[item_id] = neue_anzahl
+
+    return True
+
+def item_benutzen(item_id):
+    if item_id not in ITEMS:
+        return False
+
+    if not item_besitzt(item_id):
+        return False
+
+    item_daten = ITEMS[item_id]
+
+    heilung = item_daten.get(
+        "heilung",
+        0
+    )
+
+    status_eintraege = item_daten.get(
+        "status_effekte",
+        []
+    )
+
+    if not isinstance(
+        status_eintraege,
+        list
+    ):
+        status_eintraege = []
+
+    gueltige_status = []
+
+    for effekt in status_eintraege:
+        if not isinstance(
+            effekt,
+            dict
+        ):
+            continue
+
+        status_id = effekt.get(
+            "id"
+        )
+
+        if status_id not in STATUS_EFFEKTE:
+            continue
+
+        gueltige_status.append(
+            effekt
+        )
+
+    hat_status = bool(
+        gueltige_status
+    )
+
+    if heilung <= 0 and not hat_status:
+        print()
+        print(
+            "Diesen Gegenstand kannst du "
+            "momentan nicht benutzen."
+        )
+
+        warte_auf_taste()
+        return False
+
+    if (
+        spieler["lebenspunkte"] >= 100
+        and not hat_status
+    ):
+        print()
+        print(
+            "Du bist bereits vollständig erholt."
+        )
+
+        warte_auf_taste()
+        return False
+
+    alte_lebenspunkte = spieler[
+        "lebenspunkte"
+    ]
+
+    if heilung > 0:
+        spieler["lebenspunkte"] = min(
+            100,
+            spieler["lebenspunkte"] + heilung
+        )
+
+    geheilt = (
+        spieler["lebenspunkte"]
+        - alte_lebenspunkte
+    )
+
+    item_entfernen(
+        item_id,
+        1
+    )
+
+    print()
+
+    if geheilt > 0:
+        design_text(
+            (
+                f"Du regenerierst "
+                f"{geheilt} Lebenspunkte."
+            ),
+            design="positiv",
+            art="menue"
+        )
+
+        print(
+            f"Lebenspunkte: "
+            f"{spieler['lebenspunkte']}/100"
+        )
+
+    elif heilung > 0:
+        print(
+            "Deine Lebenspunkte sind bereits voll."
+        )
+
+    for effekt in gueltige_status:
+        status_hinzufuegen(
+            effekt["id"],
+            dauer=effekt.get(
+                "dauer"
+            ),
+            einheit=effekt.get(
+                "einheit"
+            ),
+            stapel=effekt.get(
+                "stapel",
+                1
+            ),
+            quelle=item_id
+        )
+
+    print()
+
+    print(
+        f"{item_daten['name']} verbleibend: "
+        f"{item_anzahl(item_id)}"
+    )
+
+    warte_auf_taste()
+
+    return True
+
+def speicherdatei_sicher_schreiben(
+    speicher_daten,
+    slot=None
+):
+    if slot is None:
+        slot = AKTIVER_SPEICHER_SLOT
+
+    if slot is None:
+        return (
+            False,
+            ValueError(
+                "Kein aktiver Speicherplatz ausgewählt."
+            )
+        )
