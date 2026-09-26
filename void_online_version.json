@@ -1,21 +1,19 @@
 {
-    "version": "2.3.1",
-    "name": "Alpha 2.3.1",
-    "sha256": "9E52A4A35EC5A55458D053D747CBE0F9FCE190B7E2667EAB814510917247CF90",
-    "download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v2.3.1/Void_alpha_2.3.1.zip",
-    "patch_notes": [
-        "Reisesystem V2 weiter finalisiert: Wald ist jetzt konsequent Reiselandlandschaft statt dauerhaftes Freilauf-Gebiet",
-        "Der Waldweg zur Köhlerei läuft als feste 12-Schritt-Reise mit eigenen Streckentexten und Ereignissen",
-        "Hildas verlassener Karren ist als einmaliges Questereignis auf dem Weg zur Köhlerei eingebunden",
-        "Der Waldwächter ist als eigene Abzweigung auf dem Königsring integriert und kehrt korrekt in die laufende Reise zurück",
-        "Die Alte Wegstation unterbricht den Königsring sauber und setzt die Reise anschließend am richtigen Schritt fort",
-        "Der Alte Seitenpfad ist geografisch an den Pfad des Vergessens gebunden und erscheint nicht mehr auf fremden Routen",
-        "Die Wald-Navigation zeigt jetzt eine kompakte Reiseübersicht statt alter direkter Zielauswahl",
-        "Veraltete freie Wald-Navigation und der frühere überwucherte Weg wurden entfernt",
-        "Save-Kompatibilität verbessert: alte Reise-Orte und entfernte Wegdaten werden beim Laden automatisch bereinigt",
-        "Mehrere Reise-, Rückkehr- und Altlogik-Probleme aus älteren Builds wurden behoben"
-    ],
-    "launcher_version": "1.2.8",
-    "launcher_sha256": "980F63F5D48AF345F6272B666472B932618E9D17B7879687763181CE7A8C12F1",
-    "launcher_download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v2.1.0/Void_Launcher_1.2.8.exe"
+  "version": "2.4.0",
+  "name": "Alpha 2.4.0",
+  "sha256": "2A29740F84551A5499B1EB053E3205245E96DBFC4EA60EF8799F829E329826BA",
+  "download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v2.4.0/Void_alpha_2.4.0.zip",
+  "patch_notes": [
+    "Drei getrennte Speicherplätze mit sicherer Slot-Auswahl und Import alter Spielstände",
+    "Speichern/Laden und Hauptmenü-Verhalten für die neuen Speicherplätze überarbeitet",
+    "Globale Menü-Tasten im verlassenen Dorf ergänzt",
+    "Dorfbrunnen-Lore bleibt bei Wiederholungen lesbar; Entwickler-Easter-Egg erscheint zusätzlich",
+    "Laufende Reisen können mitten auf dem Weg umgekehrt werden",
+    "Neues Reise-Kampfsystem mit streckenspezifischen Kampfchancen, Cooldown und Pechschutz",
+    "Der ruhige Prolog bleibt auf dem Weg zur Köhlerei kampffrei",
+    "Feste Reiseereignisse haben Vorrang vor zufälligen Kampfbegegnungen"
+  ],
+  "launcher_version": "1.2.8",
+  "launcher_sha256": "980F63F5D48AF345F6272B666472B932618E9D17B7879687763181CE7A8C12F1",
+  "launcher_download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v2.1.0/Void_Launcher_1.2.8.exe"
 }
