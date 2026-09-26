@@ -1,13 +1,14 @@
 {
-    "version": "2.2.0",
-    "name": "Alpha 2.2",
-    "sha256": "B73C6303DD348F3A3F034DABA322262BF9B2CDC6FCBCD9F13812E5F852C2D9C5",
-    "download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v2.2.0/void_update_2.2.0.zip",
+    "version": "2.2.1",
+    "name": "Alpha 2.2.1",
+    "sha256": "42A5B541A7EAD69E74A1D9715764AB4325D98950AF38A032598F06EC1DC5FE22",
+    "download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v2.2.1/void_update_2.2.1.zip",
     "patch_notes": [
-        "Gebietskarten fuer den Alten Seitenpfad und die Alte Wegstation",
-        "Erkundungsfunde und Hinweise klarer dargestellt",
-        "Besondere Funde zeigen moegliche weitere Ansaetze",
-        "Weitere UI-, Navigations- und Stabilitaetsverbesserungen"
+        "Prolog kann bei einem neuen Spiel übersprungen werden",
+        "Spielername-Farbe in den Optionen hinzugefügt",
+        "Geheime schwarze Spielername-Farbe als Easter Egg ergänzt",
+        "Entwickler-Easter-Egg am Dorfbrunnen hinzugefügt",
+        "Kleine Verbesserungen am Prolog- und Startablauf"
     ],
     "launcher_version": "1.2.8",
     "launcher_sha256": "980F63F5D48AF345F6272B666472B932618E9D17B7879687763181CE7A8C12F1",
