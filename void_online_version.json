@@ -1,7 +1,7 @@
 {
     "version": "2.2.2",
     "name": "Alpha 2.2.2",
-    "sha256": "279BA1083BEB38D4D379583FACFC4DD819D9FFBFA55336CE777FE4E5A32A667B",
+    "sha256": "5553C8F32A62C0E1EACAA837DE159619A99AFAE893A4EE675062EB6E541212DC",
     "download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v2.2.2/Void_update_2.2.2.zip",
     "patch_notes": [
         "Mara, Bjorn, Tomas und Hilda mit erweitertem V2-Dialogsystem überarbeitet",
