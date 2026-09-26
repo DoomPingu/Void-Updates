@@ -1,0 +1,1000 @@
+        print(
+            "Ziel: Prüfe Letzthafens Aufzeichnungen "
+            "auf Hinweise zu Marek Voss."
+        )
+
+    elif quest_name_fehlt == "marek_wohnung_untersuchen":
+        print(
+            "Ziel: Suche Mareks frühere Unterkunft am "
+            "Oberen Steg, Haus 14."
+        )
+
+    elif quest_name_fehlt == "elian_suchen":
+        print(
+            "Ziel: Finde Mareks Bruder Elian in seiner "
+            "Bootswerkstatt am Gezeitensteg."
+        )
+
+    elif quest_name_fehlt == "marek_zu_elian_bringen":
+        print(
+            "Ziel: Bring Marek zu seinem Bruder Elian "
+            "in der Bootswerkstatt."
+        )
+
+    elif quest_name_fehlt == "marek_abschluss_gespraech":
+        print(
+            "Ziel: Sprich mit Marek über das, was ihr "
+            "über sein früheres Leben herausgefunden habt."
+        )
+
+    elif quest_name_fehlt == "abgeschlossen":
+        design_text(
+            "[ABGESCHLOSSEN]",
+            design="quest_abgeschlossen",
+            art="menue"
+        )
+
+        print(
+            "Marek hat seine Erinnerungen nicht zurückgewonnen, "
+            "aber Spuren seines früheren Lebens gefunden."
+        )
+
+    # --------------------
+    # Nebenquest: Das stumme Wiegenlied
+    # --------------------
+
+    quest_wiegenlied = spieler.get(
+        "quest_wiegenlied",
+        "nicht_entdeckt"
+    )
+
+    if quest_wiegenlied != "nicht_entdeckt":
+        quest_vorhanden = True
+
+        menue_trenner()
+
+        design_text(
+            "Das stumme Wiegenlied",
+            design="wichtig",
+            art="menue"
+        )
+
+        if quest_wiegenlied == "edda_suchen":
+            print(
+                "Ziel: Suche das Haus mit der verwitterten "
+                "blauen Tür am Klippenweg auf."
+            )
+
+        elif quest_wiegenlied == "lied_rekonstruieren":
+            print(
+                "Ziel: Finde in Letzthafen heraus, wie Linas "
+                "Wiegenlied weitergeht."
+            )
+
+        elif quest_wiegenlied == "truhe_geoeffnet":
+            print(
+                "Ziel: Untersuche den Inhalt der geöffneten "
+                "Truhe in Eddas Haus."
+            )
+
+        elif quest_wiegenlied == "abgeschlossen":
+            design_text(
+                "[ABGESCHLOSSEN]",
+                design="quest_abgeschlossen",
+                art="menue"
+            )
+
+            print(
+                "Du hast Linas Wiegenlied rekonstruiert und "
+                "Edda geholfen, die alte Truhe wieder zu öffnen."
+            )
+
+    if not quest_vorhanden:
+        print(
+            "Du hast momentan keine Quests."
+        )
+
+    menue_trenner()
+
+    print("1. Zurück")
+
+    eingabe_menu(
+        1,
+        1,
+        sonder_tasten=()
+    )
+
+def hinweise():
+    ort_titel(
+        "Questlog/Erfolge - Hinweise"
+    )
+
+    bekannte_hinweise = []
+
+    for hinweis_id, status in spieler.get(
+        "rueckkehr_hinweise",
+        {}
+    ).items():
+
+        if status not in (
+            "neu",
+            "offen",
+            "erledigt"
+        ):
+            continue
+
+        daten = RUECKKEHR_HINWEISE.get(
+            hinweis_id
+        )
+
+        if daten:
+            bekannte_hinweise.append(
+                (daten, status)
+            )
+
+    if not bekannte_hinweise:
+        print(
+            "Du hast noch keine Hinweise erhalten."
+        )
+
+    else:
+        for daten, status in bekannte_hinweise:
+
+            if status == "erledigt":
+                design_text(
+                    f'{daten["name"]} [Abgeschlossen]',
+                    design="positiv",
+                    art="menue"
+                )
+
+            else:
+                design_text(
+                    f'{daten["name"]} [Offen]',
+                    design="wissen",
+                    art="menue"
+                )
+
+            print(
+                daten["text"]
+            )
+
+            print()
+
+    menue_trenner()
+
+    print("1. Zurück")
+
+    eingabe_menu(
+        1,
+        1,
+        sonder_tasten=()
+    )
+
+def questlog():
+    while True:
+        ort_titel(
+            "Questlog/Erfolge"
+        )
+
+        hinweis_text = "Hinweise"
+
+        if rueckkehr_hinweise_offen_vorhanden():
+            hinweis_text += " [!]"
+
+        print("1. Quests")
+        print("2. Erfolge")
+
+        print(
+            f"3. {hinweis_text}"
+        )
+
+        print("4. Zurück")
+
+        questlog_auswahl = eingabe_menu(
+            1,
+            4,
+            sonder_tasten=()
+        )
+
+        if questlog_auswahl == 1:
+            quests()
+
+        elif questlog_auswahl == 2:
+            erfolge()
+
+        elif questlog_auswahl == 3:
+            hinweise()
+
+        elif questlog_auswahl == 4:
+            return
+
+def rezept_ist_gelernt(rezept_id):
+    return rezept_id in spieler.get(
+        "rezepte_gelernt",
+        []
+    )
+
+
+def rezept_lernen(rezept_id):
+    if rezept_id not in REZEPTE:
+        return False
+
+    gelernte_rezepte = spieler.setdefault(
+        "rezepte_gelernt",
+        []
+    )
+
+    if rezept_id in gelernte_rezepte:
+        return False
+
+    gelernte_rezepte.append(
+        rezept_id
+    )
+
+    print()
+    print("-" * 34)
+
+    design_text(
+        "NEUES REZEPT GELERNT",
+        design="wissen",
+        art="menue"
+    )
+
+    print(
+        REZEPTE[
+            rezept_id
+        ]["name"]
+    )
+
+    print("-" * 34)
+    print()
+
+    return True
+
+def buecherregal():
+    ort_titel(
+        "Dein Haus - Bücherregal"
+    )
+
+    text_ausgeben(
+        "Neben alten Spielsachen und allerlei Schnickschnack "
+        "stehen dort auch ein paar Bücher.",
+        art="menue"
+    )
+
+    menue_trenner()
+
+    print("1. Der Schmied des Weges")
+    print("2. Kochen für Arme - Betty Bottom")
+    print("3. Altes Bilderbuch")
+
+    fahrtenbuch_modus = None
+
+    if (
+        spieler.get(
+            "quest_ein_name_fehlt"
+        ) == "fahrtenbuch_untersuchen"
+        and item_besitzt(
+            "fahrtenbuch_haendler"
+        )
+    ):
+        fahrtenbuch_modus = "untersuchen"
+
+        print(
+            "4. Fahrtenbuch des Händlers untersuchen [!]"
+        )
+
+        buch_maximum = 4
+
+    elif besonderer_fund_status(
+        "fahrtenbuch_haendler"
+    ) == "archiviert":
+        fahrtenbuch_modus = "archiv"
+
+        print(
+            "4. Archiv: Fahrtenbuch des Händlers"
+        )
+
+        buch_maximum = 4
+
+    else:
+        buch_maximum = 3
+
+    buch_auswahl = eingabe_menu(
+        1,
+        buch_maximum,
+        sonder_tasten=()
+    )
+    if buch_auswahl == 1:
+        ort_titel(
+            "Der Schmied des Weges - Seite 1"
+        )
+        print("Vor langer Zeit lebte ein Schmied, der nie lange an einem Ort blieb.")
+        print("Er zog von Dorf zu Dorf und reparierte Werkzeuge, Waffen und alles,")
+        print("was ihm die Menschen vor die Füße legten.")
+        print()
+        print("Man sagte, er könne am Klang eines Hammers erkennen,")
+        print("ob ein Stück Metall noch eine lange Reise vor sich hatte.")
+        print()
+        print("1. Weiterblättern")
+        print("2. Buch schliessen")
+        seiten_auswahl = eingabe_menu(
+            1,
+            2,
+            sonder_tasten=()
+        )
+        if seiten_auswahl == 1:
+            ort_titel(
+                "Der Schmied des Weges - Seite 2"
+            )
+            print("Eines Tages führte ihn sein Weg in ein kleines Dorf am Rande eines Waldes.")
+            print("Dort fand er eine alte Schmiede, deren Feuer seit Jahren erloschen war.")
+            print()
+            print("Der Schmied entzündete die Esse neu und arbeitete drei Tage und drei Nächte.")
+            print("Als er das Dorf wieder verließ, blieb nur ein einzelner Hammer zurück.")
+            print()
+            print("Auf seinem Griff waren die Worte eingeritzt:")
+            print('"Ein guter Schmied hinterlässt mehr als nur Stahl."')
+            print()
+            print("1. Weiterblättern")
+            print("2. Buch schliessen")
+            seiten_auswahl2 = eingabe_menu(
+                1,
+                2,
+                sonder_tasten=()
+            )
+
+            if seiten_auswahl2 == 1:
+                ort_titel(
+                    "Der Schmied des Weges - Seite 3"
+                )
+                print("Viele Jahre später soll der Hammer noch immer dort gewesen sein.")
+                print("Niemand wusste, wem er wirklich gehörte oder warum der Schmied ihn zurückließ.")
+                print()
+                print("Manche hielten die Geschichte für ein Märchen.")
+                print("Andere behaupteten, die alte Schmiede würde die Geschichte noch heute kennen.")
+                print()
+                print("Vielleicht kennt auch der Schmied von Eichenruh diese Geschichte...")
+                print()
+                if spieler["quest_schmied"] == "nicht_entdeckt":
+                    quest_meldung(
+                        "neu",
+                        "Der Schmied des Weges",
+                        "Sprich mit Bjorn über den alten Hammer."
+                    )
+
+                    spieler["quest_schmied"] = "aktiv"
+                print("1. Buch schliessen")   
+                seiten_auswahl3 = eingabe_menu(
+                    1,
+                    1,
+                    sonder_tasten=()
+                )
+                if seiten_auswahl3 == 1:
+                    spieler["ort"] = "spieler_zimmer"
+
+            elif seiten_auswahl2 == 2:
+                spieler["ort"] = "spieler_zimmer"   
+                
+        elif seiten_auswahl == 2:
+            spieler["ort"] = "spieler_zimmer"
+            
+    elif buch_auswahl == 2:
+        ort_titel(
+            "Kochen für Arme - Betty Bottom"
+        )
+
+        print(
+            "Das Buch enthält einfache Rezepte "
+            "aus Eichenruh."
+        )
+
+        print(
+            "Einige Seiten sind mit Fettflecken übersät."
+        )
+
+        print()
+        print(
+            "Zwischen mehreren kaum lesbaren Seiten "
+            "findest du ein besonders einfaches Rezept:"
+        )
+
+        print()
+        print("- Geröstetes Brot")
+
+        if not rezept_lernen(
+            "geroestetes_brot"
+        ):
+            print()
+            print(
+                "Dieses Rezept kennst du bereits."
+            )
+
+    elif buch_auswahl == 3:
+        ort_titel(
+            "Altes Bilderbuch"
+        )
+
+        print(
+            "Die Seiten sind voller alter Kinderzeichnungen."
+        )
+        print("Du erkennst Eichenruh, den Wald und einige seltsame Gestalten.")
+        print("Eine Zeichnung zeigt einen dunklen Riss, der sich quer über den Himmel zieht.")
+        print("Vermutlich nur die Fantasie eines Kindes...")
+        print()
+
+    elif (
+        buch_auswahl == 4
+        and fahrtenbuch_modus == "untersuchen"
+    ):
+        ort_titel(
+            "Dein Haus - Bücherregal"
+        )
+
+        text_ausgeben(
+            "Du legst das Fahrtenbuch auf den Tisch "
+            "und ziehst mehrere alte Wegverzeichnisse "
+            "aus deinem Regal."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Die letzten Einträge helfen zunächst kaum."
+        )
+
+        print()
+        print(
+            '"Die Klippen... ich muss zum Hafen..."'
+        )
+
+        print(
+            '"Wie hieß der Hafen?"'
+        )
+
+        print()
+
+        text_ausgeben(
+            "Du vergleichst die alten Ortsnamen mit den "
+            "Beschreibungen der Küste östlich von Eichenruh."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Nur ein alter Hafen liegt dort unmittelbar "
+            "an den hohen Klippen."
+        )
+
+        print()
+
+        design_text(
+            "LETZTHAFEN",
+            design="wissen",
+            art="ereignis"
+        )
+
+        print()
+
+        text_ausgeben(
+            "Ein altes Wegverzeichnis nennt außerdem die Straße, "
+            "die Eichenruh mit Letzthafen verbindet."
+        )
+
+        print()
+
+        design_text(
+            "Der Königsring",
+            design="wissen",
+            art="menue"
+        )
+
+        # -------------------------
+        # OPTIONAL: ALTES KARTENSTÜCK
+        # -------------------------
+
+        if item_besitzt(
+            "altes_kartenstueck"
+        ):
+            print()
+
+            text_ausgeben(
+                "Du legst Tomas' altes Kartenstück daneben."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Eine der verblassten Linien passt genau zum "
+                "östlichen Verlauf des Königsrings."
+            )
+
+            print()
+
+            design_text(
+                "[Zusätzlicher Hinweis]",
+                design="wissen",
+                art="menue"
+            )
+
+            print(
+                "Auf halber Strecke ist ein kleines "
+                "Gebäudesymbol eingezeichnet."
+            )
+
+            print(
+                "Im Wegverzeichnis wird dort eine alte "
+                "Wegstation erwähnt."
+            )
+
+            besonderen_fund_dokumentieren(
+                "altes_kartenstueck",
+                "zugeordnet"
+            )
+
+        # -------------------------
+        # FAHRTENBUCH ARCHIVIEREN
+        # -------------------------
+
+        if item_besitzt(
+            "fahrtenbuch_haendler"
+        ):
+            item_entfernen(
+                "fahrtenbuch_haendler"
+            )
+
+        besonderen_fund_dokumentieren(
+            "fahrtenbuch_haendler",
+            "archiviert"
+        )
+
+        print()
+
+        text_ausgeben(
+            "Du stellst das Fahrtenbuch zwischen die anderen "
+            "Aufzeichnungen in dein Regal."
+        )
+
+        text_ausgeben(
+            "Dort soll es bleiben, falls sich noch jemand "
+            "an diesen Mann erinnern muss."
+        )
+
+        print()
+
+        weg_entdecken(
+            "koenigsring"
+        )
+
+        spieler[
+            "quest_ein_name_fehlt"
+        ] = "letzthafen_suchen"
+
+        quest_meldung(
+            "update",
+            "Ein Name fehlt",
+            "Folge dem Königsring nach Letzthafen und "
+            "finde den verschwundenen Händler."
+        )
+
+        warte_auf_taste(
+            "Weiter"
+        )
+
+        return
+
+    elif (
+        buch_auswahl == 4
+        and fahrtenbuch_modus == "archiv"
+    ):
+        ort_titel(
+            "Archiv - Fahrtenbuch des Händlers"
+        )
+
+        print(
+            "Die letzten lesbaren Einträge:"
+        )
+
+        print()
+        print(
+            '"Habe dieselbe Wegmarkierung zweimal passiert."'
+        )
+
+        print(
+            '"Das ergibt keinen Sinn."'
+        )
+
+        print()
+        print(
+            '"Die Klippen... ich muss zum Hafen."'
+        )
+
+        print(
+            '"Wie hieß der Hafen?"'
+        )
+
+        print()
+
+        design_text(
+            "Deine Notiz: Die Spur führt nach Letzthafen.",
+            design="wissen",
+            art="menue"
+        )
+
+        if besonderer_fund_status(
+            "altes_kartenstueck"
+        ) == "zugeordnet":
+            print()
+
+            print(
+                "Das alte Kartenstück weist außerdem auf eine "
+                "Wegstation am Königsring hin."
+            )
+
+        warte_auf_taste()
+
+        return
+
+    if buch_auswahl in (2, 3):
+        warte_auf_taste()
+
+def rezept_fehlende_zutaten(rezept):
+    fehlende_zutaten = []
+
+    for item_id, anzahl in rezept[
+        "zutaten"
+    ].items():
+
+        vorhanden = item_anzahl(
+            item_id
+        )
+
+        if vorhanden < anzahl:
+            fehlende_zutaten.append(
+                (
+                    item_id,
+                    anzahl - vorhanden
+                )
+            )
+
+    return fehlende_zutaten
+
+
+def rezept_kann_gekocht_werden(rezept):
+    return not rezept_fehlende_zutaten(
+        rezept
+    )
+
+
+def kochen(titel="Kochen"):
+    while True:
+        ort_titel(titel)
+
+        gelernte_rezepte = [
+            rezept_id
+            for rezept_id in spieler.get(
+                "rezepte_gelernt",
+                []
+            )
+            if rezept_id in REZEPTE
+        ]
+
+        if not gelernte_rezepte:
+            print(
+                "Du kennst momentan keine Rezepte."
+            )
+
+            print()
+            print(
+                "Vielleicht findest du irgendwo "
+                "ein Kochbuch."
+            )
+
+            warte_auf_taste()
+            return
+
+        print("Bekannte Rezepte:")
+        print()
+
+        for nummer, rezept_id in enumerate(
+            gelernte_rezepte,
+            start=1
+        ):
+            rezept = REZEPTE[
+                rezept_id
+            ]
+
+            ergebnis_id = rezept[
+                "ergebnis"
+            ]
+
+            heilung = ITEMS[
+                ergebnis_id
+            ].get(
+                "heilung",
+                0
+            )
+
+            fehlende_zutaten = (
+                rezept_fehlende_zutaten(
+                    rezept
+                )
+            )
+
+            print(
+                f"{nummer}. "
+                f"{rezept['name']} "
+                f"- {heilung} HP"
+            )
+
+            if not fehlende_zutaten:
+                design_text(
+                    "   [Bereit]",
+                    design="positiv",
+                    art="menue"
+                )
+
+            else:
+                fehlende_texte = []
+
+                for (
+                    item_id,
+                    anzahl
+                ) in fehlende_zutaten:
+
+                    fehlende_texte.append(
+                        f"{ITEMS[item_id]['name']} "
+                        f"x{anzahl}"
+                    )
+
+                print(
+                    "   [Fehlt: "
+                    + ", ".join(
+                        fehlende_texte
+                    )
+                    + "]"
+                )
+
+            print()
+
+        zurueck_nummer = (
+            len(gelernte_rezepte) + 1
+        )
+
+        print()
+        print(
+            f"{zurueck_nummer}. Zurück"
+        )
+
+        auswahl = eingabe_menu(
+            1,
+            zurueck_nummer,
+            sonder_tasten=()
+        )
+
+        if auswahl == zurueck_nummer:
+            return
+
+        rezept_id = gelernte_rezepte[
+            auswahl - 1
+        ]
+
+        rezept = REZEPTE[
+            rezept_id
+        ]
+
+        ort_titel(
+            rezept["name"]
+        )
+
+        ergebnis_id = rezept[
+            "ergebnis"
+        ]
+
+        heilung = ITEMS[
+            ergebnis_id
+        ].get(
+            "heilung",
+            0
+        )
+
+        print(
+            f"Heilung: {heilung} HP"
+        )
+
+        print()
+        print("Benötigte Zutaten:")
+        print()
+
+        for item_id, anzahl in rezept[
+            "zutaten"
+        ].items():
+
+            vorhanden = item_anzahl(
+                item_id
+            )
+
+            if vorhanden >= anzahl:
+                status = "OK"
+
+            else:
+                fehlt = (
+                    anzahl - vorhanden
+                )
+
+                status = (
+                    f"Fehlt: {fehlt}"
+                )
+
+            print(
+                f"- {ITEMS[item_id]['name']} "
+                f"x{anzahl} "
+                f"(Du hast: {vorhanden}) "
+                f"[{status}]"
+            )
+
+        print()
+
+        if not rezept_kann_gekocht_werden(
+            rezept
+        ):
+            print(
+                "Dir fehlen Zutaten für "
+                "dieses Rezept."
+            )
+
+            warte_auf_taste()
+            continue
+
+        print("1. Zubereiten")
+        print("2. Zurück")
+
+        koch_auswahl = eingabe_menu(
+            1,
+            2,
+            sonder_tasten=()
+        )
+
+        if koch_auswahl == 2:
+            continue
+
+        for item_id, anzahl in rezept[
+            "zutaten"
+        ].items():
+
+            item_entfernen(
+                item_id,
+                anzahl
+            )
+
+        item_hinzufuegen(
+            rezept["ergebnis"],
+            rezept.get(
+                "anzahl",
+                1
+            )
+        )
+
+        print()
+
+        design_text(
+            f"{rezept['name']} zubereitet",
+            design="positiv",
+            art="menue"
+        )
+
+        warte_auf_taste()
+
+def spielmenue():
+    while True:
+        ort_titel(
+            "Menü"
+        )
+
+        print(
+            "1. Weiterspielen"
+        )
+
+        print(
+            "2. Textverlauf"
+        )
+
+        print(
+            "3. Questlog/Erfolge"
+        )
+
+        print(
+            "4. Spiel speichern"
+        )
+
+        print(
+            "5. Optionen"
+        )
+
+        print(
+            "6. Speichern & Hauptmenü"
+        )
+
+        menue_auswahl = eingabe_menu(
+            1,
+            6,
+            sonder_tasten=()
+        )
+
+        if menue_auswahl == 1:
+            return
+
+        elif menue_auswahl == 2:
+            textverlauf_anzeigen()
+
+        elif menue_auswahl == 3:
+            questlog()
+
+        elif menue_auswahl == 4:
+            spiel_speichern(
+                spieler
+            )
+
+            warte_auf_taste()
+
+        elif menue_auswahl == 5:
+            optionen()
+
+        elif menue_auswahl == 6:
+            if spiel_speichern(
+                spieler
+            ):
+                print()
+
+                print(
+                    "Du kehrst zum Hauptmenü zurück."
+                )
+
+                warte_auf_taste(
+                    "Zum Hauptmenü"
+                )
+
+                zum_hauptmenue()
+                return
+
+            else:
+                warte_auf_taste()
+
+def prolog_haus():
+    prolog_status = spieler.get(
+        "prolog_status",
+        "dorf_freigeschaltet"
+    )
+
+    # -------------------------
+    # STUFE 1: AUFGEWACHT
+    # -------------------------
+
+    if prolog_status == "aufgewacht":
+        menue_trenner()
+
+        print("1. Dich im Zimmer umsehen")
+
+        print()
+        print("[S] Status")
+        print("[I] Inventar")
+        print("[J] Questlog/Erfolge")
+        print("[Q] Speichern / Menü")
+
+        auswahl = eingabe_menu(
+            1,
+            1,
+            sonder_tasten=("s", "i", "j", "q")
+        )
+
+        if auswahl == "s":
+            status()
+            return
+
+        elif auswahl == "i":
+            inventar()
+            return
+
+        elif auswahl == "j":
+            questlog()
+            return
