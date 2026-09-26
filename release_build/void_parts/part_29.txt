@@ -1,0 +1,290 @@
+                f"{aktive_reise['aktueller_schritt']}/"
+                f"{aktive_reise['gesamt_schritte']}"
+            )
+
+        menue_trenner()
+
+        umgebung_text = (
+            "Umgebung erkunden"
+        )
+
+        if alter_seitenpfad_hier_verfuegbar():
+            seitenpfad_status = weg_status(
+                "alter_seitenpfad"
+            )
+
+            if seitenpfad_status == "bemerkt":
+                umgebung_text += " [!]"
+
+            elif weg_ist_neu(
+                "alter_seitenpfad"
+            ):
+                umgebung_text += " [NEU]"
+
+        ziele_text = (
+            "Reiseübersicht"
+        )
+
+        print("1. Weitergehen")
+        print(
+            f"2. {umgebung_text}"
+        )
+        print("3. Rasten")
+        print(
+            f"4. {ziele_text}"
+        )
+
+        umkehr_ziel = reise_ort_name(
+            aktive_reise["start"]
+        )
+
+        print(
+            f"5. Umkehren Richtung "
+            f"{umkehr_ziel}"
+        )
+
+        print()
+        print("[S] Status")
+        print("[I] Inventar")
+        print("[J] Questlog/Erfolge")
+        print("[Q] Speichern / Menü")
+
+        menu_auswahl = eingabe_menu(
+            1,
+            5,
+            sonder_tasten=(
+                "s",
+                "i",
+                "j",
+                "q"
+            )
+        )
+
+
+
+    elif spieler["ort"] == "Köhlerei":
+        koehlerei()
+        continue
+
+    elif spieler["ort"] == "lagerkeller":
+        lagerkeller()
+        continue
+
+    elif spieler["ort"] == "alte_schmiede":
+        alte_schmiede()
+        continue
+
+    elif spieler[
+        "ort"
+    ] == "alte_wegstation":
+        alte_wegstation()
+        continue
+
+
+
+    elif spieler["ort"] == "Bossraum":
+        ort_titel("Bossraum")
+
+        ort_nachricht_anzeigen()
+
+        menue_trenner()
+
+        print("1. Boss bekämpfen")
+        print("2. Status anzeigen (s)")
+        print("3. Inventar öffnen (i)")
+        print("4. Zurück in den Wald")
+        menu_auswahl = eingabe_menu(1, 4)
+
+    elif spieler["ort"] == "Marktplatz":
+        marktplatz()
+        continue
+
+    elif spieler["ort"] == "spieler_zimmer":
+        spielerhaus()
+        continue
+    elif spieler["ort"] == "Gasthaus":
+        gasthaus()
+        continue
+    elif spieler["ort"] == "Schmiede":
+        schmiede()
+        continue
+    elif spieler["ort"] == "verlassenes_dorf":
+        verlassenes_dorf()
+        continue
+
+    if menu_auswahl == "s":
+        status()
+
+    elif menu_auswahl == "i":
+        inventar()
+
+    elif menu_auswahl == "j":
+        questlog()
+
+    elif menu_auswahl == "q":
+        spielmenue()
+
+
+    # -------------------------
+    # EICHENRUH
+    # -------------------------
+
+    elif menu_auswahl == 1 and spieler["ort"] == "Eichenruh":
+        spieler["ort"] = "Gasthaus"
+
+        ort_nachricht_setzen(
+            "Du betrittst Maras Gasthaus.",
+            "Musik erklingt, Gespräche hallen durch die Gaststube."
+        )
+
+
+    elif menu_auswahl == 2 and spieler["ort"] == "Eichenruh":
+        spieler["ort"] = "Schmiede"
+
+        ort_nachricht_setzen(
+            "Du betrittst Bjorns Schmiede.",
+            "Hitze schlägt dir entgegen, während Metall auf Metall trifft."
+        )
+
+
+    elif menu_auswahl == 3 and spieler["ort"] == "Eichenruh":
+        spieler["ort"] = "Marktplatz"
+
+        ort_nachricht_setzen(
+            "Du gehst hinüber zum Marktplatz.",
+            "Zwischen den Ständen herrscht bereits reges Treiben."
+        )
+
+
+    elif menu_auswahl == 4 and spieler["ort"] == "Eichenruh":
+        spieler["ort"] = "spieler_zimmer"
+
+        ort_nachricht_setzen(
+            "Du öffnest die Tür und trittst ein.",
+            "Die vertraute Ruhe deines Hauses empfängt dich."
+        )
+
+    elif (
+        menu_auswahl == 5
+        and spieler["ort"] == "Eichenruh"
+        and spieler.get("prolog_status") in [
+            "koehlerei_lieferung",
+            "prolog_abgeschlossen"
+        ]
+    ):
+        reise(
+            "Köhlerei",
+            (
+                "Zwischen den Bäumen öffnet sich "
+                "wieder der Platz der Köhlerei."
+            ),
+            gebiet_modus=True
+        )
+
+    elif (
+        menu_auswahl == 6
+        and spieler["ort"] == "Eichenruh"
+        and weg_status(
+            "pfad_des_vergessens"
+        ) == "entdeckt"
+    ):
+        reise(
+            "verlassenes_dorf",
+            (
+                "Der Wald liegt hinter dir."
+            ),
+            (
+                "Zwischen den Bäumen stehen die "
+                "verlassenen Häuser des alten Dorfes."
+            ),
+            gebiet_modus=True
+        )
+
+
+    # -------------------------
+    # ALTE ORTSMENÜS
+    # -------------------------
+
+    elif (
+        menu_auswahl == 2
+        and spieler["ort"] == "Bossraum"
+    ):
+        status()
+
+    elif (
+        menu_auswahl == 3
+        and spieler["ort"] == "Bossraum"
+    ):
+        inventar()
+
+    elif (
+        spieler["ort"] == "Wald"
+        and menu_auswahl == 1
+    ):
+        reise_fortsetzen()
+        continue
+
+    elif menu_auswahl == 1 and spieler["ort"] == "Bossraum":
+            spieler["lebenspunkte"], spieler["spiel_laeuft"], spieler["gold"], spieler["diamanten"], spieler["heiltränke"], spieler["ort"] = bosskampf(
+            spieler["lebenspunkte"], spieler["spiel_laeuft"], spieler["gold"],
+            spieler["diamanten"], spieler["heiltränke"], spieler["ort"]
+        )
+
+    elif (
+        menu_auswahl == 2
+        and spieler["ort"] == "Wald"
+    ):
+        wald_umgebung_erkunden()
+
+    elif (
+        menu_auswahl == 3
+        and spieler["ort"] == "Wald"
+    ):
+        wald_rasten()
+
+    elif (
+        menu_auswahl == 4
+        and spieler["ort"] == "Wald"
+    ):
+        wald_wege_und_ziele()
+
+    elif (
+        menu_auswahl == 5
+        and spieler["ort"] == "Wald"
+    ):
+        reise_umkehren()
+        continue
+
+    elif (
+        menu_auswahl == 4
+        and spieler["ort"] == "Bossraum"
+    ):
+        aktive_reise = spieler.get(
+            "reise"
+        )
+
+        if isinstance(
+            aktive_reise,
+            dict
+        ):
+            spieler["ort"] = aktive_reise.get(
+                "gebiet",
+                "Wald"
+            )
+
+            ort_nachricht_setzen(
+                "Du entscheidest dich, den Waldwächter "
+                "noch nicht herauszufordern.",
+                "Du kehrst zum Königsring zurück und "
+                "setzt deine Reise fort."
+            )
+
+        else:
+            spieler["ort"] = "Eichenruh"
+
+            ort_nachricht_setzen(
+                "Du entscheidest dich, den Waldwächter "
+                "noch nicht herauszufordern.",
+                "Nach einiger Zeit erreichst du "
+                "wieder Eichenruh."
+            )           
