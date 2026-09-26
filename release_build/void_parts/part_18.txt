@@ -1,0 +1,1000 @@
+
+    print()
+
+    text_ausgeben(
+        "Kaum ist der Weg frei, wird von der anderen Seite "
+        "gegen die Tür gedrückt."
+    )
+
+    text_ausgeben(
+        "Sie öffnet sich einen Spalt."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Ein junger Mann zwängt sich hindurch."
+    )
+
+    print()
+
+    dialog_titel("Joris")
+
+    text_ausgeben("[Joris] Endlich.")
+
+    print()
+    text_ausgeben(
+        "Joris setzt sich auf eine der Kisten "
+        "und fährt sich erschöpft durchs Haar."
+    )
+
+    print()
+    text_ausgeben(
+        "[Joris] Ich dachte schon, ich müsste "
+        "die ganze Nacht hier unten bleiben."
+    )
+
+    print()
+    text_ausgeben(
+        "Du wirfst einen Blick in Richtung der Kellertreppe."
+    )
+
+    print()
+    text_ausgeben(
+        "Draußen steht die Sonne noch immer hoch genug, "
+        "dass es nicht einmal Mittag sein dürfte."
+    )
+
+    print()
+    text_ausgeben(
+        f'[{spieler["name"]}] Die ganze Nacht? '
+        "Du bist erst seit heute Morgen verschwunden."
+    )
+
+    print()
+    text_ausgeben("Joris sieht dich einige Sekunden schweigend an.")
+
+    print()
+    text_ausgeben("[Joris] Heute Morgen?")
+
+    seite_wechseln(
+        "Alter Lagerkeller",
+        "Joris"
+    )
+
+    text_ausgeben(
+        "Er reibt sich über die Stirn."
+    )
+
+    print()
+    text_ausgeben(
+        "[Joris] Dann habe ich wohl vollkommen "
+        "das Zeitgefühl verloren."
+    )
+
+    print()
+    text_ausgeben(
+        "[Joris] Hier unten ist es verdammt dunkel."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Neben der Tür liegt tatsächlich das lange Hanfseil, "
+        "von dem Tomas erzählt hat."
+    )
+
+    text_ausgeben(
+        "Joris wirkt ansonsten unverletzt."
+    )
+
+    print()
+
+    spieler["prolog_status"] = "joris_gefunden"
+
+    quest_meldung(
+        "update",
+        "Der verlorene Lehrling",
+        "Bring Joris zurück zu Bjorn."
+    )
+
+    warte_auf_taste()
+
+    spieler["ort"] = "Schmiede"
+
+    ort_nachricht_setzen(
+        "Gemeinsam mit Joris steigst du aus dem Keller.",
+        "Als ihr die Schmiede betretet, fährt Bjorn herum."
+    )
+
+def alte_schmiede():
+    ort_titel("Alte Schmiede")
+
+    print("1. Werkbank untersuchen")
+    print("2. Die Wände ansehen")
+    print("3. Zurück zum verlassenen Dorf")
+
+    if spieler["quest_schmied"] == "neuer_hinweis":
+        print("4. Die alte Esse untersuchen")
+        menu_auswahl = eingabe_menu(
+            1,
+            4,
+            sonder_tasten=()
+        )
+
+    elif spieler["quest_schmied"] == "hinweis_gefunden":
+        print("4. Schublade aufbrechen")
+        menu_auswahl = eingabe_menu(
+            1,
+            4,
+            sonder_tasten=()
+        )
+
+    elif spieler["quest_schmied"] == "versteck_gefunden":
+        print("4. Den lockeren Stein anheben")
+        menu_auswahl = eingabe_menu(
+            1,
+            4,
+            sonder_tasten=()
+        )
+
+    else:
+        menu_auswahl = eingabe_menu(
+            1,
+            3,
+            sonder_tasten=()
+        )
+
+    if (
+        menu_auswahl == 1
+        and spieler["quest_schmied"] == "dorf_entdeckt"
+    ):
+        text_ausgeben(
+            "Du streichst mit der Hand über die alte Werkbank."
+        )
+
+        text_ausgeben(
+            "Eine dicke Staubschicht bedeckt verrostete "
+            "Zangen, Nägel und Werkzeug."
+        )
+
+        text_ausgeben(
+            "An einer der Schubladen fallen dir tiefe "
+            "Kratzspuren im Holz auf."
+        )
+
+        text_ausgeben(
+            "Jemand scheint versucht zu haben, "
+            "sie gewaltsam zu öffnen."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Du ziehst an der Schublade, doch sie bewegt "
+            "sich keinen Millimeter."
+        )
+
+        text_ausgeben(
+            "Als du genauer hinsiehst, entdeckst du zwischen "
+            "den Kratzspuren eine kleine eingeritzte Markierung."
+        )
+
+        text_ausgeben(
+            "Das Symbol kommt dir nicht bekannt vor."
+        )
+
+        quest_meldung(
+            "update",
+            "Der Schmied des Weges",
+            "Untersuche die Spur in der alten Schmiede."
+        )
+
+        spieler["quest_schmied"] = "hinweis_gefunden"
+
+    elif menu_auswahl == 1:
+        text_ausgeben(
+            "Du untersuchst die Werkbank erneut, "
+            "findest aber nichts Neues."
+        )
+
+    elif menu_auswahl == 2:
+        text_ausgeben(
+            "Du lässt deinen Blick über die alten "
+            "Wände der Schmiede wandern."
+        )
+
+        text_ausgeben(
+            "Ruß und Brandspuren haben den Stein über "
+            "die Jahre fast schwarz gefärbt."
+        )
+
+        text_ausgeben(
+            "Zwischen den Steinen sind Namen, kleine "
+            "Zeichnungen und Kerben eingeritzt."
+        )
+
+        text_ausgeben(
+            "Einige davon wirken, als hätten sich hier "
+            "früher Kinder verewigt."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Über der alten Esse kannst du noch die Reste "
+            "eines verblassten Schriftzuges erkennen:"
+        )
+
+        text_ausgeben(
+            '"Was aus Feuer geboren wird, '
+            'überdauert seinen Schöpfer."'
+        )
+
+        print()
+
+        text_ausgeben(
+            "Wer auch immer hier früher gearbeitet hat, "
+            "diese Schmiede war einmal voller Leben."
+        )
+
+    elif (
+        menu_auswahl == 4
+        and spieler["quest_schmied"] == "hinweis_gefunden"
+    ):
+        text_ausgeben(
+            "Mit einem kräftigen Ruck gibt das alte Holz nach."
+        )
+
+        text_ausgeben(
+            "Die Schublade springt auf."
+        )
+
+        text_ausgeben(
+            "Zwischen rostigen Nägeln und Staub liegt "
+            "ein gefaltetes Stück Papier."
+        )
+
+        text_ausgeben(
+            "Die Schrift ist fast verblasst."
+        )
+
+        print()
+
+        text_ausgeben(
+            '"Wenn der Hammer je gefunden werden soll, '
+            'sucht dort, wo kein Feuer brennt."'
+        )
+
+        spieler["quest_schmied"] = "neuer_hinweis"
+
+    elif (
+        menu_auswahl == 4
+        and spieler["quest_schmied"] == "neuer_hinweis"
+    ):
+        text_ausgeben(
+            "Du kniest dich vor die alte Esse."
+        )
+
+        text_ausgeben(
+            "Zwischen kalter Asche und verkohlten "
+            "Holzresten suchst du nach einer Spur."
+        )
+
+        text_ausgeben(
+            "Als du mit der Hand über den steinernen "
+            "Boden fährst, bemerkst du etwas."
+        )
+
+        text_ausgeben(
+            "Einer der Steine sitzt locker."
+        )
+
+        spieler["quest_schmied"] = "versteck_gefunden"
+
+    elif (
+        menu_auswahl == 4
+        and spieler["quest_schmied"] == "versteck_gefunden"
+    ):
+        text_ausgeben(
+            "Du greifst unter den lockeren Stein "
+            "und hebst ihn vorsichtig an."
+        )
+
+        text_ausgeben(
+            "Darunter befindet sich ein kleiner Hohlraum."
+        )
+
+        text_ausgeben(
+            "Etwas ist darin in ein altes, halb zerfallenes "
+            "Tuch gewickelt."
+        )
+
+        text_ausgeben(
+            "Du ziehst es hervor und entfernst "
+            "vorsichtig den Stoff."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Ein alter Schmiedehammer kommt zum Vorschein."
+        )
+
+        text_ausgeben(
+            "Auf seinem Griff erkennst du die eingeritzten Worte:"
+        )
+
+        text_ausgeben(
+            "„Ein guter Schmied hinterlässt mehr als nur Stahl.“"
+        )
+
+        quest_meldung(
+            "update",
+            "Der Schmied des Weges",
+            "Bringe den alten Schmiedehammer zu Bjorn."
+        )
+
+        spieler["quest_schmied"] = "hammer_gefunden"
+
+    elif menu_auswahl == 3:
+        spieler["ort"] = "verlassenes_dorf"
+
+    if menu_auswahl != 3:
+        warte_auf_taste()
+
+def verlassenes_dorf():
+    ort_titel("Verlassenes Dorf")
+
+    ort_nachricht_anzeigen()
+
+    if spieler.get(
+        "quest_schmied"
+    ) == "suche_verlassenes_dorf":
+        spieler[
+            "quest_schmied"
+        ] = "dorf_entdeckt"
+
+        quest_meldung(
+            "update",
+            "Der Schmied des Weges",
+            "Untersuche die alte Schmiede."
+        )
+
+    menue_trenner()
+    print("1. Die alte Schmiede untersuchen")
+    print("2. Das Dorf durchsuchen")
+    print("3. Zurück nach Eichenruh")
+
+    print()
+    print("[S] Status")
+    print("[I] Inventar")
+    print("[J] Questlog/Erfolge")
+    print("[Q] Speichern / Menü")
+
+    dorf_auswahl = eingabe_menu(
+        1,
+        3,
+        sonder_tasten=(
+            "s",
+            "i",
+            "j",
+            "q"
+        )
+    )
+
+    if dorf_auswahl == "s":
+        status()
+        return
+
+    elif dorf_auswahl == "i":
+        inventar()
+        return
+
+    elif dorf_auswahl == "j":
+        questlog()
+        return
+
+    elif dorf_auswahl == "q":
+        spielmenue()
+        return
+
+    if dorf_auswahl == 1:
+        spieler["ort"] = "alte_schmiede"
+
+    elif dorf_auswahl == 3:
+
+        if weg_status(
+            "pfad_des_vergessens"
+        ) == "entdeckt":
+            reise(
+                "Eichenruh",
+                (
+                    "Die letzten Bäume bleiben "
+                    "hinter dir."
+                ),
+                (
+                    "Vor dir liegen wieder die "
+                    "vertrauten Häuser Eichenruhs."
+                ),
+                gebiet_modus=True
+            )
+
+        else:
+            spieler["reise"] = None
+            spieler["ort"] = "Eichenruh"
+
+    elif dorf_auswahl == 2:
+        while True:
+            ort_titel(
+                "Verlassenes Dorf - Häuser"
+            )
+
+            text_ausgeben(
+                "Du gehst zwischen den verlassenen "
+                "Häusern hindurch.",
+                art="menue"
+            )
+
+            menue_trenner()
+
+            print(
+                "1. Ein altes Wohnhaus durchsuchen"
+            )
+
+            print(
+                "2. Den Dorfbrunnen untersuchen"
+            )
+
+            print(
+                "3. Zurück"
+            )
+
+            dorf_menu_auswahl = eingabe_menu(
+                1,
+                3,
+                sonder_tasten=()
+            )
+
+            # -------------------------
+            # WOHNHAUS
+            # -------------------------
+
+            if dorf_menu_auswahl == 1:
+                ort_titel(
+                    "Verlassenes Dorf - Wohnhaus"
+                )
+
+                if not spieler[
+                    "dorf_haus_gepluendert"
+                ]:
+                    text_ausgeben(
+                        "Du durchsuchst das "
+                        "verlassene Wohnhaus."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "Unter einer losen Bodendiele "
+                        "findest du 12 Gold."
+                    )
+
+                    spieler[
+                        "gold"
+                    ] += 12
+
+                    spieler[
+                        "dorf_haus_gepluendert"
+                    ] = True
+
+                    print()
+
+                    design_text(
+                        "Du erhältst 12 Gold.",
+                        design="positiv",
+                        art="menue"
+                    )
+
+                else:
+                    text_ausgeben(
+                        "Du hast dieses Haus bereits "
+                        "durchsucht.",
+                        art="menue"
+                    )
+
+                    print()
+
+                    print(
+                        "Hier gibt es nichts mehr zu finden."
+                    )
+
+                warte_auf_taste(
+                    "Zurück zu den Häusern"
+                )
+
+            # -------------------------
+            # DORFBRUNNEN
+            # -------------------------
+
+            elif dorf_menu_auswahl == 2:
+                ort_titel(
+                    "Verlassenes Dorf - Dorfbrunnen"
+                )
+
+                spieler["easteregg_brunnen"] = (
+                    spieler.get(
+                        "easteregg_brunnen",
+                        0
+                    ) + 1
+                )
+
+                brunnen_besuche = spieler[
+                    "easteregg_brunnen"
+                ]
+
+
+
+                text_ausgeben(
+                    "Du trittst an den alten Dorfbrunnen."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "Das Holz des Daches ist morsch, "
+                    "und der Eimer hängt schief an einem "
+                    "ausgefransten Seil."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "Als du dich über den Rand beugst, "
+                    "fällt dir etwas an der Innenseite "
+                    "des Brunnens auf."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "Zwischen Moos und verwittertem Stein "
+                    "sind mehrere Namen eingeritzt."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "Einige davon sind kaum noch zu lesen."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "Unter den Namen steht ein Satz:"
+                )
+
+                print()
+
+                design_text(
+                    "„Wir gingen nach Eichenruh. "
+                    "Hier blieb nichts mehr für uns.“",
+                    design="wissen",
+                    art="menue"
+                )
+
+                print()
+
+                text_ausgeben(
+                    "Du blickst noch einmal über die "
+                    "verlassenen Häuser."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "Vielleicht wurde dieses Dorf "
+                    "nicht zerstört."
+                )
+
+                text_ausgeben(
+                    "Vielleicht wurde es einfach aufgegeben."
+                )
+
+                if brunnen_besuche >= 5:
+                    print()
+
+                    if brunnen_besuche == 5:
+                        design_text(
+                            "[Entwickler] Du hast den Brunnen "
+                            "jetzt fünfmal untersucht.",
+                            design="wissen",
+                            art="menue"
+                        )
+
+                        print()
+
+                        design_text(
+                            "[Entwickler] Wir haben hier wirklich "
+                            "nichts mehr versteckt.",
+                            design="wissen",
+                            art="menue"
+                        )
+
+                    elif brunnen_besuche == 6:
+                        design_text(
+                            "[Entwickler] Nein.",
+                            design="wissen",
+                            art="menue"
+                        )
+
+                    elif brunnen_besuche == 7:
+                        design_text(
+                            "[Entwickler] Wirklich nicht.",
+                            design="wissen",
+                            art="menue"
+                        )
+
+                    else:
+                        design_text(
+                            "[Entwickler] Hör auf, den Brunnen "
+                            "zu untersuchen.",
+                            design="wissen",
+                            art="menue"
+                        )
+
+                warte_auf_taste(
+                    "Zurück zu den Häusern"
+                )
+
+            # -------------------------
+            # ZURÜCK
+            # -------------------------
+
+            elif dorf_menu_auswahl == 3:
+                break
+
+
+def dialog_mara():
+    mara_besuch = npc_besuch_starten(
+        "mara"
+    )
+
+    erste_runde = True
+
+    themen_dieses_gespraech = set()
+    nach_prolog_besuch = None
+
+    while True:
+        ort_titel("Gasthaus")
+        dialog_titel("Mara")
+
+        prolog_status = spieler.get("prolog_status")
+
+        # -------------------------
+        # JORIS WIRD GESUCHT
+        # -------------------------
+
+        if prolog_status in [
+            "joris_suche",
+            "joris_hinweise_komplett"
+        ]:
+            hinweise = spieler.get(
+                "prolog_joris_hinweise",
+                {}
+            )
+
+            text_ausgeben(
+                "Mara stellt gerade mehrere Brote "
+                "hinter dem Tresen beiseite."
+            )
+
+            print()
+            print(
+                "1. " + dialog_option(
+                    "mara",
+                    "joris_gesehen",
+                    "Hast du Joris heute gesehen?"
+                )
+            )
+
+            print(
+                "2. " + dialog_option(
+                    "mara",
+                    "joris_kurz_vorbeischauen",
+                    "Ich wollte nur kurz vorbeischauen."
+                )
+            )
+
+            print("3. Gespräch beenden")
+
+            mara_auswahl = eingabe_menu(
+                1,
+                3,
+                sonder_tasten=()
+            )
+
+            print()
+
+            if mara_auswahl == 1:
+                dialog_thema_markieren(
+                    "mara",
+                    "joris_gesehen"
+                ) 
+
+                if not hinweise.get("mara", False):
+                    text_ausgeben(
+                        "[Mara] Joris? Ja, der war heute Morgen hier."
+                    )
+
+                    print()
+                    text_ausgeben(
+                        "[Mara] Er hat das Brot für Bjorns Schmiede "
+                        "abgeholt."
+                    )
+
+                    text_ausgeben(
+                        "[Mara] Besonders gesprächig war er allerdings nicht."
+                    )
+
+                    print()
+                    text_ausgeben(
+                        "[Mara] Danach wollte er noch zu Tomas."
+                    )
+
+                    text_ausgeben(
+                        "[Mara] Irgendetwas fehlte ihm wohl "
+                        "für eine Arbeit."
+                    )
+
+                    prolog_joris_hinweis("mara")
+
+                else:
+                    text_ausgeben(
+                        "[Mara] Wie gesagt: Erst hat er das Brot "
+                        "abgeholt, danach wollte er zu Tomas."
+                    )
+
+                warte_auf_taste("Weiter")
+
+            elif mara_auswahl == 2:
+                dialog_thema_markieren(
+                    "mara",
+                    "joris_kurz_vorbeischauen"
+                )
+                text_ausgeben(
+                    "[Mara] Dann such dir einen Platz. "
+                    "Noch ist es hier einigermaßen ruhig."
+                )
+
+                warte_auf_taste("Weiter")
+
+            elif mara_auswahl == 3:
+                return
+
+            continue
+
+        # -------------------------
+        # NORMALER PROLOG-DIALOG
+        # -------------------------
+
+        if prolog_laeuft():
+            text_ausgeben(
+                f"[Mara] Guten Morgen, {spieler['name']}. "
+                "Schon auf den Beinen?"
+            )
+
+            print()
+            text_ausgeben(
+                "Mara stellt einen Krug unter den Tresen "
+                "und wischt sich die Hände an ihrer Schürze ab."
+            )
+
+            print()
+            print(
+                "1. " + dialog_option(
+                    "mara",
+                    "prolog_reinschauen",
+                    "Ich wollte nur kurz reinschauen."
+                )
+            )
+
+            print(
+                "2. " + dialog_option(
+                    "mara",
+                    "prolog_viel_los",
+                    "Ist heute schon viel los?"
+                )
+            )
+
+            print("3. Gespräch beenden")
+
+            mara_auswahl = eingabe_menu(
+                1,
+                3,
+                sonder_tasten=()
+            )
+
+            print()
+
+            if mara_auswahl == 1:
+
+                dialog_thema_markieren(
+                    "mara",
+                    "prolog_reinschauen"
+                )
+
+                text_ausgeben(
+                    "[Mara] Dann bist du hier genau richtig. "
+                    "Für ein paar Minuten ist immer Platz."
+                )
+
+                warte_auf_taste("Weiter")
+
+            elif mara_auswahl == 2:
+
+                dialog_thema_markieren(
+                    "mara",
+                    "prolog_viel_los"
+                )
+
+                text_ausgeben(
+                    "[Mara] Noch nicht. "
+                    "Aber gib ihnen Zeit."
+                )
+
+                text_ausgeben(
+                    "[Mara] Spätestens zur Mittagszeit "
+                    "sitzt wieder das halbe Dorf hier."
+                )
+
+                warte_auf_taste("Weiter")
+
+            elif mara_auswahl == 3:
+                return
+
+            continue
+
+        # -------------------------
+        # NACH DEM PROLOG
+        # -------------------------
+
+        if nach_prolog_besuch is None:
+            mara_daten = npc_status(
+                "mara"
+            )
+
+            mara_daten["nach_prolog_besuche"] = (
+                mara_daten.get(
+                    "nach_prolog_besuche",
+                    0
+                ) + 1
+            )
+
+            nach_prolog_besuch = mara_daten[
+                "nach_prolog_besuche"
+            ]
+
+        ereignis_begruessung = False
+
+        if (
+            erste_runde
+            and not spieler.get(
+                "prolog_uebersprungen",
+                False
+            )
+            and not npc_reaktion_gezeigt(
+                "mara",
+                "joris_wieder_da"
+            )
+        ):
+            text_ausgeben(
+                "Mara hält mitten in der Bewegung inne, "
+                "als sie dich erkennt."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Mara] Bjorn hat mir erzählt, "
+                "dass du Joris gefunden hast."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Mara] Gut."
+            )
+
+            text_ausgeben(
+                "[Mara] Wirklich gut."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Sie greift wieder nach dem Krug vor ihr."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Mara] Der Junge soll sich trotzdem "
+                "morgen hier blicken lassen."
+            )
+
+            text_ausgeben(
+                "[Mara] Ich habe ein paar deutliche Worte für ihn."
+            )
+
+            npc_reaktion_markieren(
+                "mara",
+                "joris_wieder_da"
+            )
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+            ereignis_begruessung = True
+
+        if erste_runde and not ereignis_begruessung:
+
+            direkte_besuche = npc_status(
+                "mara"
+            ).get(
+                "direkte_besuche",
+                0
+            )
+
+            if spieler["lebenspunkte"] <= 50:
+                begruessung = npc_variante_waehlen(
+                    "mara",
+                    "letzte_begruessung_verletzt",
+                    [
+                        (
+                            "Mara hält mitten in der Bewegung inne "
+                            "und mustert dich.\n\n"
+                            "[Mara] Setz dich erstmal. "
+                            "Du siehst nicht besonders gut aus."
+                        ),
+                        (
+                            "Mara zieht die Stirn kraus, "
+                            "als sie dich näher ansieht.\n\n"
+                            "[Mara] Was immer da draußen passiert ist: "
+                            "Heute machst du langsam."
+                        ),
+                        (
+                            "Mara stellt wortlos einen Becher "
+                            "vor dir auf den Tresen.\n\n"
+                            "[Mara] Erst trinken. Dann reden."
+                        )
+                    ]
+                )
+
+                for zeile in begruessung.split("\n"):
+                    if zeile:
+                        text_ausgeben(
+                            zeile
+                        )
+                    else:
+                        print()
+
+
+            elif direkte_besuche >= 5:
+                begruessung = npc_variante_waehlen(
+                    "mara",
+                    "letzte_dauerbesuch_begruessung",
+                    [
+                        (
+                            "Mara sieht dich an. Dann kurz zur Tür. "
+                            "Dann wieder zu dir.\n\n"
+                            "[Mara] Nur damit ich sicher bin: "
+                            "Du warst gerade eben schon hier, oder?"
+                        ),
+                        (
+                            "Mara stützt beide Hände auf den Tresen.\n\n"
+                            "[Mara] Gut. Diesmal bleibst du einfach hier, "
+                            "bis dir alles eingefallen ist."
+                        ),
+                        (
