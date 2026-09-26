@@ -1,0 +1,1000 @@
+                auswahl
+            )
+        )
+
+        if not os.path.exists(
+            speicher_datei
+        ):
+            return auswahl
+
+        print()
+
+        design_text(
+            "SPIELSTAND VORHANDEN",
+            design="warnung",
+            art="menue"
+        )
+
+        print()
+        print(
+            "Dieser Speicherplatz enthält "
+            "bereits einen Spielstand."
+        )
+
+        print()
+        print(
+            "Wenn du hier ein neues Spiel startest, "
+            "wird der alte Spielstand überschrieben."
+        )
+
+        menue_trenner()
+
+        print(
+            "1. Trotzdem verwenden"
+        )
+
+        print(
+            "2. Anderen Speicherplatz wählen"
+        )
+
+        bestaetigung = eingabe_menu(
+            1,
+            2,
+            sonder_tasten=()
+        )
+
+        if bestaetigung == 1:
+            return auswahl
+
+def prolog_startauswahl():
+    ort_titel("Neues Spiel")
+
+    print("1. Prolog spielen")
+    print("2. Prolog überspringen")
+    print("3. Zurück")
+
+    print()
+
+    design_text(
+        "Für den ersten Durchlauf wird der Prolog empfohlen.",
+        design="wissen",
+        art="menue"
+    )
+
+    return eingabe_menu(
+        1,
+        3,
+        sonder_tasten=()
+    )
+
+def hauptmenue_starten():
+    global spieler
+    global AKTIVER_SPEICHER_SLOT
+
+    einstellungen_laden()
+
+    alten_spielstand_importieren()
+
+    spieler = None
+    neues_spiel = False
+    prolog_ueberspringen = False
+
+    while spieler is None:
+
+        hauptmenue_auswahl = hauptmenue()
+
+        if hauptmenue_auswahl == 1:
+            slot = (
+                speicherplatz_auswahl_neues_spiel()
+            )
+
+            if slot is None:
+                continue
+
+            prolog_auswahl = prolog_startauswahl()
+
+            if prolog_auswahl == 3:
+                continue
+
+            prolog_ueberspringen = (
+                prolog_auswahl == 2
+            )
+
+            name = input("Wie ist dein Name? ")
+
+            AKTIVER_SPEICHER_SLOT = slot
+
+            spieler = neuer_spieler(name)
+            neues_spiel = True
+
+            if prolog_ueberspringen:
+                spieler["prolog_status"] = "prolog_abgeschlossen"
+                spieler["akt"] = "AKT 1"
+                spieler["ort"] = "Eichenruh"
+
+                spieler["prolog_besuchte_orte"] = {
+                    "gasthaus": True,
+                    "schmiede": True,
+                    "marktplatz": True
+                }
+
+                spieler["prolog_joris_hinweise"] = {
+                    "mara": True,
+                    "tomas": True
+                }
+
+                spieler["koehler_nachricht_bjorn"] = "offen"
+
+                item_hinzufuegen(
+                    "holz",
+                    3
+                )
+
+                spieler["prolog_skip_startwaffe"] = True
+                spieler["prolog_uebersprungen"] = True
+
+
+            if (
+                DEV_TEST_ITEMS
+                and not getattr(
+                    sys,
+                    "frozen",
+                    False
+                )
+            ):
+                spieler[
+                    "lebenspunkte"
+                ] = 50
+
+                item_hinzufuegen(
+                    "apfel",
+                    2
+                )
+
+                item_hinzufuegen(
+                    "brot",
+                    1
+                )
+
+            if (
+                DEV_TEST_KOCHEN
+                and not getattr(
+                    sys,
+                    "frozen",
+                    False
+                )
+            ):
+                spieler[
+                    "prolog_status"
+                ] = "prolog_abgeschlossen"
+
+                spieler[
+                    "gold"
+                ] = 30
+
+                spieler[
+                    "akt"
+                ] = "AKT 1"
+
+                spieler[
+                    "rezepte_gelernt"
+                ] = []
+
+        elif hauptmenue_auswahl == 2:
+            slot = (
+                speicherplatz_auswahl_laden()
+            )
+
+            if slot is not None:
+                spieler = spiel_laden(
+                    slot
+                )
+
+        elif hauptmenue_auswahl == 3:
+            optionen()
+
+        elif hauptmenue_auswahl == 4:
+            print("Bis bald!")
+            raise SystemExit
+
+    if neues_spiel:
+        if (
+            not DEV_MODUS
+            and not prolog_ueberspringen
+        ):
+            spiel_intro()
+
+        if DEV_MODUS:
+            spieler["prolog_status"] = "prolog_abgeschlossen"
+            spieler["akt"] = "AKT 1"
+
+            spieler["ort"] = "Gasthaus"
+
+            item_hinzufuegen(
+                "altes_kartenstueck"
+            )
+            weg_entdecken(
+                "alter_seitenpfad"
+            )
+
+            weg_als_gesehen_markieren(
+                "alter_seitenpfad"
+            )
+
+            spieler["lebenspunkte"] = 40
+
+            spieler["waffe"] = {
+                "name": "Schweres Handbeil",
+                "min_schaden": 8,
+                "max_schaden": 16,
+                "verkaufswert": 5,
+                "typ": "Beil",
+                "wendigkeit": 1,
+                "parade": 1,
+                "reichweite": 1
+            }
+
+            item_hinzufuegen(
+                "holz",
+                6
+            )
+
+            ort_nachricht_setzen(
+                "DEV-Testmodus aktiv.",
+                "Du startest direkt im Wald."
+            )
+
+        else:
+            ort_nachricht_setzen(
+                "Du öffnest die Augen.",
+                "Durch das kleine Fenster fällt das erste Licht des Morgens.",
+                "Draußen erwacht das Dorf langsam zum Leben.",
+                "Irgendwo schlägt bereits ein Hammer auf Metall.",
+                "Von weiter weg hörst du erste Stimmen vom Marktplatz.",
+                "Es ist ein gewöhnlicher Morgen in Eichenruh."
+            )
+
+
+def zum_hauptmenue():
+    global spieler
+    global AKTIVER_SPEICHER_SLOT
+
+    spieler = None
+    AKTIVER_SPEICHER_SLOT = None
+
+    hauptmenue_starten()
+
+
+spieler = None
+hauptmenue_starten()
+
+def erfolg_ist_freigeschaltet(erfolg_id):
+    return erfolg_id in spieler.get(
+        "erfolge_freigeschaltet",
+        []
+    )
+
+
+def erfolg_freischalten(erfolg_id):
+    if erfolg_id not in ERFOLGE:
+        return False
+
+    erfolge = spieler.setdefault(
+        "erfolge_freigeschaltet",
+        []
+    )
+
+    if erfolg_id in erfolge:
+        return False
+
+    erfolge.append(
+        erfolg_id
+    )
+
+    print()
+    print("-" * 34)
+
+    design_text(
+        "ERFOLG FREIGESCHALTET",
+        design="wissen",
+        art="menue"
+    )
+
+    print(
+        ERFOLGE[
+            erfolg_id
+        ]["name"]
+    )
+
+    print("-" * 34)
+    print()
+
+    return True
+
+def besonderer_fund_status(fund_id):
+    return spieler.get(
+        "besondere_funde",
+        {}
+    ).get(
+        fund_id
+    )
+
+
+def besonderer_fund_bekannt(fund_id):
+    return besonderer_fund_status(
+        fund_id
+    ) is not None
+
+
+def besonderen_fund_dokumentieren(
+    fund_id,
+    status="gefunden"
+):
+    if fund_id not in BESONDERE_FUNDE:
+        return False
+
+    funde = spieler.setdefault(
+        "besondere_funde",
+        {}
+    )
+
+    alter_status = funde.get(
+        fund_id
+    )
+
+    funde[fund_id] = status
+
+    return alter_status != status
+
+def besonderen_fund_hinweis_anzeigen(
+    fund_id
+):
+    fund_daten = BESONDERE_FUNDE.get(
+        fund_id
+    )
+
+    if not fund_daten:
+        return
+
+    status = besonderer_fund_status(
+        fund_id
+    )
+
+    ansatz_text = fund_daten.get(
+        "ansatz_texte",
+        {}
+    ).get(
+        status
+    )
+
+    if not ansatz_text:
+        return
+
+    print()
+
+    design_text(
+        "MÖGLICHER ANSATZ",
+        design="wissen",
+        art="menue"
+    )
+
+    print()
+
+    print(
+        ansatz_text
+    )
+
+def status():
+    ort_titel("Status")
+
+    print(f"Name: {spieler['name']}")
+    print(f"Lebenspunkte: {spieler['lebenspunkte']}")
+    print(f"Gold: {spieler['gold']}")
+    print(f"Diamanten: {spieler['diamanten']}")
+    print(f"Besiegte Gegner: {spieler['besiegte_gegner']}")
+
+    aktuelle_waffe = spieler.get("waffe")
+
+    if aktuelle_waffe:
+        print(
+            f"Waffe: {aktuelle_waffe['name']} "
+            f"({aktuelle_waffe['min_schaden']}-"
+            f"{aktuelle_waffe['max_schaden']} Schaden)"
+        )
+
+    else:
+        print("Waffe: Keine")
+
+    warte_auf_taste()
+
+def erfolge_sammlungen():
+    ort_titel("Erfolge - Sammlungen")
+
+    for sammlung in REZEPT_SAMMLUNGEN.values():
+        rezepte = sammlung[
+            "rezepte"
+        ]
+
+        gelernt = spieler.get(
+            "rezepte_gelernt",
+            []
+        )
+
+        anzahl_gelernt = sum(
+            1
+            for rezept_id in rezepte
+            if rezept_id in gelernt
+        )
+
+        design_text(
+            sammlung["name"],
+            design="wissen",
+            art="menue"
+        )
+
+        print(
+            f"Fortschritt: "
+            f"{anzahl_gelernt}/{len(rezepte)}"
+        )
+
+        print()
+
+        for rezept_id in rezepte:
+            if rezept_id in gelernt:
+                print(
+                    f"✓ "
+                    f"{REZEPTE[rezept_id]['name']}"
+                )
+
+            else:
+                print("? ???")
+
+        print()
+
+    menue_trenner()
+
+    print("1. Zurück")
+
+    eingabe_menu(
+        1,
+        1,
+        sonder_tasten=()
+    )
+
+
+def erfolge_entdeckt():
+    ort_titel(
+        "Erfolge - Gesehen / Entdeckt"
+    )
+
+    besuchte_dorforte = spieler.get(
+        "prolog_besuchte_orte",
+        {}
+    )
+
+    eichenruh_orte = (
+        "gasthaus",
+        "schmiede",
+        "marktplatz"
+    )
+
+    anzahl_besucht = sum(
+        1
+        for ort_id in eichenruh_orte
+        if besuchte_dorforte.get(
+            ort_id,
+            False
+        )
+    )
+
+    design_text(
+        "Eichenruh kennengelernt",
+        design="wissen",
+        art="menue"
+    )
+
+    print(
+        f"Fortschritt: "
+        f"{anzahl_besucht}/3"
+    )
+
+    print()
+
+    ort_namen = {
+        "gasthaus": "Maras Gasthaus",
+        "schmiede": "Bjorns Schmiede",
+        "marktplatz": "Marktplatz"
+    }
+
+    for ort_id in eichenruh_orte:
+        if besuchte_dorforte.get(
+            ort_id,
+            False
+        ):
+            print(
+                f"✓ {ort_namen[ort_id]}"
+            )
+
+        else:
+            print("? ???")
+
+    print()
+
+    design_text(
+        "Besondere Entdeckungen",
+        design="wissen",
+        art="menue"
+    )
+
+    print()
+
+    entdeckungen_vorhanden = False
+
+    for erfolg_id, erfolg_daten in ERFOLGE.items():
+
+        if erfolg_daten.get(
+            "kategorie"
+        ) != "entdeckt":
+            continue
+
+        entdeckungen_vorhanden = True
+
+        if erfolg_ist_freigeschaltet(
+            erfolg_id
+        ):
+            print(
+                f"✓ {erfolg_daten['name']}"
+            )
+
+        elif erfolg_daten.get(
+            "verborgen",
+            False
+        ):
+            print(
+                "? ???"
+            )
+
+        else:
+            print(
+                f"○ {erfolg_daten['name']}"
+            )
+
+    if not entdeckungen_vorhanden:
+        print(
+            "Noch keine besonderen "
+            "Entdeckungen verfügbar."
+        )
+
+    menue_trenner()
+
+    print("1. Zurück")
+
+    eingabe_menu(
+        1,
+        1,
+        sonder_tasten=()
+    )
+
+
+def erfolge_besondere_funde():
+    ort_titel(
+        "Erfolge - Besondere Funde"
+    )
+
+    fund_vorhanden = False
+
+    for fund_id, fund_daten in (
+        BESONDERE_FUNDE.items()
+    ):
+        status = besonderer_fund_status(
+            fund_id
+        )
+
+        if status is None:
+            continue
+
+        print(
+            f"✓ {fund_daten['name']}"
+        )
+
+        status_text = fund_daten.get(
+            "status_texte",
+            {}
+        ).get(
+            status
+        )
+
+        if status_text:
+            print(
+                f"  Status: {status_text}"
+            )
+
+        ansatz_text = fund_daten.get(
+            "ansatz_texte",
+            {}
+        ).get(
+            status
+        )
+
+        if ansatz_text:
+            print(
+                f"  Ansatz: {ansatz_text}"
+            )
+
+        print()
+
+        fund_vorhanden = True
+
+    if not fund_vorhanden:
+        print(
+            "Noch keine besonderen "
+            "Funde dokumentiert."
+        )
+
+    menue_trenner()
+
+    print("1. Zurück")
+
+    eingabe_menu(
+        1,
+        1,
+        sonder_tasten=()
+    )
+
+
+def erfolge():
+    while True:
+        ort_titel(
+            "Questlog/Erfolge - Erfolge"
+        )
+
+        print("1. Sammlungen")
+        print("2. Gesehen / Entdeckt")
+        print("3. Besondere Funde")
+        print("4. Zurück")
+
+        erfolge_auswahl = eingabe_menu(
+            1,
+            4,
+            sonder_tasten=()
+        )
+
+        if erfolge_auswahl == 1:
+            erfolge_sammlungen()
+
+        elif erfolge_auswahl == 2:
+            erfolge_entdeckt()
+
+        elif erfolge_auswahl == 3:
+            erfolge_besondere_funde()
+
+        elif erfolge_auswahl == 4:
+            return
+
+
+def quests():
+    ort_titel(
+        "Questlog/Erfolge - Quests"
+    )
+
+    design_text(
+        spieler["akt"],
+        design="wissen",
+        art="menue"
+    )
+
+    print()
+
+    quest_vorhanden = False
+
+    # --------------------
+    # Prolog: Joris
+    # --------------------
+
+    prolog_status = spieler.get(
+        "prolog_status"
+    )
+
+    if (
+        not spieler.get("prolog_uebersprungen", False)
+        and prolog_status in [
+            "joris_suche",
+            "joris_hinweise_komplett",
+            "joris_keller",
+            "joris_gefunden",
+            "joris_gerettet",
+            "koehlerei_lieferung",
+            "prolog_abgeschlossen"
+        ]
+    ):
+        quest_vorhanden = True
+
+        menue_trenner()
+
+        design_text(
+            "Der verlorene Lehrling",
+            design="wichtig",
+            art="menue"
+        )
+
+        if prolog_status == "joris_suche":
+            hinweise = spieler.get(
+                "prolog_joris_hinweise",
+                {}
+            )
+
+            anzahl_hinweise = sum(
+                hinweise.values()
+            )
+
+            print(
+                f"Ziel: Frage Mara und Tomas nach Joris. "
+                f"({anzahl_hinweise}/2 Hinweise)"
+            )
+
+        elif prolog_status == "joris_hinweise_komplett":
+            print(
+                "Ziel: Berichte Bjorn, was du über Joris "
+                "herausgefunden hast."
+            )
+
+        elif prolog_status == "joris_keller":
+            print(
+                "Ziel: Untersuche den alten Lagerkeller "
+                "hinter Bjorns Schmiede."
+            )
+
+        elif prolog_status == "joris_gefunden":
+            print(
+                "Ziel: Bring Joris zurück zu Bjorn."
+            )
+
+        elif prolog_status in [
+            "joris_gerettet",
+            "koehlerei_lieferung",
+            "prolog_abgeschlossen"
+        ]:
+            design_text(
+                "[ABGESCHLOSSEN]",
+                design="quest_abgeschlossen",
+                art="menue"
+            )
+
+    # --------------------
+    # Prolog: Köhlerei
+    # --------------------
+
+    if (
+        not spieler.get("prolog_uebersprungen", False)
+        and prolog_status in [
+            "koehlerei_lieferung",
+            "prolog_abgeschlossen"
+        ]
+    ):
+        quest_vorhanden = True
+
+        menue_trenner()
+
+        design_text(
+            "Zur Köhlerei",
+            design="wichtig",
+            art="menue"
+        )
+
+        if prolog_status == "koehlerei_lieferung":
+            print(
+                "Ziel: Bringe Bjorns Lieferung "
+                "zur Köhlerei am Waldrand."
+            )
+
+        elif prolog_status == "prolog_abgeschlossen":
+            design_text(
+                "[ABGESCHLOSSEN]",
+                design="quest_abgeschlossen",
+                art="menue"
+            )
+
+    # --------------------
+    # Schmied-Quest
+    # --------------------
+
+    if spieler[
+        "quest_schmied"
+    ] != "nicht_entdeckt":
+
+        quest_vorhanden = True
+
+        menue_trenner()
+
+        design_text(
+            "Der Schmied des Weges",
+            design="wichtig",
+            art="menue"
+        )
+
+        if spieler[
+            "quest_schmied"
+        ] == "aktiv":
+
+            print(
+                "Ziel: Sprich mit Bjorn "
+                "über den alten Hammer."
+            )
+
+        elif spieler[
+            "quest_schmied"
+        ] == "suche_verlassenes_dorf":
+
+            print(
+                "Ziel: Finde das verlassene Dorf im Wald."
+            )
+
+        elif spieler[
+            "quest_schmied"
+        ] == "dorf_entdeckt":
+
+            print(
+                "Ziel: Untersuche die alte Schmiede."
+            )
+
+        elif spieler[
+            "quest_schmied"
+        ] == "hinweis_gefunden":
+
+            print(
+                "Ziel: Öffne die verdächtige Schublade."
+            )
+
+        elif spieler[
+            "quest_schmied"
+        ] == "neuer_hinweis":
+
+            print(
+                "Ziel: Untersuche die alte Esse."
+            )
+
+        elif spieler[
+            "quest_schmied"
+        ] == "versteck_gefunden":
+
+            print(
+                "Ziel: Untersuche den lockeren Stein."
+            )
+
+        elif spieler[
+            "quest_schmied"
+        ] == "hammer_gefunden":
+
+            print(
+                "Ziel: Bringe den alten "
+                "Schmiedehammer zu Bjorn."
+            )
+
+        elif spieler[
+            "quest_schmied"
+        ] == "abgeschlossen":
+
+            design_text(
+                "[ABGESCHLOSSEN]",
+                design="quest_abgeschlossen",
+                art="menue"
+            )
+
+    # --------------------
+    # Hildas Quest
+    # --------------------
+
+    if spieler[
+        "quest_hilda"
+    ] != "nicht_entdeckt":
+
+        quest_vorhanden = True
+
+        menue_trenner()
+
+        design_text(
+            "Die verschwundene Lieferung",
+            design="wichtig",
+            art="menue"
+        )
+
+        if spieler[
+            "quest_hilda"
+        ] == "aktiv":
+
+            print(
+                "Ziel: Suche im Wald nach "
+                "Hildas Händler und seinem Karren."
+            )
+
+        elif spieler[
+            "quest_hilda"
+        ] == "karren_gefunden":
+
+            print(
+                "Ziel: Berichte Hilda vom "
+                "verlassenen Karren."
+            )
+
+        elif spieler[
+            "quest_hilda"
+        ] == "abgeschlossen":
+
+            design_text(
+                "[ABGESCHLOSSEN]",
+                design="quest_abgeschlossen",
+                art="menue"
+            )
+
+    # --------------------
+    # Hauptquest: Ein Name fehlt
+    # --------------------
+
+    quest_name_fehlt = spieler.get(
+        "quest_ein_name_fehlt",
+        "nicht_entdeckt"
+    )
+
+    if quest_name_fehlt != "nicht_entdeckt":
+        quest_vorhanden = True
+
+        menue_trenner()
+
+        design_text(
+            "Ein Name fehlt",
+            design="wichtig",
+            art="menue"
+        )
+
+    if quest_name_fehlt == "tomas_befragen":
+        print(
+            "Ziel: Sprich mit Tomas über "
+            "Hildas verschwundenen Händler."
+        )
+
+    elif quest_name_fehlt == "fahrtenbuch_untersuchen":
+        print(
+            "Ziel: Untersuche das Fahrtenbuch "
+            "an deinem Bücherregal."
+        )
+
+    elif quest_name_fehlt == "letzthafen_suchen":
+        print(
+            "Ziel: Folge dem Königsring nach Letzthafen "
+            "und finde den verschwundenen Händler."
+        )
+
+    elif quest_name_fehlt == "marek_spur_suchen":
+        letzthafen_spuren = spieler.get(
+            "letzthafen_status",
+            {}
+        ).get(
+            "spuren",
+            {}
+        )
+
+        if letzthafen_spuren.get(
+            "register_marek",
+            False
+        ):
+            print(
+                "Ziel: Die Register nennen den Fuhrmann Marek Voss. "
+                "Finde ihn in Letzthafen."
+            )
+
+        elif letzthafen_spuren.get(
+            "sera_marek",
+            False
+        ):
+            print(
+                "Ziel: Sera sah Marek zuletzt am "
+                "Gezeitensteg. Suche dort nach ihm."
+            )
+
+        else:
+            print(
+                "Ziel: Suche in Letzthafen nach Hinweisen "
+                "auf den verschwundenen Händler."
+            )
+
+    elif quest_name_fehlt == "marek_identitaet_pruefen":
