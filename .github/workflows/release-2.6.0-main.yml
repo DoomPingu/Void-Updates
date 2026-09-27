@@ -71,7 +71,7 @@ jobs:
           expected = {
               "void.py": "b77f4482ff99e5342140d84f1a7e8a8157508e52309a6abfd459a85ebf58c33e",
               "kampfsystem.py": "0a7f93ecec3cebcee8b381654175883b7ef67850dbfb1ec1c7f8391f21ea7158",
-              "void_launcher.py": "2f03acab5a39dfc15214985a207a30fa2d14d5dbaee609963af4c2775ca7f9ce",
+              "void_launcher.py": "d274ac467d22b24b4c43809f4b11344d0c6484338d56f50e16cae41beadb4936",
           }
           for name, wanted in expected.items():
               got = hashlib.sha256((out / name).read_bytes()).hexdigest()
