@@ -1,0 +1,1000 @@
+    )
+
+    print()
+
+    design_text(
+        "Mein Name ist Marek Voss.",
+        design="wissen",
+        art="atmosphaere"
+    )
+
+    text_ausgeben(
+        "Ich komme aus Letzthafen."
+    )
+
+    text_ausgeben(
+        "Elian ist mein Bruder."
+    )
+
+    text_ausgeben(
+        "Ich fahre den Königsring."
+    )
+
+    text_ausgeben(
+        "Ich war in Eichenruh."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Wenn ich das wieder nicht weiß:"
+    )
+
+    text_ausgeben(
+        "Glaube diesem Buch."
+    )
+
+    print()
+    text_ausgeben(
+        "Marek liest die Zeilen einmal durch und schließt das Buch."
+    )
+
+    spuren[
+        "marek_notizbuch"
+    ] = True
+
+    # -------------------------
+    # ROUTENMAPPE
+    # -------------------------
+
+    print()
+
+    text_ausgeben(
+        "Danach zieht Marek eine abgewetzte Ledermappe "
+        "aus seiner Tasche."
+    )
+
+    print()
+    text_ausgeben(
+        "[Marek] Die hatte ich bei mir, als ich hier ankam."
+    )
+
+    text_ausgeben(
+        "[Marek] Sera erkennt meine Handschrift. Elian auch."
+    )
+
+    print()
+    text_ausgeben(
+        "[Marek] Ich kann dir jede Steigung, jede brauchbare Raststelle "
+        "und fast jeden alten Wegstein darin erklären."
+    )
+
+    text_ausgeben(
+        "[Marek] Ich erinnere mich nur nicht daran, das alles "
+        "aufgeschrieben zu haben."
+    )
+
+    print()
+    text_ausgeben(
+        "[Marek] Ich bleibe vorerst hier. Nimm sie."
+    )
+
+    text_ausgeben(
+        "[Marek] Vielleicht bringt sie wenigstens jemanden "
+        "zuverlässig ans Ziel."
+    )
+
+    seite_wechseln(
+        "Gezeitensteg"
+    )
+
+    # -------------------------
+    # BELOHNUNGEN
+    # -------------------------
+
+    if not item_besitzt(
+        "mareks_routenmappe"
+    ):
+        item_hinzufuegen(
+            "mareks_routenmappe"
+        )
+
+    routenkenntnis_lernen(
+        "koenigsring"
+    )
+
+    spieler[
+        "quest_ein_name_fehlt"
+    ] = "abgeschlossen"
+
+    akt1_lernerfahrung(
+        "marek_quest"
+    )
+
+    quest_meldung(
+        "abgeschlossen",
+        "Ein Name fehlt",
+        belohnungen=[
+            "Mareks Routenmappe",
+            "Routenkenntnis: Königsring"
+        ]
+    )
+
+    text_ausgeben(
+        "Marek steckt das neue Notizbuch in die Innentasche seines Mantels."
+    )
+
+    text_ausgeben(
+        "Einen Augenblick später tastet er noch einmal nach dem Einband, "
+        "als wolle er sicher sein, dass es wirklich dort ist."
+    )
+
+    print()
+    text_ausgeben(
+        "[Marek] Morgen lese ich zuerst die erste Seite."
+    )
+
+    warte_auf_taste(
+        "Weiter"
+    )
+
+def dialog_marek():
+    marek_besuch = npc_besuch_starten(
+        "marek"
+    )
+
+    erste_runde = True
+    themen_dieses_gespraech = set()
+
+    while True:
+        ort_titel(
+            "Gezeitensteg"
+        )
+
+        dialog_titel(
+            "Marek Voss"
+        )
+
+        if erste_runde:
+            if marek_besuch == 1:
+                text_ausgeben(
+                    "Marek steht am Rand des Stegs und arbeitet "
+                    "an einem Stück Tauwerk."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Marek] Wenn du etwas fragen willst, frag ruhig."
+                )
+
+                text_ausgeben(
+                    "[Marek] Vielleicht hilft mir die Antwort ja selbst."
+                )
+
+            else:
+                begruessung = npc_begruessung_waehlen(
+                    "marek",
+                    [
+                        "[Marek] Wieder da? Frag ruhig.",
+                        "[Marek] Ich höre.",
+                        (
+                            "[Marek] Viel Neues weiß ich vermutlich nicht. "
+                            "Aber versuchen können wir es."
+                        ),
+                        (
+                            "[Marek] Vielleicht fällt mir diesmal "
+                            "etwas ein."
+                        ),
+                        (
+                            "[Marek] Meine Hände sind beschäftigt. "
+                            "Mein Kopf eher weniger. Was gibt es?"
+                        )
+                    ]
+                )
+
+                text_ausgeben(
+                    begruessung
+                )
+
+        else:
+            text_ausgeben(
+                "[Marek] Noch etwas?"
+            )
+
+        print()
+
+        optionen = []
+
+        if "erinnerung" not in themen_dieses_gespraech:
+            optionen.append(
+                (
+                    "erinnerung",
+                    dialog_option(
+                        "marek",
+                        "erinnerung",
+                        "Woran erinnerst du dich?"
+                    )
+                )
+            )
+
+        if "faehigkeiten" not in themen_dieses_gespraech:
+            optionen.append(
+                (
+                    "faehigkeiten",
+                    dialog_option(
+                        "marek",
+                        "faehigkeiten",
+                        "Das mit dem Tauwerk kannst du noch."
+                    )
+                )
+            )
+
+        if "karren" not in themen_dieses_gespraech:
+            optionen.append(
+                (
+                    "karren",
+                    dialog_option(
+                        "marek",
+                        "karren",
+                        "Erinnerst du dich an deinen Karren?"
+                    )
+                )
+            )
+
+        optionen.append(
+            (
+                "ende",
+                "Gespräch beenden"
+            )
+        )
+
+        for nummer, (_, text) in enumerate(
+            optionen,
+            start=1
+        ):
+            print(
+                f"{nummer}. {text}"
+            )
+
+        auswahl = eingabe_menu(
+            1,
+            len(optionen),
+            sonder_tasten=()
+        )
+
+        aktion = optionen[
+            auswahl - 1
+        ][0]
+
+        erste_runde = False
+
+        if aktion != "ende":
+            themen_dieses_gespraech.add(
+                aktion
+            )
+
+        print()
+
+        # -------------------------
+        # ERINNERUNGEN
+        # -------------------------
+
+        if aktion == "erinnerung":
+            dialog_thema_markieren(
+                "marek",
+                "erinnerung"
+            )
+
+            text_ausgeben(
+                "[Marek] An heute. "
+                "An einiges von gestern."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Marek] Meinen Namen kenne ich, "
+                "weil andere Leute ihn mir genannt haben."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Marek] Aber wenn ich versuche, mich an den Mann "
+                "zu erinnern, der diesen Namen sein ganzes Leben "
+                "getragen haben soll ..."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Marek] Da ist nichts."
+            )
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+        # -------------------------
+        # FÄHIGKEITEN
+        # -------------------------
+
+        elif aktion == "faehigkeiten":
+            dialog_thema_markieren(
+                "marek",
+                "faehigkeiten"
+            )
+
+            text_ausgeben(
+                "Marek betrachtet seine Hände."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Marek] Dabei muss ich nicht nachdenken."
+            )
+
+            text_ausgeben(
+                "[Marek] Knoten. Gewicht. Räder. Pferde."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Marek] Meine Hände wissen, was sie tun."
+            )
+
+            text_ausgeben(
+                "[Marek] Nur ich weiß nicht mehr, warum."
+            )
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+        # -------------------------
+        # KARREN
+        # -------------------------
+
+        elif aktion == "karren":
+            dialog_thema_markieren(
+                "marek",
+                "karren"
+            )
+
+            text_ausgeben(
+                "[Marek] Nein."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Marek] Das ist das Seltsame."
+            )
+
+            text_ausgeben(
+                "[Marek] Du kannst mir beschreiben, "
+                "was an einem Wagen nicht stimmt, und ich könnte "
+                "dir wahrscheinlich sagen, wie man es repariert."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Marek] Aber meinen eigenen Karren sehe ich "
+                "nicht vor mir."
+            )
+
+            text_ausgeben(
+                "[Marek] Nicht einmal verschwommen."
+            )
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+        elif aktion == "ende":
+            return
+
+def dialog_elian():
+    elian_besuch = npc_besuch_starten(
+        "elian"
+    )
+
+    erste_runde = True
+    themen_dieses_gespraech = set()
+
+    while True:
+        ort_titel(
+            "Bootswerkstatt am Gezeitensteg"
+        )
+
+        dialog_titel(
+            "Elian Voss"
+        )
+
+        spuren = letzthafen_status()[
+            "spuren"
+        ]
+
+        brueder_begegnung = spuren.get(
+            "brueder_begegnung",
+            False
+        )
+
+        if erste_runde:
+            if elian_besuch == 1:
+                text_ausgeben(
+                    "Elian arbeitet an einem halb fertigen Bootsrahmen."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Elian] Wenn du wegen Marek hier bist, frag."
+                )
+
+            elif brueder_begegnung:
+                begruessung = npc_begruessung_waehlen(
+                    "elian",
+                    [
+                        "[Elian] Wieder da? Was gibt es?",
+                        "[Elian] Wenn es um Marek geht: Ich höre.",
+                        (
+                            "[Elian] Er ist noch derselbe Mann. "
+                            "Auch wenn er das selbst nicht weiß."
+                        ),
+                        "[Elian] Na? Noch eine Frage?",
+                        (
+                            "[Elian] Ich habe Arbeit genug. "
+                            "Aber für ein Gespräch reicht es."
+                        )
+                    ]
+                )
+
+                text_ausgeben(
+                    begruessung
+                )
+
+            else:
+                begruessung = npc_begruessung_waehlen(
+                    "elian",
+                    [
+                        "[Elian] Wieder da?",
+                        "[Elian] Was willst du wissen?",
+                        "[Elian] Ich höre.",
+                        (
+                            "[Elian] Wenn du etwas über Marek wissen willst, "
+                            "frag einfach."
+                        )
+                    ]
+                )
+
+                text_ausgeben(
+                    begruessung
+                )
+
+        else:
+            text_ausgeben(
+                "[Elian] Noch etwas?"
+            )
+
+        print()
+
+        optionen = []
+
+        if "marek_frueher" not in themen_dieses_gespraech:
+            optionen.append(
+                (
+                    "marek_frueher",
+                    dialog_option(
+                        "elian",
+                        "marek_frueher",
+                        "Wie war Marek früher?"
+                    )
+                )
+            )
+
+        if "familie" not in themen_dieses_gespraech:
+            optionen.append(
+                (
+                    "familie",
+                    dialog_option(
+                        "elian",
+                        "familie",
+                        "Erzähl mir etwas über eure Familie."
+                    )
+                )
+            )
+
+        optionen.append(
+            (
+                "ende",
+                "Gespräch beenden"
+            )
+        )
+
+        for nummer, (_, text) in enumerate(
+            optionen,
+            start=1
+        ):
+            print(
+                f"{nummer}. {text}"
+            )
+
+        auswahl = eingabe_menu(
+            1,
+            len(optionen),
+            sonder_tasten=()
+        )
+
+        aktion = optionen[
+            auswahl - 1
+        ][0]
+
+        erste_runde = False
+
+        if aktion != "ende":
+            themen_dieses_gespraech.add(
+                aktion
+            )
+
+        print()
+
+        if aktion == "marek_frueher":
+            dialog_thema_markieren(
+                "elian",
+                "marek_frueher"
+            )
+
+            text_ausgeben(
+                "[Elian] Zuverlässig. Stur. "
+                "Und immer unterwegs."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Elian] Marek konnte drei Wochen fort sein "
+                "und trotzdem am Abend seiner Rückkehr wissen, "
+                "welcher Balken am Haus wieder locker war."
+            )
+
+            if brueder_begegnung:
+                print()
+
+                text_ausgeben(
+                    "[Elian] Jetzt kennt er die Balken "
+                    "vermutlich besser als mich."
+                )
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+        elif aktion == "familie":
+            dialog_thema_markieren(
+                "elian",
+                "familie"
+            )
+
+            text_ausgeben(
+                "[Elian] Viel gibt es nicht zu erzählen."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Elian] Wir sind hier aufgewachsen. "
+                "Marek wollte irgendwann mehr von der Straße sehen."
+            )
+
+            text_ausgeben(
+                "[Elian] Ich bin bei den Booten geblieben."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Elian] Offenbar kann man weit weggehen "
+                "und trotzdem näher an Zuhause sein als jetzt."
+            )
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+        elif aktion == "ende":
+            return
+
+
+def letzthafen_elian_werkstatt():
+    daten = letzthafen_status()
+
+    spuren = daten[
+        "spuren"
+    ]
+
+    erstmals = letzthafen_bereich_betreten(
+        "elian_werkstatt"
+    )
+
+    ort_titel(
+        "Bootswerkstatt am Gezeitensteg"
+    )
+
+    if erstmals:
+        text_ausgeben(
+            "Die Werkstatt mit den grünen Türen steht "
+            "zwischen zwei niedrigen Lagerhäusern."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Durch die offene Hälfte des Tores siehst du "
+            "einen unfertigen Bootsrumpf auf schweren Böcken liegen."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Ein breitschultriger Mann arbeitet mit einem "
+            "Ziehmesser an einer Planke."
+        )
+
+    # -------------------------
+    # ERSTES TREFFEN MIT ELIAN
+    # -------------------------
+
+    if not spuren.get(
+        "elian_getroffen",
+        False
+    ):
+        print()
+
+        text_ausgeben(
+            f'[{spieler["name"]}] Elian Voss?'
+        )
+
+        print()
+
+        text_ausgeben(
+            "Der Mann hält mitten in der Bewegung inne."
+        )
+
+        print()
+
+        text_ausgeben(
+            "[Elian] Ja. Was gibt es?"
+        )
+
+        print()
+
+        if spuren.get(
+            "marek_getroffen",
+            False
+        ):
+            text_ausgeben(
+                f'[{spieler["name"]}] Ich komme wegen deines Bruders. '
+                "Ich habe Marek am Gezeitensteg gefunden."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Das Ziehmesser bleibt mitten über der Planke stehen."
+            )
+
+            text_ausgeben(
+                "[Elian] Du hast ihn gefunden?"
+            )
+
+            print()
+
+            text_ausgeben(
+                "Du erzählst ihm, dass Marek am Gezeitensteg ist "
+                "und sich an große Teile seines eigenen Lebens "
+                "nicht erinnert."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Elian legt das Werkzeug langsam auf die Werkbank. "
+                "Sein Blick wandert zur offenen Tür Richtung Hafen."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Elian] Dann stimmt es also."
+            )
+
+            text_ausgeben(
+                "[Elian] Ich hatte gehofft, die Leute übertreiben."
+            )
+
+        else:
+            text_ausgeben(
+                f'[{spieler["name"]}] Ich suche deinen Bruder Marek. '
+                "Mehrere Aufzeichnungen haben mich zu dir geführt."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Elian] Marek ist wieder in Letzthafen?"
+            )
+
+            print()
+
+            text_ausgeben(
+                "Du erklärst ihm, was du bisher über "
+                "den verschwundenen Fuhrmann herausgefunden hast."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Elian] Wenn du ihn findest, bring ihn her."
+            )
+
+            text_ausgeben(
+                "[Elian] Und sag ihm nicht, er müsse sich erinnern."
+            )
+
+            text_ausgeben(
+                "[Elian] Das haben vermutlich schon genug "
+                "Leute versucht."
+            )
+
+        spuren[
+            "elian_getroffen"
+        ] = True
+
+        if spuren.get(
+            "marek_getroffen",
+            False
+        ):
+            spieler[
+                "quest_ein_name_fehlt"
+            ] = "marek_zu_elian_bringen"
+
+            quest_meldung(
+                "update",
+                "Ein Name fehlt",
+                "Sprich mit Marek und bring ihn "
+                "zu seinem Bruder Elian."
+            )
+
+        else:
+            quest_meldung(
+                "update",
+                "Ein Name fehlt",
+                "Finde Marek in Letzthafen und bring ihn "
+                "zu seinem Bruder Elian."
+            )
+
+        warte_auf_taste(
+            "Weiter"
+        )
+
+    # -------------------------
+    # WERKSTATT-MENÜ
+    # -------------------------
+
+    while True:
+        ort_titel(
+            "Bootswerkstatt am Gezeitensteg"
+        )
+
+        text_ausgeben(
+            "Harz, Sägespäne und feuchtes Holz bestimmen "
+            "den Geruch der kleinen Werkstatt.",
+            art="menue"
+        )
+
+        print()
+
+        print(
+            "1. Mit Elian reden"
+        )
+
+        print(
+            "2. Die Werkstatt ansehen"
+        )
+
+        print(
+            "3. Zurück zum Gezeitensteg"
+        )
+
+        auswahl = eingabe_menu(
+            1,
+            3,
+            sonder_tasten=()
+        )
+
+        if auswahl == 1:
+            dialog_elian()
+
+        elif auswahl == 2:
+            ort_titel(
+                "Bootswerkstatt am Gezeitensteg"
+            )
+
+            text_ausgeben(
+                "Werkzeuge hängen in sauberer Reihenfolge an der Wand. "
+                "Unter einigen Griffen ist das Holz dunkler vom häufigen Anfassen."
+            )
+
+            text_ausgeben(
+                "Neben einem halb fertigen Ruder stehen mehrere "
+                "beschriftete Holzstücke und eine offene Schale mit Harz."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Frische Späne liegen zwischen den Dielen. "
+                "An einem schweren Bock ist eine neue Kerbe im Holz."
+            )
+
+            text_ausgeben(
+                "Alles hier trägt Spuren davon, dass die Arbeit "
+                "erst vor wenigen Augenblicken unterbrochen wurde."
+            )
+
+            warte_auf_taste(
+                "Zurück"
+            )
+
+        elif auswahl == 3:
+            return
+
+
+def marek_elian_begegnung():
+    spuren = letzthafen_status()[
+        "spuren"
+    ]
+
+    if spuren.get(
+        "brueder_begegnung",
+        False
+    ):
+        return
+
+    ort_titel(
+        "Bootswerkstatt am Gezeitensteg"
+    )
+
+    text_ausgeben(
+        "Marek bleibt vor den grünen Türen "
+        "einen Moment stehen."
+    )
+
+    print()
+
+    text_ausgeben(
+        "[Marek] Ich war schon einmal hier."
+    )
+
+    print()
+
+    text_ausgeben(
+        f'[{spieler["name"]}] Erinnerst du dich?'
+    )
+
+    print()
+
+    text_ausgeben(
+        "[Marek] Nein."
+    )
+
+    text_ausgeben(
+        "[Marek] Aber ich wusste, welche Tür klemmt."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Aus der Werkstatt tritt Elian. Holzstaub liegt auf seinen "
+        "Unterarmen."
+    )
+
+    text_ausgeben(
+        "Als er Marek sieht, bleibt er im Türrahmen stehen."
+    )
+
+    print()
+
+    text_ausgeben(
+        "[Elian] Du siehst beschissen aus."
+    )
+
+    text_ausgeben(
+        "Für einen Augenblick bewegt sich Mareks Mundwinkel."
+    )
+
+    text_ausgeben(
+        "[Marek] Das scheint mir im Moment jeder zu sagen."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Elian wischt die Hände an seiner Schürze ab, obwohl kaum "
+        "noch Staub daran haftet."
+    )
+
+    text_ausgeben(
+        "Lange sagt keiner von beiden etwas."
+    )
+
+    print()
+
+    text_ausgeben(
+        "[Marek] Man sagt mir, du bist mein Bruder."
+    )
+
+    print()
+
+    text_ausgeben(
+        "[Elian] Ja."
+    )
+
+    print()
+
+    text_ausgeben(
+        "[Marek] Ich erinnere mich nicht an dich."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Elian sieht ihn einen Moment lang an."
+    )
+
+    print()
+
+    text_ausgeben(
+        "[Elian] Dann versuch nicht, es zu erzwingen."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Elian lehnt sich gegen die Werkbank."
+    )
+
+    print()
+
+    text_ausgeben(
+        "[Elian] Ich erzähl dir etwas."
+    )
+
+    text_ausgeben(
+        "[Elian] Als du zwölf warst, bist du "
+        "von der alten Mole gefallen."
+    )
+
+    text_ausgeben(
+        "[Elian] Vater dachte zuerst, "
+        "du hättest dir den Arm gebrochen."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Noch bevor Elian zu Ende gesprochen hat, "
+        "fährt Mareks rechte Hand zu einer schmalen "
+        "Narbe an seinem linken Unterarm."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Marek bemerkt die Bewegung selbst "
+        "erst einen Augenblick später."
