@@ -1,0 +1,999 @@
+
+        optionen = [
+            (
+                "holz",
+                "Nach trockenem Holz suchen"
+            )
+        ]
+
+        if alter_seitenpfad_hier_verfuegbar():
+            seitenpfad_status = weg_status(
+                "alter_seitenpfad"
+            )
+
+            if seitenpfad_status == "bemerkt":
+                optionen.append(
+                    (
+                        "seitenpfad",
+                        "Nach dem bemerkten Seitenpfad suchen"
+                    )
+                )
+
+            elif seitenpfad_status == "entdeckt":
+                optionen.append(
+                    (
+                        "seitenpfad",
+                        "Dem Alten Seitenpfad folgen"
+                    )
+                )
+
+        for nummer, (_, text) in enumerate(
+            optionen,
+            start=1
+        ):
+            print(
+                f"{nummer}. {text}"
+            )
+
+        zurueck_nummer = len(optionen) + 1
+
+        print(
+            f"{zurueck_nummer}. Zurück"
+        )
+
+        auswahl = eingabe_menu(
+            1,
+            zurueck_nummer,
+            sonder_tasten=()
+        )
+
+        if auswahl == zurueck_nummer:
+            return
+
+        aktion = optionen[
+            auswahl - 1
+        ][0]
+
+        if aktion == "holz":
+            holz_sammeln()
+
+        elif aktion == "seitenpfad":
+            if weg_status(
+                "alter_seitenpfad"
+            ) == "entdeckt":
+                weg_als_gesehen_markieren(
+                    "alter_seitenpfad"
+                )
+
+                wald_abzweigung(
+                    direkt=True
+                )
+
+                return
+
+            wald_abzweigung()
+
+
+def reise_rasten():
+    while True:
+        ort_titel(
+            reise_bildschirm_titel(
+                "Rasten"
+            )
+        )
+
+        print(
+            f"Lebenspunkte: "
+            f"{spieler['lebenspunkte']}/100"
+        )
+
+        print(
+            f"Holz: "
+            f"{item_anzahl('holz')}"
+        )
+
+        print()
+        print("1. Lagerfeuer errichten")
+        print("2. Zurück")
+
+        auswahl = eingabe_menu(
+            1,
+            2,
+            sonder_tasten=()
+        )
+
+        if auswahl == 1:
+            lagerfeuer()
+
+        elif auswahl == 2:
+            return
+
+
+def reise_uebersicht():
+    aktive_reise = spieler.get(
+        "reise"
+    )
+
+    if not isinstance(
+        aktive_reise,
+        dict
+    ):
+        return
+
+    ort_titel(
+        reise_bildschirm_titel(
+            "Reiseübersicht"
+        )
+    )   
+
+    design_text(
+        aktive_reise.get(
+            "name",
+            "Aktive Reise"
+        ),
+        design="wissen",
+        art="menue"
+    )
+
+    print()
+
+    print(
+        f"Start: {aktive_reise['start']}"
+    )
+
+    print(
+        f"Ziel: {aktive_reise['ziel']}"
+    )
+
+    print(
+        f"Fortschritt: "
+        f"{aktive_reise['aktueller_schritt']}/"
+        f"{aktive_reise['gesamt_schritte']}"
+    )
+
+    menue_trenner()
+
+    print("1. Zurück")
+
+    eingabe_menu(
+        1,
+        1,
+        sonder_tasten=()
+    )
+
+def hilda_karren_ereignis():
+    if spieler.get(
+        "quest_hilda"
+    ) != "aktiv":
+        return False
+
+    ort_titel(
+        "Wald - Verlassener Karren"
+    )
+
+    text_ausgeben(
+        "Zwischen den vielen Fahrspuren fällt dir eine Rille auf, "
+        "die in flachem Winkel vom Waldweg abweicht."
+    )
+
+    text_ausgeben(
+        "Sie führt nur wenige Schritte zwischen die Bäume."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Dort steht ein Handelskarren schief im weichen Boden."
+    )
+
+    text_ausgeben(
+        "Die Zugtiere sind verschwunden, doch mehrere Kisten "
+        "stehen noch immer auf der Ladefläche."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Nichts daran sieht nach einem hastigen Überfall aus."
+    )
+
+    menue_trenner()
+
+    print("1. Den Karren genauer untersuchen")
+    print("2. Nach Spuren des Händlers suchen")
+
+    auswahl = eingabe_menu(
+        1,
+        2,
+        sonder_tasten=()
+    )
+
+    ort_titel(
+        "Wald - Verlassener Karren"
+    )
+
+    if auswahl == 1:
+        text_ausgeben(
+            "Du gehst langsam um den Karren herum."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Die Deichsel ist unbeschädigt. "
+            "Auch an den Rädern findest du keine Spur "
+            "eines gewaltsamen Zusammenstoßes."
+        )
+
+        text_ausgeben(
+            "Die Lederriemen für die Zugtiere hängen geöffnet "
+            "und ordentlich gelöst an der Vorderseite."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Jemand hat die Tiere ausgespannt."
+        )
+
+        print()
+        text_ausgeben(
+            "Danach siehst du dir den Boden rund um den Wagen an."
+        )
+
+        text_ausgeben(
+            "Keine Blutspuren. Keine Kampfspuren. "
+            "Keine Schleifspuren."
+        )
+
+        text_ausgeben(
+            "Nur ein einzelner Satz Fußspuren führt vom Karren weg "
+            "und verliert sich bald auf dem festen Waldboden."
+        )
+
+    elif auswahl == 2:
+        text_ausgeben(
+            "Du suchst den Boden rund um den Wagen ab."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Keine Blutspuren. Keine Kampfspuren. "
+            "Keine Schleifspuren."
+        )
+
+        text_ausgeben(
+            "Ein einzelner Satz Fußspuren führt vom Karren weg "
+            "und verliert sich bald auf dem festen Waldboden."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Am Wagen selbst findest du ebenfalls nichts, "
+            "was auf Gewalt hindeutet."
+        )
+
+        text_ausgeben(
+            "Deichsel und Räder sind unbeschädigt. "
+            "Die Lederriemen für die Zugtiere wurden sauber geöffnet."
+        )
+
+        text_ausgeben(
+            "Jemand hat die Tiere ausgespannt, bevor er den Karren verließ."
+        )
+
+    print()
+
+    text_ausgeben(
+        "Auf einer der Kisten erkennst du das Zeichen "
+        "von Hildas Marktstand."
+    )
+
+    text_ausgeben(
+        "Der Wagen gehört zu der Lieferung, nach der sie sucht."
+    )
+
+    seite_wechseln(
+        "Wald - Verlassener Karren"
+    )
+
+    text_ausgeben(
+        "Unter dem Sitz des Kutschers steckt eine schmale Ledermappe."
+    )
+
+    text_ausgeben(
+        "Darin liegt ein abgegriffenes Fahrtenbuch voller Lieferlisten, "
+        "Entfernungen und kurzer Notizen."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Die letzten Einträge unterscheiden sich deutlich vom Rest."
+    )
+
+    print()
+
+    design_text(
+        "Letzte Einträge",
+        design="wissen",
+        art="menue"
+    )
+
+    print()
+    print(
+        "12. des Monats"
+    )
+
+    print(
+        "Eichenruh morgen vor Mittag. "
+        "Hilda wartet auf die Stoffe."
+    )
+
+    print()
+    print(
+        "13. des Monats"
+    )
+
+    print(
+        "Bin später losgekommen. "
+        "Der Weg kommt mir heute länger vor."
+    )
+
+    print()
+    print(
+        "..."
+    )
+
+    print(
+        "Habe dieselbe Wegmarkierung zweimal passiert."
+    )
+
+    print(
+        "Das ergibt keinen Sinn."
+    )
+
+    print()
+    print(
+        "Die Klippen..."
+    )
+
+    print(
+        "Ich muss zum Hafen."
+    )
+
+    print()
+    print(
+        "Wie hieß der Hafen?"
+    )
+
+    print()
+
+    text_ausgeben(
+        "Bei den letzten Zeilen wird die Schrift unruhiger. "
+        "Einige Buchstaben sind mehrfach angesetzt."
+    )
+
+    text_ausgeben(
+        "Danach bleiben die Seiten leer."
+    )
+
+    seite_wechseln(
+        "Wald - Verlassener Karren"
+    )
+
+    if not item_besitzt(
+        "fahrtenbuch_haendler"
+    ):
+        item_hinzufuegen(
+            "fahrtenbuch_haendler"
+        )
+
+    besonderen_fund_dokumentieren(
+        "fahrtenbuch_haendler"
+    )
+
+    print()
+    print("-" * 34)
+
+    design_text(
+        "BESONDERER FUND",
+        design="wissen",
+        art="ereignis"
+    )
+
+    print()
+    print(
+        "Fahrtenbuch des Händlers"
+    )
+
+    print("-" * 34)
+
+    spieler[
+        "quest_hilda"
+    ] = "karren_gefunden"
+
+    quest_meldung(
+        "update",
+        "Die verschwundene Lieferung",
+        "Berichte Hilda vom verlassenen Karren."
+    )
+
+    ort_nachricht_setzen(
+        "Du kehrst auf den Waldweg zurück.",
+        "Der verlassene Karren bleibt zwischen den Bäumen zurück."
+    )
+
+    warte_auf_taste(
+        "Zurück zum Waldweg"
+    )
+
+    return True
+
+def zufallsereignis(gold, heiltränke, diamanten, lebenspunkte, spiel_laeuft, besiegte_gegner, ort):
+    if spiel_laeuft:
+        ereignis = random.randint(1, 8)
+        if ereignis == 1:
+            print()
+            text_ausgeben(
+                "Ein umgestürzter Baum versperrt den Waldweg."
+            )
+
+            text_ausgeben(
+                "Die Wurzeln haben einen großen Teil der "
+                "feuchten Erde mitgerissen."
+            )
+
+            print()
+            print("1. Über den Stamm klettern")
+            print("2. Einen Weg darum herum suchen")
+
+            hindernis_auswahl = eingabe_menu(
+                1,
+                2,
+                sonder_tasten=()
+            )
+
+            if hindernis_auswahl == 1:
+                print()
+                text_ausgeben(
+                    "Du ziehst dich am rauen Stamm hinauf "
+                    "und kletterst vorsichtig auf die andere Seite."
+                )
+
+                text_ausgeben(
+                    "Ein paar lose Äste brechen unter deinen "
+                    "Stiefeln, doch du kommst sicher hinüber."
+                )
+
+            elif hindernis_auswahl == 2:
+                print()
+                text_ausgeben(
+                    "Du verlässt den Weg für einige Minuten "
+                    "und suchst zwischen den Bäumen nach einer "
+                    "passierbaren Stelle."
+                )
+
+                text_ausgeben(
+                    "Nach einem kleinen Umweg erreichst du "
+                    "den Waldweg wieder."
+                )
+        elif ereignis == 2:
+            print()
+            text_ausgeben(
+                "Zwischen Farnen hörst du leise Wasser über "
+                "Steine laufen."
+            )
+
+            text_ausgeben(
+                "Wenige Schritte neben dem Weg tritt eine "
+                "kleine Quelle zwischen den Wurzeln hervor."
+            )
+
+            if lebenspunkte < 100:
+                print()
+                text_ausgeben(
+                    "Du wäschst dir Gesicht und Hände und "
+                    "ruhst dich einen Moment am kühlen Wasser aus."
+                )
+
+                heilung = min(
+                    random.randint(5, 10),
+                    100 - lebenspunkte
+                )
+
+                lebenspunkte += heilung
+
+                print()
+                design_text(
+                    f"Du regenerierst {heilung} Lebenspunkte.",
+                    design="positiv",
+                    art="menue"
+                )
+
+                print(
+                    f"Lebenspunkte: {lebenspunkte}/100"
+                )
+
+            else:
+                print()
+                text_ausgeben(
+                    "Du trinkst etwas von dem kalten Wasser "
+                    "und setzt deinen Weg erfrischt fort."
+                )
+
+        elif ereignis == 3:
+            print()
+            print("Ein Gegner taucht auf!")
+
+            kampf_ergebnis = kampf_starten(
+                lebenspunkte=lebenspunkte,
+                heiltraenke=heiltränke,
+                waffe=spieler["waffe"]
+            )
+
+            lebenspunkte = kampf_ergebnis["lebenspunkte"]
+            heiltränke = kampf_ergebnis["heiltraenke"]
+
+            if kampf_ergebnis["gewonnen"]:
+                gefundenes_gold = random.randint(10, 30)
+                gold += gefundenes_gold
+                besiegte_gegner += 1
+
+                print()
+                print(f"Du findest {gefundenes_gold} Gold.")
+
+                if besiegte_gegner == 4:
+                    print()
+                    print("Du spürst eine mächtige Präsenz im Wald...")
+
+            elif kampf_ergebnis["besiegt"]:
+                print()
+                print("Game Over")
+                spiel_laeuft = False
+
+        elif ereignis == 4:
+            print()
+            text_ausgeben(
+                "Etwas abseits des Weges entdeckst du "
+                "eine alte Raststelle."
+            )
+
+            text_ausgeben(
+                "Zwischen zwei Bäumen liegt ein Kreis aus "
+                "verrußten Steinen."
+            )
+
+            text_ausgeben(
+                "Die Asche darin ist längst kalt."
+            )
+
+            print()
+            print("1. Die Raststelle untersuchen")
+            print("2. Weitergehen")
+
+            rastplatz_auswahl = eingabe_menu(
+                1,
+                2,
+                sonder_tasten=()
+            )
+
+            if rastplatz_auswahl == 1:
+                rastplatz_fund = random.randint(
+                    1,
+                    3
+                )
+
+                if rastplatz_fund == 1:
+                    gefundene_menge = random.randint(
+                        1,
+                        2
+                    )
+
+                    print()
+                    text_ausgeben(
+                        "Unter einer halb verrotteten Plane "
+                        "findest du etwas trockenes Brennholz."
+                    )
+
+                    item_hinzufuegen(
+                        "holz",
+                        gefundene_menge
+                    )
+
+                    print()
+
+                    design_text(
+                        f"{gefundene_menge}x Holz gefunden",
+                        design="positiv",
+                        art="menue"
+                    )
+
+                elif rastplatz_fund == 2:
+                    gefundenes_gold = random.randint(
+                        3,
+                        8
+                    )
+
+                    print()
+                    text_ausgeben(
+                        "Zwischen Laub und alten Stoffresten "
+                        "entdeckst du einen kleinen Lederbeutel."
+                    )
+
+                    gold += gefundenes_gold
+
+                    print()
+
+                    design_text(
+                        f"{gefundenes_gold} Gold gefunden",
+                        design="positiv",
+                        art="menue"
+                    )
+
+                elif rastplatz_fund == 3:
+                    print()
+                    text_ausgeben(
+                        "Du findest einige alte Fußspuren, "
+                        "verkohlte Zweige und einen zerbrochenen "
+                        "Holzlöffel."
+                    )
+
+                    text_ausgeben(
+                        "Wer hier gerastet hat, ist offenbar "
+                        "schon vor längerer Zeit weitergezogen."
+                    )
+
+            elif rastplatz_auswahl == 2:
+                print()
+                text_ausgeben(
+                    "Du lässt die verlassene Raststelle "
+                    "hinter dir und bleibst auf dem Weg."
+                )
+
+        elif ereignis == 5:
+
+
+
+            # -------------------------
+            # VERLETZTER REISENDER
+            # -------------------------
+
+            if (
+                spieler["reisender_status"]
+                == "nicht_getroffen"
+            ):
+                print()
+                text_ausgeben(
+                    "Am Rand des Weges sitzt ein Mann "
+                    "mit dem Rücken gegen einen Baum."
+                )
+
+                text_ausgeben(
+                    "Sein Mantel ist an mehreren Stellen "
+                    "zerrissen und eine Hand liegt fest "
+                    "auf seiner Seite."
+                )
+
+                print()
+                text_ausgeben(
+                    "Als er deine Schritte hört, "
+                    "hebt er langsam den Kopf."
+                )
+
+                print()
+                print(
+                    "1. Nachsehen, ob du helfen kannst"
+                )
+
+                print(
+                    "2. Abstand halten und weitergehen"
+                )
+
+                reisender_auswahl = eingabe_menu(
+                    1,
+                    2,
+                    sonder_tasten=()
+                )
+
+                if reisender_auswahl == 1:
+                    ort_titel(
+                        "Wald - Verletzter Reisender"
+                    )
+
+                    text_ausgeben(
+                        "Du gehst vorsichtig zu ihm "
+                        "und kniest dich neben den Baum."
+                    )
+
+                    text_ausgeben(
+                        "Die Verletzung sieht schmerzhaft aus, "
+                        "aber nicht lebensbedrohlich."
+                    )
+
+                    text_ausgeben(
+                        "Du hilfst ihm vorsichtig auf die Beine."
+                    )
+
+                    warte_auf_taste(
+                        "Weiter"
+                    )
+
+                    dialog_titel("???")
+
+                    text_ausgeben(
+                        "[???] Danke..."
+                    )
+
+                    text_ausgeben(
+                        "[???] Ich dachte schon, hier kommt "
+                        "niemand mehr vorbei."
+                    )
+
+                    warte_auf_taste(
+                        "Weiter"
+                    )
+
+                    text_ausgeben(
+                        "Er blickt den Waldweg hinunter."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "[???] Seltsam."
+                    )
+
+                    text_ausgeben(
+                        "[???] Ich war sicher, dass ich diesen "
+                        "Abschnitt schon hinter mir hatte."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "Für einen Moment wirkt er, als wolle "
+                        "er noch etwas sagen."
+                    )
+
+                    text_ausgeben(
+                        "Dann schüttelt er nur den Kopf."
+                    )
+
+                    spieler[
+                        "reisender_status"
+                    ] = "geholfen"
+
+                elif reisender_auswahl == 2:
+                    print()
+                    text_ausgeben(
+                        "Du bleibst auf Abstand."
+                    )
+
+                    text_ausgeben(
+                        "Der Mann beobachtet dich, sagt aber nichts."
+                    )
+
+                    print()
+                    text_ausgeben(
+                        "Nach einigen Schritten verschwindet "
+                        "er hinter den Bäumen."
+                    )
+
+                    spieler["reisender_status"] = "ignoriert"
+
+            # -------------------------
+            # SPÄTERE SPUREN
+            # -------------------------
+
+            elif spieler["reisender_status"] == "geholfen":
+                print()
+                text_ausgeben(
+                    "An einem niedrigen Ast hängt ein schmaler "
+                    "Streifen dunklen Stoffes."
+                )
+
+                text_ausgeben(
+                    "Das Material erinnert dich an den "
+                    "zerrissenen Mantel des verletzten Reisenden."
+                )
+
+                print()
+                text_ausgeben(
+                    "Daneben führen einzelne Fußspuren "
+                    "vom Waldweg fort."
+                )
+
+                text_ausgeben(
+                    "Nach wenigen Metern verlierst du sie "
+                    "zwischen Wurzeln und altem Laub."
+                )
+
+            elif spieler["reisender_status"] == "ignoriert":
+                print()
+                text_ausgeben(
+                    "Du kommst an der Stelle vorbei, "
+                    "an der du den verletzten Reisenden "
+                    "zurückgelassen hast."
+                )
+
+                print()
+                text_ausgeben(
+                    "Der Platz unter dem Baum ist leer."
+                )
+
+                text_ausgeben(
+                    "Nur einige niedergedrückte Blätter "
+                    "zeigen noch, dass hier jemand gesessen hat."
+                )             
+
+        elif ereignis == 7:
+            print()
+            text_ausgeben(
+                "Zwischen den Bäumen öffnet sich eine "
+                "kleine Lichtung."
+            )
+
+            text_ausgeben(
+                "Mehrere niedrige Steine ragen dort "
+                "aus Moos und Farnen."
+            )
+
+            print()
+            text_ausgeben(
+                "Auf den ersten Blick wirken sie wie "
+                "gewöhnliche Felsen."
+            )
+
+            text_ausgeben(
+                "Als du näher trittst, erkennst du jedoch "
+                "verwitterte Einkerbungen."
+            )
+
+            print()
+            text_ausgeben(
+                "Einer der Steine trägt noch den Rest "
+                "eines eingemeißelten Pfeils."
+            )
+
+            text_ausgeben(
+                "Er zeigt zwischen zwei dicht stehende "
+                "Bäume."
+            )
+
+            print()
+            text_ausgeben(
+                "Dort ist heute kein Weg mehr zu erkennen."
+            )
+
+
+        elif ereignis == 8:
+            print()
+            text_ausgeben(
+                "Ohne Vorwarnung erhebt sich ein Schwarm "
+                "schwarzer Vögel aus den Baumkronen."
+            )
+
+            text_ausgeben(
+                "Dutzende Flügel schlagen gleichzeitig "
+                "durch die stille Luft."
+            )
+
+            print()
+            text_ausgeben(
+                "Für einige Sekunden verschwinden die "
+                "Vögel über den Baumwipfeln."
+            )
+
+            print()
+            text_ausgeben(
+                "Dann wird es still."
+            )
+
+            print()
+            text_ausgeben(
+                "Nicht völlig still."
+            )
+
+            text_ausgeben(
+                "Aber deutlich stiller als noch einen "
+                "Moment zuvor."
+            )
+
+            print()
+            text_ausgeben(
+                "Du wartest kurz und hörst schließlich "
+                "wieder Wind in den Blättern."
+            )
+
+            text_ausgeben(
+                "Dann setzt du deinen Weg fort."
+            )
+
+
+        elif ereignis == 6:
+            print()
+            text_ausgeben(
+                "Am Rand des Weges fallen dir frische Spuren "
+                "im weichen Boden auf."
+            )
+
+            text_ausgeben(
+                "Sie führen zwischen den Bäumen hindurch "
+                "und verschwinden im Unterholz."
+            )
+
+            print()
+            print("1. Die Spuren untersuchen")
+            print("2. Auf dem Weg bleiben")
+
+            spuren_auswahl = eingabe_menu(
+                1,
+                2,
+                sonder_tasten=()
+            )
+
+            if spuren_auswahl == 1:
+                spuren_fund = random.randint(
+                    1,
+                    3
+                )
+
+                if spuren_fund == 1:
+                    print()
+                    text_ausgeben(
+                        "Du folgst den Abdrücken einige Minuten "
+                        "zwischen den Bäumen."
+                    )
+
+                    text_ausgeben(
+                        "Schließlich entdeckst du eine kleine "
+                        "verlassene Feuerstelle."
+                    )
+
+                    text_ausgeben(
+                        "Unter der Asche glimmt noch etwas Wärme."
+                    )
+
+                    print()
+                    text_ausgeben(
+                        "Wer hier gerastet hat, kann noch nicht "
+                        "lange fort sein."
+                    )
+
+                elif spuren_fund == 2:
+                    print()
+                    text_ausgeben(
+                        "Je weiter du den Spuren folgst, desto "
+                        "deutlicher erkennst du gespaltene Hufabdrücke."
+                    )
+
+                    text_ausgeben(
+                        "An einem Baum ist die Rinde in Kniehöhe "
+                        "frisch aufgerissen."
+                    )
+
+                    print()
+                    text_ausgeben(
+                        "Ein Wildschwein muss hier erst vor "
+                        "Kurzem entlanggekommen sein."
+                    )
+
+                    text_ausgeben(
+                        "Du entscheidest dich, nicht noch weiter "
+                        "in sein Revier vorzudringen."
+                    )
+
+                elif spuren_fund == 3:
+                    print()
+                    text_ausgeben(
+                        "Zwischen den Abdrücken entdeckst du "
+                        "schwarze Krümel auf dem Waldboden."
+                    )
+
+                    text_ausgeben(
+                        "Als du einen davon zwischen den Fingern "
+                        "zerreibst, erkennst du Holzkohle."
+                    )
