@@ -1,0 +1,889 @@
+                    print()
+                    text_ausgeben(
+                        "Die Spur stammt vermutlich von jemandem, "
+                        "der zwischen Wald und Köhlerei unterwegs war."
+                    )
+
+                    text_ausgeben(
+                        "Nach einigen Metern verlierst du sie "
+                        "zwischen trockenem Laub."
+                    )
+
+            elif spuren_auswahl == 2:
+                print()
+                text_ausgeben(
+                    "Du lässt die Spuren hinter dir und bleibst "
+                    "auf dem bekannten Waldweg."
+                )
+    
+    return gold, heiltränke, diamanten, lebenspunkte, spiel_laeuft, besiegte_gegner, ort
+    
+
+if spieler.get("prolog_skip_startwaffe"):
+    startwaffe_waehlen()
+
+    warte_auf_taste("Weiter")
+
+    spieler["prolog_skip_startwaffe"] = False
+
+    spieler["ort"] = "Eichenruh"
+
+    ort_nachricht_setzen(
+        "Der Prolog wurde übersprungen.",
+        "Du beginnst direkt mit Akt 1 in Eichenruh."
+    )
+
+
+while spieler["spiel_laeuft"]:
+    rueckkehr_hinweise_pruefen()
+
+    if spieler["ort"] == "Eichenruh":
+        ort_titel("Eichenruh")
+
+        ort_nachricht_anzeigen()
+
+        if (
+            spieler.get(
+                "prolog_status"
+            ) == "prolog_abgeschlossen"
+            and not spieler.get(
+                "prolog_uebersprungen",
+                False
+            )
+            and spieler.get(
+                "quest_hilda"
+            ) == "nicht_entdeckt"
+            and spieler.get(
+                "koehler_nachricht_bjorn"
+            ) == "offen"
+            and not spieler.get(
+                "akt1_eichenruh_rueckkehr_gezeigt",
+                False
+            )
+        ):
+            print()
+
+            text_ausgeben(
+                "Die vertrauten Geräusche Eichenruhs empfangen dich wieder.",
+                art="atmosphaere"
+            )
+
+            text_ausgeben(
+                "Aus Bjorns Schmiede klingt wieder der regelmäßige "
+                "Schlag seines Hammers.",
+                art="atmosphaere"
+            )
+
+            print()
+
+            text_ausgeben(
+                "Am Marktplatz steht Hilda einen Moment lang vor ihrem Stand "
+                "und blickt die Straße Richtung Wald hinunter.",
+                art="atmosphaere"
+            )
+
+            text_ausgeben(
+                "Dann dreht sie sich um und beginnt erneut, ihre Waren "
+                "zu ordnen.",
+                art="atmosphaere"
+            )
+
+            spieler[
+                "akt1_eichenruh_rueckkehr_gezeigt"
+            ] = True
+
+        if (
+            spieler.get(
+                "quest_ein_name_fehlt"
+            ) == "abgeschlossen"
+            and not spieler.get(
+                "marek_rueckkehr_eichenruh_gezeigt",
+                False
+            )
+        ):
+            print()
+
+            text_ausgeben(
+                "Eichenruh klingt genauso wie bei deiner Abreise.",
+                art="atmosphaere"
+            )
+
+            text_ausgeben(
+                "Bjorns Hammer schlägt in der Schmiede, vom Marktplatz "
+                "kommen Stimmen herüber und vor Maras Gasthaus klappert "
+                "Geschirr.",
+                art="atmosphaere"
+            )
+
+            print()
+
+            text_ausgeben(
+                "Als du den Marktplatz überquerst, hebt Tomas den Blick. "
+                "Hilda hält mit einer Hand ihr Auftragsbuch offen.",
+                art="atmosphaere"
+            )
+
+            text_ausgeben(
+                "Beide sehen zu dir, als hätten sie auf eine Antwort gewartet.",
+                art="atmosphaere"
+            )
+
+            spieler[
+                "marek_rueckkehr_eichenruh_gezeigt"
+            ] = True
+
+        if (
+            spieler.get(
+                "quest_wiegenlied"
+            ) == "abgeschlossen"
+            and spieler.get(
+                "quest_schmied"
+            ) == "nicht_entdeckt"
+            and not spieler.get(
+                "wiegenlied_rueckkehr_eichenruh_gezeigt",
+                False
+            )
+        ):
+            print()
+
+            text_ausgeben(
+                "Nach Wind, Salz und Brandung wirkt Eichenruh beinahe "
+                "ungewohnt still.",
+                art="atmosphaere"
+            )
+
+            text_ausgeben(
+                "Als du an deinem Haus vorbeischaust, fällt dein Blick "
+                "zum Fenster deines Zimmers.",
+                art="atmosphaere"
+            )
+
+            print()
+
+            text_ausgeben(
+                "Zwischen den Büchern dort stehen noch einige alte Bände, "
+                "die du seit Jahren nicht geöffnet hast.",
+                art="atmosphaere"
+            )
+
+            spieler[
+                "wiegenlied_rueckkehr_eichenruh_gezeigt"
+            ] = True
+
+        if (
+            spieler.get(
+                "waldwaechter_schwelle_erlebt",
+                False
+            )
+            and not spieler.get(
+                "waldwaechter_eichenruh_nachhall_gezeigt",
+                False
+            )
+        ):
+            print()
+
+            text_ausgeben(
+                "Eichenruh sieht aus wie immer.",
+                art="atmosphaere"
+            )
+
+            text_ausgeben(
+                "Trotzdem bleibt dein Blick einen Moment an den Straßen hängen, "
+                "die zwischen den Häusern aus dem Dorf führen.",
+                art="atmosphaere"
+            )
+
+            print()
+
+            text_ausgeben(
+                "Für einen kurzen Augenblick musst du nicht darüber nachdenken, "
+                "wohin sie verlaufen. Ihre Richtung scheint einfach da zu sein - "
+                "auch dort, wo Häuser und Bäume sie verdecken.",
+                art="atmosphaere"
+            )
+
+            text_ausgeben(
+                "Sobald du dich darauf konzentrierst, wird das Gefühl schwächer.",
+                art="atmosphaere"
+            )
+
+            spieler[
+                "waldwaechter_eichenruh_nachhall_gezeigt"
+            ] = True
+
+        if spieler.get("prolog_status") == "dorf_freigeschaltet":
+            besuchte_orte = spieler.get(
+                "prolog_besuchte_orte",
+                {}
+            )
+
+            anzahl_besucht = sum(
+                besuchte_orte.values()
+            )
+
+            if anzahl_besucht == 0:
+                print()
+
+                text_ausgeben(
+                    "Zwischen den niedrigen Häusern liegt noch "
+                    "der kühle Schatten des Morgens.",
+                    art="atmosphaere"
+                )
+
+                text_ausgeben(
+                    "Vor Maras Gasthaus werden die Fensterläden geöffnet, "
+                    "während vom Marktplatz Stimmen und das Scharren "
+                    "von Kisten über Stein herüberdringen.",
+                    art="atmosphaere"
+                )
+
+                text_ausgeben(
+                    "Über allem liegt der regelmäßige Klang "
+                    "von Bjorns Hammer.",
+                    art="atmosphaere"
+                )
+
+            print()
+
+            design_text(
+                f"Sieh dich in Eichenruh um. "
+                f"({anzahl_besucht}/3 Orte besucht)",
+                design="wissen",
+                art="menue"
+            )
+
+        elif spieler.get("prolog_status") == "dorf_kennengelernt":
+            print()
+
+            if not spieler.get(
+                "prolog_bjorn_unruhe_gezeigt",
+                False
+            ):
+                text_ausgeben(
+                    "Aus Richtung der Schmiede bleibt Bjorns "
+                    "vertrauter Hammerschlag plötzlich aus.",
+                    art="atmosphaere"
+                )
+
+                text_ausgeben(
+                    "Einen Moment später scheppert etwas Metallisches "
+                    "über den Boden.",
+                    art="atmosphaere"
+                )
+
+                text_ausgeben(
+                    "Dann hörst du Bjorn fluchen. Laut genug, dass "
+                    "selbst auf dem Marktplatz einige Köpfe zur "
+                    "Schmiede herumgehen.",
+                    art="atmosphaere"
+                )
+
+                spieler[
+                    "prolog_bjorn_unruhe_gezeigt"
+                ] = True
+
+            else:
+                design_text(
+                    "In Bjorns Schmiede scheint etwas nicht zu stimmen.",
+                    design="warnung",
+                    art="menue"
+                )
+
+        menue_trenner()
+
+        schmiede_text = "2. Bjorns Schmiede"
+        haus_text = "4. Nach Hause"
+
+        if spieler.get(
+            "quest_schmied"
+        ) in (
+            "aktiv",
+            "hammer_gefunden"
+        ):
+            schmiede_text += " [!]"
+
+        if (
+            spieler.get(
+                "quest_wiegenlied"
+            ) == "abgeschlossen"
+            and spieler.get(
+                "quest_schmied"
+            ) == "nicht_entdeckt"
+        ):
+            haus_text += " [!]"
+
+        print("1. Maras Gasthaus")
+        print(schmiede_text)
+
+        marktplatz_text = "3. Marktplatz"
+
+        marktplatz_hinweis = (
+            spieler.get(
+                "prolog_status"
+            ) == "prolog_abgeschlossen"
+            and (
+                spieler.get(
+                    "quest_hilda"
+                ) in (
+                    "nicht_entdeckt",
+                    "karren_gefunden"
+                )
+                or spieler.get(
+                    "quest_ein_name_fehlt"
+                ) in (
+                    "tomas_befragen",
+                    "letzthafen_suchen"
+                )
+            )
+        )
+
+        if marktplatz_hinweis:
+            marktplatz_text += " [!]"
+
+        print(marktplatz_text)
+        print(haus_text)
+
+        koehler_weg_frei = spieler.get(
+            "prolog_status"
+        ) in [
+            "koehlerei_lieferung",
+            "prolog_abgeschlossen"
+        ]
+
+        pfad_vergessen_frei = (
+            weg_status(
+                "pfad_des_vergessens"
+            ) == "entdeckt"
+        )
+
+        if koehler_weg_frei:
+            print("5. Waldweg zur Köhlerei")
+
+        if pfad_vergessen_frei:
+            pfad_text = "6. Pfad des Vergessens"
+
+            if spieler.get(
+                "quest_schmied"
+            ) == "suche_verlassenes_dorf":
+                pfad_text += " - Verlassenes Dorf [!]"
+
+            print(
+                pfad_text
+            )
+
+        print()
+
+        print("[S] Status")
+        print("[I] Inventar")
+        print("[J] Questlog/Erfolge")
+        print("[Q] Speichern / Menü")
+
+        if pfad_vergessen_frei:
+            menu_auswahl = eingabe_menu(
+                1,
+                6,
+                sonder_tasten=(
+                    "s",
+                    "i",
+                    "j",
+                    "q"
+                )
+            )
+
+        elif koehler_weg_frei:
+            menu_auswahl = eingabe_menu(
+                1,
+                5,
+                sonder_tasten=(
+                    "s",
+                    "i",
+                    "j",
+                    "q"
+                )
+            )
+
+        else:
+            menu_auswahl = eingabe_menu(
+                1,
+                4,
+                sonder_tasten=(
+                    "s",
+                    "i",
+                    "j",
+                    "q"
+                )
+            )
+
+    elif spieler[
+        "ort"
+    ] == "Letzthafen":
+        letzthafen()
+        continue
+
+
+    elif reise_aktiv():
+        aktive_reise = spieler.get(
+            "reise"
+        )
+
+        ort_titel(
+            reise_bildschirm_titel()
+        )
+
+        ort_nachricht_anzeigen()
+
+        design_text(
+            f"Richtung: "
+            f"{reise_ort_name(aktive_reise['ziel'])}",
+            design="wissen",
+            art="menue"
+        )
+
+        print(
+            f"Fortschritt: "
+            f"{aktive_reise['aktueller_schritt']}/"
+            f"{aktive_reise['gesamt_schritte']}"
+        )
+
+        menue_trenner()
+
+        umgebung_text = (
+            "Umgebung erkunden"
+        )
+
+        if alter_seitenpfad_hier_verfuegbar():
+            seitenpfad_status = weg_status(
+                "alter_seitenpfad"
+            )
+
+            if seitenpfad_status == "bemerkt":
+                umgebung_text += " [!]"
+
+            elif weg_ist_neu(
+                "alter_seitenpfad"
+            ):
+                umgebung_text += " [NEU]"
+
+        print("1. Weitergehen")
+
+        print(
+            f"2. {umgebung_text}"
+        )
+
+        print("3. Rasten")
+        print("4. Reiseübersicht")
+
+        umkehr_ziel = reise_ort_name(
+            aktive_reise[
+                "start"
+            ]
+        )
+
+        print(
+            f"5. Umkehren Richtung "
+            f"{umkehr_ziel}"
+        )
+
+        print()
+        print("[S] Status")
+        print("[I] Inventar")
+        print("[J] Questlog/Erfolge")
+        print("[Q] Speichern / Menü")
+
+        menu_auswahl = eingabe_menu(
+            1,
+            5,
+            sonder_tasten=(
+                "s",
+                "i",
+                "j",
+                "q"
+            )
+        )
+
+    elif spieler["ort"] == "Wald":
+        # Kompatibilität mit älteren Spielständen,
+        # die im Wald gespeichert wurden, aber
+        # keine aktive Reisedatenstruktur besitzen.
+        spieler[
+            "ort"
+        ] = "Eichenruh"
+
+        ort_nachricht_setzen(
+            "Du findest zurück auf einen vertrauten Weg.",
+            "Wenig später erreichst du wieder Eichenruh."
+        )
+
+        continue
+
+
+
+    elif spieler["ort"] == "Köhlerei":
+        koehlerei()
+        continue
+
+    elif spieler["ort"] == "lagerkeller":
+        lagerkeller()
+        continue
+
+    elif spieler["ort"] == "alte_schmiede":
+        alte_schmiede()
+        continue
+
+    elif spieler[
+        "ort"
+    ] == "alte_wegstation":
+        alte_wegstation()
+        continue
+
+
+
+    elif spieler["ort"] == "Bossraum":
+        ort_titel("Waldlichtung")
+
+        ort_nachricht_anzeigen()
+
+        if not spieler.get(
+            "waldwaechter_eindruck_gezeigt",
+            False
+        ):
+            text_ausgeben(
+                "Die Lichtung ist fast kreisförmig. Am Rand ragen flache, "
+                "verwitterte Steine zwischen Wurzeln und Moos aus der Erde."
+            )
+
+            text_ausgeben(
+                "Kein Vogel ruft. Selbst das Rascheln im Unterholz ist verstummt."
+            )
+
+            seite_wechseln(
+                "Waldlichtung"
+            )
+
+            text_ausgeben(
+                "Am gegenüberliegenden Rand steht etwas, das du im ersten Moment "
+                "für einen besonders breiten Baumstamm hältst."
+            )
+
+            text_ausgeben(
+                "Dann bewegt es sich."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Eine massige Gestalt löst sich zwischen den Stämmen. Moos hängt "
+                "von ihren Schultern, und ihre Oberfläche erinnert eher an alte "
+                "Rinde als an Haut."
+            )
+
+            text_ausgeben(
+                "Sie kommt nicht auf dich zu. Stattdessen stellt sie sich zwischen "
+                "dich und die verwitterten Steine am anderen Ende der Lichtung."
+            )
+
+            print()
+
+            design_text(
+                "Waldwächter",
+                design="warnung",
+                art="ereignis"
+            )
+
+            spieler[
+                "waldwaechter_eindruck_gezeigt"
+            ] = True
+
+        else:
+            text_ausgeben(
+                "Der Waldwächter steht noch immer zwischen den alten Steinen.",
+                art="menue"
+            )
+
+        menue_trenner()
+
+        print("1. Dem Waldwächter entgegentreten")
+        print("2. Status anzeigen")
+        print("3. Inventar öffnen")
+        print("4. Zum Königsring zurück")
+
+        willenskraft_option = (
+            spieler_pruefung(
+                "willenskraft",
+                2
+            )
+            and not spieler.get(
+                "waldwaechter_willenskraft_erlebt",
+                False
+            )
+        )
+
+        if willenskraft_option:
+            print(
+                "5. [Willenskraft] Der Warnung standhalten"
+            )
+
+        menu_auswahl = eingabe_menu(
+            1,
+            5 if willenskraft_option else 4
+        )
+
+    elif spieler["ort"] == "Marktplatz":
+        marktplatz()
+        continue
+
+    elif spieler["ort"] == "spieler_zimmer":
+        spielerhaus()
+        continue
+    elif spieler["ort"] == "Gasthaus":
+        gasthaus()
+        continue
+    elif spieler["ort"] == "Schmiede":
+        schmiede()
+        continue
+    elif spieler["ort"] == "verlassenes_dorf":
+        verlassenes_dorf()
+        continue
+
+    if menu_auswahl == "s":
+        status()
+
+    elif menu_auswahl == "i":
+        inventar()
+
+    elif menu_auswahl == "j":
+        questlog()
+
+    elif menu_auswahl == "q":
+        spielmenue()
+
+
+    # -------------------------
+    # EICHENRUH
+    # -------------------------
+
+    elif menu_auswahl == 1 and spieler["ort"] == "Eichenruh":
+        spieler["ort"] = "Gasthaus"
+
+        ort_nachricht_setzen(
+            "Du drückst die Tür zu Maras Gasthaus auf.",
+            "Warme Luft und leises Stimmengewirr kommen dir entgegen."
+        )
+
+
+    elif menu_auswahl == 2 and spieler["ort"] == "Eichenruh":
+        spieler["ort"] = "Schmiede"
+
+        ort_nachricht_setzen(
+            "Du öffnest die Tür zu Bjorns Schmiede.",
+            "Ein Schwall warmer Luft schlägt dir entgegen."
+        )
+
+
+    elif menu_auswahl == 3 and spieler["ort"] == "Eichenruh":
+        spieler["ort"] = "Marktplatz"
+
+        ort_nachricht_setzen(
+            "Du gehst hinüber zum Marktplatz.",
+            "Das Stimmengewirr wird mit jedem Schritt deutlicher."
+        )
+
+
+    elif menu_auswahl == 4 and spieler["ort"] == "Eichenruh":
+        spieler["ort"] = "spieler_zimmer"
+
+        ort_nachricht_setzen(
+            "Du öffnest die Tür und trittst ein.",
+            "Die vertraute Ruhe deines Hauses empfängt dich."
+        )
+
+    elif (
+        menu_auswahl == 5
+        and spieler["ort"] == "Eichenruh"
+        and spieler.get("prolog_status") in [
+            "koehlerei_lieferung",
+            "prolog_abgeschlossen"
+        ]
+    ):
+        reise(
+            "Köhlerei",
+            (
+                "Zwischen den Bäumen öffnet sich "
+                "die Lichtung der Köhlerei."
+            ),
+            gebiet_modus=True
+        )
+
+    elif (
+        menu_auswahl == 6
+        and spieler["ort"] == "Eichenruh"
+        and weg_status(
+            "pfad_des_vergessens"
+        ) == "entdeckt"
+    ):
+        reise(
+            "verlassenes_dorf",
+            (
+                "Zwischen den letzten Bäumen erscheinen verfallene Dächer."
+            ),
+            (
+                "Der Pfad führt direkt zwischen die verlassenen Häuser "
+                "des alten Dorfes."
+            ),
+            gebiet_modus=True
+        )
+
+
+    # -------------------------
+    # ALTE ORTSMENÜS
+    # -------------------------
+
+    elif (
+        menu_auswahl == 2
+        and spieler["ort"] == "Bossraum"
+    ):
+        status()
+
+    elif (
+        menu_auswahl == 3
+        and spieler["ort"] == "Bossraum"
+    ):
+        inventar()
+
+    elif (
+        reise_aktiv()
+        and menu_auswahl == 1
+    ):
+        reise_fortsetzen()
+        continue
+
+    elif (
+        menu_auswahl == 1
+        and spieler["ort"] == "Bossraum"
+    ):
+        (
+            spieler["lebenspunkte"],
+            spieler["spiel_laeuft"],
+            spieler["gold"],
+            spieler["diamanten"],
+            spieler["heiltränke"],
+            spieler["ort"]
+        ) = bosskampf(
+            spieler["lebenspunkte"],
+            spieler["spiel_laeuft"],
+            spieler["gold"],
+            spieler["diamanten"],
+            spieler["heiltränke"],
+            spieler["ort"]
+        )
+
+    elif (
+        menu_auswahl == 5
+        and spieler["ort"] == "Bossraum"
+    ):
+        ort_titel(
+            "Waldlichtung - Die Warnung"
+        )
+
+        text_ausgeben(
+            "Der Druck wird stärker, sobald du einen Schritt weiter in die "
+            "Lichtung setzt."
+        )
+
+        text_ausgeben(
+            "Dein Körper will zurückweichen. Du zwingst dich, stehen zu bleiben "
+            "und ruhig weiterzuatmen."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Der Waldwächter bewegt sich nicht auf dich zu."
+        )
+
+        text_ausgeben(
+            "Als du einen halben Schritt zurücksetzt, lässt der Druck merklich nach."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Zum ersten Mal wirkt seine Haltung weniger wie die eines Jägers."
+        )
+
+        text_ausgeben(
+            "Er scheint dich nicht verfolgen zu wollen. Er will, dass du umkehrst."
+        )
+
+        spieler[
+            "waldwaechter_willenskraft_erlebt"
+        ] = True
+
+        akt1_lernerfahrung(
+            "waldwaechter_willenskraft"
+        )
+
+        warte_auf_taste(
+            "Weiter"
+        )
+
+        continue
+
+    elif (
+        menu_auswahl == 2
+        and reise_aktiv()
+    ):
+        reise_umgebung_erkunden()
+
+    elif (
+        menu_auswahl == 3
+        and reise_aktiv()
+    ):
+        reise_rasten()
+
+    elif (
+        menu_auswahl == 4
+        and reise_aktiv()
+    ):
+        reise_uebersicht()
+
+    elif (
+        menu_auswahl == 5
+        and reise_aktiv()
+    ):
+        reise_umkehren()
+        continue
+
+    elif (
+        menu_auswahl == 4
+        and spieler["ort"] == "Bossraum"
+    ):
+        aktive_reise = spieler.get(
+            "reise"
+        )
+
+        if isinstance(
+            aktive_reise,
+            dict
+        ):
+            spieler["ort"] = aktive_reise.get(
+                "gebiet",
+                "Wald"
+            )
+
+            ort_nachricht_setzen(
+                "Du weichst langsam zurück, ohne dem Waldwächter den Rücken zuzudrehen.",
+                "Die Gestalt bleibt zwischen den verwitterten Steinen stehen. "
+                "Sie folgt dir nicht.",
+                "Erst als du wieder die alten Pflastersteine des Königsrings unter "
+                "den Füßen spürst, hörst du über dir den ersten Vogelruf."
+            )
+
+        else:
+            spieler["ort"] = "Eichenruh"
+
+            ort_nachricht_setzen(
+                "Du weichst aus der stillen Lichtung zurück.",
+                "Der Waldwächter folgt dir nicht.",
+                "Nach einiger Zeit erreichst du wieder Eichenruh."
+            )       
