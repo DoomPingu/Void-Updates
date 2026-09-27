@@ -1,0 +1,1000 @@
+                "[Hafenarbeiter] Drei Fässer Lampenöl. Zwei angekommen."
+            )
+
+            text_ausgeben(
+                "Der ältere Schreiber hinter dem Pult prüft eine Zeile, "
+                "setzt einen kurzen Strich daneben und schiebt das Blatt zurück."
+            )
+
+            text_ausgeben(
+                "[Schreiber] Dann stehen hier ab jetzt auch nur zwei."
+            )
+
+            text_ausgeben(
+                "Der Hafenarbeiter nickt, nimmt den Zettel und geht wieder."
+            )
+
+        else:
+            text_ausgeben(
+                "Der Geruch von Papier, trockenem Holz und Tinte "
+                "liegt unverändert zwischen den hohen Regalen.",
+                art="menue"
+            )
+
+        wiegenlied_aktiv = spieler.get(
+            "quest_wiegenlied"
+        ) in (
+            "lied_rekonstruieren",
+            "truhe_geoeffnet",
+            "abgeschlossen"
+        )
+
+        menue_trenner()
+
+        print(
+            "1. Mit dem Schreiber reden"
+        )
+
+        print(
+            "2. Die Registerregale ansehen"
+        )
+
+        if wiegenlied_aktiv:
+            print(
+                "3. Nach der Familie Rehn suchen"
+            )
+
+            print(
+                "4. Zurück nach Letzthafen"
+            )
+
+            maximum = 4
+
+        else:
+            print(
+                "3. Zurück nach Letzthafen"
+            )
+
+            maximum = 3
+
+        auswahl = eingabe_menu(
+            1,
+            maximum,
+            sonder_tasten=()
+        )
+
+        if auswahl == 1:
+            dialog_schreiber_letzthafen()
+
+        elif auswahl == 2:
+            ort_titel(
+                "Haus der Listen"
+            )
+
+            text_ausgeben(
+                "Du gehst langsam an den beschrifteten Fächern entlang."
+            )
+
+            text_ausgeben(
+                "Die Regale folgen einer festen Ordnung: Hafenbücher, "
+                "Einwohnerregister, Straßenlisten und Handelsaufzeichnungen."
+            )
+
+            text_ausgeben(
+                "Manche Einbände sind an den Kanten fast blank gerieben. "
+                "Zwischen neueren Seiten stecken Korrekturzettel und "
+                "schmale Streifen mit nachgetragenen Zahlen."
+            )
+
+            spuren = letzthafen_status()[
+                "spuren"
+            ]
+
+            # Optionaler Rückbezug auf die Alte Wegstation.
+            if (
+                besonderer_fund_status(
+                    "strassenkarte_wegstation"
+                ) == "gelesen"
+                and not spuren.get(
+                    "oros_abschrift",
+                    False
+                )
+            ):
+                print()
+
+                text_ausgeben(
+                    "Auf mehreren älteren Bündeln steht "
+                    "derselbe Vermerk:"
+                )
+
+                print()
+
+                design_text(
+                    "Jahresabschrift - Oros",
+                    design="wissen",
+                    art="menue"
+                )
+
+                print()
+
+                text_ausgeben(
+                    "Der Name kommt dir bekannt vor. "
+                    "Auch auf der Straßenkarte der alten "
+                    "Wegstation wurde eine Abschrift "
+                    "nach Oros vermerkt."
+                )
+
+                spuren[
+                    "oros_abschrift"
+                ] = True
+
+            warte_auf_taste(
+                "Zurück"
+            )
+
+        elif (
+            wiegenlied_aktiv
+            and auswahl == 3
+        ):
+            letzthafen_rehn_register_lesen()
+
+        elif (
+            wiegenlied_aktiv
+            and auswahl == 4
+        ) or (
+            not wiegenlied_aktiv
+            and auswahl == 3
+        ):
+            return
+
+def mareks_dachzimmer():
+    daten = letzthafen_status()
+
+    spuren = daten[
+        "spuren"
+    ]
+
+    erstmals = not spuren.get(
+        "marek_zimmer_betreten",
+        False
+    )
+
+    spuren[
+        "marek_zimmer_betreten"
+    ] = True
+
+    while True:
+        ort_titel(
+            "Haus 14 - Dachzimmer"
+        )
+
+        if erstmals:
+            text_ausgeben(
+                "Das Dachzimmer ist kleiner, als du erwartet hast. "
+                "Die schräge Decke zwingt dich nahe dem Fenster "
+                "fast den Kopf einzuziehen."
+            )
+
+            text_ausgeben(
+                "Durch die Ritzen im Rahmen zieht kalte Seeluft herein. "
+                "Vom Hafen dringt nur noch gedämpftes Rufen bis hier herauf."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Ein schmales Bettgestell und ein leerer Wandhaken "
+                "sind fast alles, was noch im Raum steht."
+            )
+
+            text_ausgeben(
+                "Auf den Dielen zeichnen hellere Flächen und tiefe Kratzer "
+                "die Stellen nach, an denen früher Möbel gestanden haben."
+            )
+
+            erstmals = False
+
+        else:
+            text_ausgeben(
+                "Mareks ehemaliges Dachzimmer liegt still unter "
+                "dem schrägen Dach.",
+                art="menue"
+            )
+
+        menue_trenner()
+
+        print("1. Den Fensterrahmen untersuchen")
+        print("2. Die alten Bodendielen ansehen")
+        print("3. Die Spuren im Zimmer betrachten")
+        print("4. Zurück zu Nela")
+
+        auswahl = eingabe_menu(
+            1,
+            4,
+            sonder_tasten=()
+        )
+
+        if auswahl == 1:
+            ort_titel(
+                "Haus 14 - Dachzimmer"
+            )
+
+            if not spuren.get(
+                "rueckkehrkerben",
+                False
+            ):
+                text_ausgeben(
+                    "Im Holz des Fensterrahmens entdeckst du drei Gruppen "
+                    "sauber gesetzter Kerben."
+                )
+
+                print()
+
+                print("|||| |")
+                print("|||| ||")
+                print("|||| |||")
+
+                print()
+
+                text_ausgeben(
+                    "Alle sitzen auf derselben Höhe und sind ähnlich tief "
+                    "ins Holz geschnitten."
+                )
+
+                text_ausgeben(
+                    "Für zufällige Beschädigungen sind sie zu regelmäßig."
+                )
+
+                spuren[
+                    "rueckkehrkerben"
+                ] = True
+
+            else:
+                text_ausgeben(
+                    "Die alten Kerben im Fensterrahmen sind "
+                    "noch immer deutlich zu erkennen.",
+                    art="menue"
+                )
+
+            warte_auf_taste(
+                "Zurück"
+            )
+
+        elif auswahl == 2:
+            ort_titel(
+                "Haus 14 - Dachzimmer"
+            )
+
+            if not spuren.get(
+                "wegmuenzen_gefunden",
+                False
+            ):
+                text_ausgeben(
+                    "Eine der Dielen nahe der Wand sitzt etwas höher "
+                    "als die übrigen."
+                )
+
+                text_ausgeben(
+                    "Mit etwas Geduld lässt sie sich anheben."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "Darunter liegt ein kleiner Lederbeutel."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "Im Beutel stecken drei alte, durchbohrte Münzen. "
+                    "Die Ränder der Löcher sind glatt, als wären sie lange "
+                    "an einer Schnur getragen worden."
+                )
+
+                text_ausgeben(
+                    "In jede Münze wurde von Hand ein anderes Zeichen geritzt."
+                )
+
+                print()
+
+                print("Eine Eiche.")
+                print("Eine Welle.")
+                print("Ein Zeichen, das du nicht zuordnen kannst.")
+
+                spuren[
+                    "wegmuenzen_gefunden"
+                ] = True
+
+                besonderen_fund_dokumentieren(
+                    "mareks_wegmuenzen",
+                    "gefunden"
+                )
+
+                print()
+                print("-" * 34)
+
+                design_text(
+                    "BESONDERER FUND",
+                    design="wissen",
+                    art="ereignis"
+                )
+
+                print()
+                print(
+                    "Mareks Wegmünzen"
+                )
+                print("-" * 34)
+
+            else:
+                text_ausgeben(
+                    "Unter der angehobenen Diele ist nichts "
+                    "Weiteres verborgen.",
+                    art="menue"
+                )
+
+            warte_auf_taste(
+                "Zurück"
+            )
+
+        elif auswahl == 3:
+            ort_titel(
+                "Haus 14 - Dachzimmer"
+            )
+
+            text_ausgeben(
+                "Am Wandhaken ist das Holz an einer Stelle heller. "
+                "Dort muss jahrelang etwas Schweres gehangen haben."
+            )
+
+            text_ausgeben(
+                "Neben dem Bett verlaufen tiefe Kratzer über die Dielen. "
+                "Sie bilden ungefähr den Umriss einer großen Truhe."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Die Fensterbank ist in der Mitte glatter als an den Rändern, "
+                "als hätte dort oft jemand Hände oder Unterarme aufgelegt."
+            )
+
+            warte_auf_taste(
+                "Zurück"
+            )
+
+        elif auswahl == 4:
+            return
+
+
+def letzthafen_haus_14():
+    daten = letzthafen_status()
+
+    spuren = daten[
+        "spuren"
+    ]
+
+    erstmals = letzthafen_bereich_betreten(
+        "haus_14"
+    )
+
+    while True:
+        ort_titel(
+            "Oberer Steg - Haus 14"
+        )
+
+        if erstmals:
+            text_ausgeben(
+                "Haus 14 unterscheidet sich kaum von den anderen "
+                "schmalen Wohnhäusern am Oberen Steg."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Salz hat die Farbe an den Fensterrahmen stumpf gemacht. "
+                "Über der Tür hängt eine kleine, schief angeschlagene "
+                "Messingnummer."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Eine ältere Frau öffnet nach deinem Klopfen "
+                "nur einen Spalt breit."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Nela] Ja?"
+            )
+
+            print()
+
+            text_ausgeben(
+                f'[{spieler["name"]}] Ich habe Marek Voss '
+                "am Gezeitensteg getroffen."
+            )
+
+            text_ausgeben(
+                "Nelas Hand bleibt am Türgriff liegen."
+            )
+
+            text_ausgeben(
+                "[Nela] Er ist wieder da?"
+            )
+
+            print()
+
+            text_ausgeben(
+                f'[{spieler["name"]}] Ja. Aber er erinnert sich kaum '
+                "an sein früheres Leben. Die Hafenregister "
+                "führen ihn unter dieser Adresse."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Nela mustert dich einen Moment und öffnet "
+                "die Tür schließlich weiter."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Nela] Marek hat fünf Winter unter meinem Dach gewohnt."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Nela] Die Listen im Hafen sind alt. "
+                "Seine Adresse wurde nie ordentlich nachgetragen."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Nela] Wenn er sich wirklich nicht mehr erinnert ..."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Nela] Das Zimmer oben ist leer. "
+                "Viel ist nicht geblieben, aber vielleicht "
+                "findest du dort etwas, das ihm hilft."
+            )
+
+            erstmals = False
+
+        else:
+            text_ausgeben(
+                "Nelas schmales Wohnhaus steht zwischen zwei "
+                "ähnlichen Häusern am Oberen Steg.",
+                art="menue"
+            )
+
+        menue_trenner()
+
+        print("1. Mit Nela reden")
+        print("2. Mareks altes Dachzimmer ansehen")
+        print("3. Zurück zum Klippenweg")
+
+        auswahl = eingabe_menu(
+            1,
+            3,
+            sonder_tasten=()
+        )
+
+        if auswahl == 1:
+            ort_titel(
+                "Oberer Steg - Haus 14"
+            )
+
+            dialog_titel(
+                "Nela"
+            )
+
+            print(
+                "1. " + dialog_option(
+                    "nela",
+                    "marek_wohnte_hier",
+                    "Wie war Marek damals?"
+                )
+            )
+
+            print(
+                "2. " + dialog_option(
+                    "nela",
+                    "marek_familie",
+                    "Hat Marek Familie in Letzthafen?"
+                )
+            )
+
+            print(
+                "3. Gespräch beenden"
+            )
+
+            nela_auswahl = eingabe_menu(
+                1,
+                3,
+                sonder_tasten=()
+            )
+
+            print()
+
+            if nela_auswahl == 1:
+                dialog_thema_markieren(
+                    "nela",
+                    "marek_wohnte_hier"
+                )
+
+                text_ausgeben(
+                    "[Nela] Ruhig. Verlässlich. Früh auf den Beinen."
+                )
+
+                print()
+                text_ausgeben(
+                    "[Nela] Wenn er von einer langen Fahrt zurückkam, "
+                    "hörte man zuerst die Stiefel auf der Treppe und "
+                    "dann drei Minuten lang gar nichts."
+                )
+
+                print()
+                text_ausgeben(
+                    "[Nela] Er setzte sich immer erst ans Fenster. "
+                    "Egal ob Sommer oder Winter."
+                )
+
+                text_ausgeben(
+                    "[Nela] Danach war er wieder ansprechbar."
+                )
+
+                warte_auf_taste(
+                    "Weiter"
+                )
+
+            elif nela_auswahl == 2:
+                dialog_thema_markieren(
+                    "nela",
+                    "marek_familie"
+                )
+
+                text_ausgeben(
+                    "[Nela] Elian. Sein älterer Bruder."
+                )
+
+                print()
+                text_ausgeben(
+                    "[Nela] Er baut unten am Gezeitensteg Boote. "
+                    "Die kleine Werkstatt mit den grünen Türen."
+                )
+
+                if not spuren.get(
+                    "elian_hinweis",
+                    False
+                ):
+                    spuren[
+                        "elian_hinweis"
+                    ] = True
+
+                    if spieler.get(
+                        "quest_ein_name_fehlt"
+                    ) == "marek_wohnung_untersuchen":
+                        spieler[
+                            "quest_ein_name_fehlt"
+                        ] = "elian_suchen"
+
+                        quest_meldung(
+                            "update",
+                            "Ein Name fehlt",
+                            "Finde Mareks Bruder Elian in seiner "
+                            "Bootswerkstatt am Gezeitensteg."
+                        )
+
+                warte_auf_taste(
+                    "Weiter"
+                )
+
+        elif auswahl == 2:
+            mareks_dachzimmer()
+
+            nela_nachspiel = False
+
+            if (
+                spuren.get(
+                    "rueckkehrkerben",
+                    False
+                )
+                and not npc_reaktion_gezeigt(
+                    "nela",
+                    "rueckkehrkerben_erklaert"
+                )
+            ):
+                ort_titel(
+                    "Oberer Steg - Haus 14"
+                )
+
+                text_ausgeben(
+                    "Als du wieder die Treppe hinunterkommst, "
+                    "fragst du Nela nach den Kerben am Fenster."
+                )
+
+                print()
+                text_ausgeben(
+                    "Nela muss kurz lächeln."
+                )
+
+                text_ausgeben(
+                    "[Nela] Die hat Marek gemacht. "
+                    "Nach jeder langen Fahrt eine."
+                )
+
+                print()
+                text_ausgeben(
+                    "[Nela] Er meinte immer, ein Mann sollte wissen, "
+                    "wie oft er wieder nach Hause gefunden hat."
+                )
+
+                erfolg_freischalten(
+                    "immer_wieder_nach_hause"
+                )
+
+                npc_reaktion_markieren(
+                    "nela",
+                    "rueckkehrkerben_erklaert"
+                )
+
+                nela_nachspiel = True
+
+            if not spuren.get(
+                "elian_hinweis",
+                False
+            ):
+                if not nela_nachspiel:
+                    ort_titel(
+                        "Oberer Steg - Haus 14"
+                    )
+
+                    text_ausgeben(
+                        "Als du wieder die Treppe hinunterkommst, "
+                        "wartet Nela im Flur."
+                    )
+
+                else:
+                    print()
+
+                text_ausgeben(
+                    "[Nela] Wenn du jemanden brauchst, der Marek "
+                    "besser kannte als ich, such seinen Bruder."
+                )
+
+                print()
+                text_ausgeben(
+                    "[Nela] Elian arbeitet unten am Gezeitensteg. "
+                    "Bootswerkstatt mit den grünen Türen."
+                )
+
+                spuren[
+                    "elian_hinweis"
+                ] = True
+
+                if spieler.get(
+                    "quest_ein_name_fehlt"
+                ) == "marek_wohnung_untersuchen":
+                    spieler[
+                        "quest_ein_name_fehlt"
+                    ] = "elian_suchen"
+
+                    quest_meldung(
+                        "update",
+                        "Ein Name fehlt",
+                        "Finde Mareks Bruder Elian in seiner "
+                        "Bootswerkstatt am Gezeitensteg."
+                    )
+
+                nela_nachspiel = True
+
+            if nela_nachspiel:
+                warte_auf_taste(
+                    "Weiter"
+                )
+
+        elif auswahl == 3:
+            return
+
+def letzthafen_namenstein():
+    erstmals = letzthafen_bereich_betreten(
+        "namenstein"
+    )
+
+    while True:
+        ort_titel(
+            "Namenstein"
+        )
+
+        if erstmals:
+            text_ausgeben(
+                "Nahe der Klippen steht ein breiter, vom Salz "
+                "verwitterter Stein."
+            )
+
+            text_ausgeben(
+                "In seine Oberfläche sind Namen aus vielen Jahren "
+                "eingemeißelt. Manche sind noch scharf, andere kaum lesbar."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Am Fuß des Steins liegen Muscheln, verwitterte Bänder "
+                "und einige vertrocknete Blumen."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Eine ältere Frau bleibt vor dem Stein stehen, legt eine "
+                "kleine Muschel zu den anderen und streicht mit zwei Fingern "
+                "über einen der Namen."
+            )
+
+            text_ausgeben(
+                "Dann zieht sie den Mantel enger und geht weiter, ohne sich umzusehen."
+            )
+
+            erstmals = False
+
+        else:
+            text_ausgeben(
+                "Der verwitterte Namenstein steht still über den Klippen.",
+                art="menue"
+            )
+
+        menue_trenner()
+
+        print(
+            "1. Die Namen genauer lesen"
+        )
+
+        print(
+            "2. Die Zeichen im Stein betrachten"
+        )
+
+        print(
+            "3. Zurück nach Letzthafen"
+        )
+
+        auswahl = eingabe_menu(
+            1,
+            3,
+            sonder_tasten=()
+        )
+
+        if auswahl == 1:
+            ort_titel(
+                "Namenstein"
+            )
+
+            text_ausgeben(
+                "Du gehst die verwitterten Zeilen langsam durch."
+            )
+
+            print()
+
+            print("Harl Tessen")
+            print("Mira Venn")
+            print("Orren Daal")
+            print("Lina Rehn")
+
+            print()
+
+            text_ausgeben(
+                "Einige Familiennamen tauchen mehrfach auf. "
+                "Andere stehen allein zwischen deutlich älteren Einträgen."
+            )
+
+            wiegenlied = letzthafen_status()[
+                "wiegenlied"
+            ]
+
+            wiegenlied[
+                "namenstein_lina_gelesen"
+            ] = True
+
+            if spieler.get(
+                "quest_wiegenlied"
+            ) in (
+                "lied_rekonstruieren",
+                "truhe_geoeffnet",
+                "abgeschlossen"
+            ):
+                print()
+
+                if not wiegenlied.get(
+                    "namenstein_hinweis",
+                    False
+                ):
+                    text_ausgeben(
+                        "Jetzt, da du nach Linas Lied suchst, "
+                        "fällt dir ihr Eintrag stärker auf."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "Direkt unter ihrem Namen sind eine kleine Möwe "
+                        "und eine Wellenlinie eingeritzt."
+                    )
+
+                    text_ausgeben(
+                        "Eine flache Kerbe verbindet beide Zeichen, "
+                        "als gehörten sie bewusst zusammen."
+                    )
+
+                    print()
+
+                    design_text(
+                        "Möwe  →  Welle",
+                        design="wissen",
+                        art="menue"
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "Die Schnitte sind feiner als die Buchstaben des Namens. "
+                        "Jemand hat sie offenbar später ergänzt."
+                    )
+
+                    wiegenlied[
+                        "namenstein_hinweis"
+                    ] = True
+
+                else:
+                    design_text(
+                        "Unter Lina Rehns Namen: Möwe → Welle",
+                        design="wissen",
+                        art="menue"
+                    )
+
+            warte_auf_taste(
+                "Zurück"
+            )
+
+        elif auswahl == 2:
+            ort_titel(
+                "Namenstein"
+            )
+
+            text_ausgeben(
+                "Zwischen den Namen sind kleine Zeichen eingemeißelt: "
+                "Anker, Möwen, Sonnen und einfache Wellenlinien."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Einige sind so tief verwittert wie die ältesten Namen. "
+                "Andere wirken deutlich später hinzugefügt."
+            )
+
+            text_ausgeben(
+                "Ein einheitliches System erkennst du nicht. Manche Zeichen "
+                "könnten Familien oder Berufe kennzeichnen, andere wirken "
+                "wie etwas, das nur für einzelne Menschen Bedeutung hatte."
+            )
+
+            warte_auf_taste(
+                "Zurück"
+            )
+
+        elif auswahl == 3:
+            return
+
+def dialog_edda():
+    edda_besuch = npc_besuch_starten(
+        "edda"
+    )
+
+    erste_runde = True
+    themen_dieses_gespraech = set()
+
+    while True:
+        ort_titel(
+            "Eddas Haus"
+        )
+
+        dialog_titel(
+            "Edda Rehn"
+        )
+
+        wiegenlied = letzthafen_status()[
+            "wiegenlied"
+        ]
+
+        quest_abgeschlossen = (
+            spieler.get(
+                "quest_wiegenlied"
+            ) == "abgeschlossen"
+        )
+
+        if erste_runde:
+            if edda_besuch == 1:
+                text_ausgeben(
+                    "Edda sitzt nahe dem Fenster und hält "
+                    "ein Stück Stoff auf den Knien."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Edda] Frag ruhig."
+                )
+
+            elif quest_abgeschlossen:
+                begruessung = npc_begruessung_waehlen(
+                    "edda",
+                    [
+                        "[Edda] Du bist wieder da.",
+                        "[Edda] Komm rein. Der Wind ist heute unangenehm.",
+                        (
+                            "[Edda] Das Lied ist noch da. "
+                            "Das ist mehr, als ich eine Zeit lang glaubte."
+                        ),
+                        "[Edda] Setz dich, wenn du möchtest.",
+                        "[Edda] Was möchtest du wissen?"
+                    ]
+                )
+
+                text_ausgeben(
+                    begruessung
+                )
+
+            else:
+                begruessung = npc_begruessung_waehlen(
+                    "edda",
+                    [
+                        "[Edda] Wieder wegen des Liedes?",
+                        "[Edda] Komm rein.",
+                        "[Edda] Vielleicht fällt mir heute etwas mehr ein.",
+                        "[Edda] Was möchtest du wissen?"
+                    ]
+                )
+
+                text_ausgeben(
+                    begruessung
+                )
+
+        else:
+            text_ausgeben(
+                "[Edda] Noch etwas?"
+            )
+
+        print()
+
+        if quest_abgeschlossen:
+            lied_frage = (
+                "Wie geht es dir mit dem Lied?"
+            )
+
+            lina_frage = (
+                "Erzähl mir von Lina."
+            )
+
+        else:
+            lied_frage = (
+                "Das Lied, das du summst ..."
+            )
+
+            lina_frage = (
+                "Wer ist Lina Rehn?"
+            )
+
+        optionen = []
+
+        if "lied" not in themen_dieses_gespraech:
+            optionen.append(
+                (
