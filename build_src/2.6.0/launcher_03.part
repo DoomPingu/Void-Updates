@@ -1,0 +1,563 @@
+                "/c",
+
+                script_pfad
+
+            ],
+
+            cwd=basis_ordner(),
+
+            creationflags=getattr(
+
+                subprocess,
+
+                "CREATE_NEW_CONSOLE",
+
+                0
+
+            )
+
+        )
+
+
+
+    except OSError as fehler:
+
+        print()
+
+        print(
+
+            "Das Launcher-Update konnte "
+
+            "nicht gestartet werden."
+
+        )
+
+
+
+        print(
+
+            f"Fehler: {fehler}"
+
+        )
+
+
+
+        return False
+
+
+
+    print()
+
+    print(
+
+        "Launcher wird aktualisiert "
+
+        "und neu gestartet ..."
+
+    )
+
+
+
+    return True
+
+
+
+def launcher_starten():
+
+    version = version_laden()
+
+    online_version = online_version_laden()
+
+
+
+    update_verfuegbar = False
+
+    launcher_update_verfuegbar = False
+
+
+
+    if online_version is not None:
+
+        update_verfuegbar = (
+
+            version_als_tuple(
+
+                online_version["version"]
+
+            )
+
+            >
+
+            version_als_tuple(
+
+                version["version"]
+
+            )
+
+        )
+
+
+
+        online_launcher_version = (
+
+            online_version.get(
+
+                "launcher_version",
+
+                ""
+
+            ).strip()
+
+        )
+
+
+
+        if online_launcher_version:
+
+            launcher_update_verfuegbar = (
+
+                version_als_tuple(
+
+                    online_launcher_version
+
+                )
+
+                >
+
+                version_als_tuple(
+
+                    LAUNCHER_VERSION
+
+                )
+
+            )
+
+
+
+    print("=" \* 34)
+
+    print("VOID LAUNCHER")
+
+    print("=" \* 34)
+
+
+
+    print()
+
+    print(
+
+        f"Installiert: {version['name']}"
+
+    )
+
+
+
+    print(
+
+        f"Launcher:    {LAUNCHER_VERSION}"
+
+    )
+
+
+
+    if launcher_update_verfuegbar:
+
+        print(
+
+            f"Launcher neu: "
+
+            f"{online_version['launcher_version']}"
+
+        )
+
+
+
+        print()
+
+        print(
+
+            "\*\*\* LAUNCHER-UPDATE VERFÜGBAR \*\*\*"
+
+        )
+
+
+
+    if launcher_update_verfuegbar:
+
+        print()
+
+        print("1. Launcher aktualisieren")
+
+        print("2. Später")
+
+
+
+        while True:
+
+            launcher_auswahl = input(
+
+                "\nAuswahl: "
+
+            ).strip()
+
+
+
+            if launcher_auswahl == "1":
+
+                if not launcher_update_herunterladen(
+
+                    online_version
+
+                ):
+
+                    input(
+
+                        "\n[Enter] Zurück ..."
+
+                    )
+
+                    return
+
+
+
+                if not launcher_update_installieren():
+
+                    launcher_update_pfad = os.path.join(
+
+                        basis_ordner(),
+
+                        LAUNCHER_UPDATE_DATEI
+
+                    )
+
+
+
+                    try:
+
+                        if os.path.exists(
+
+                            launcher_update_pfad
+
+                        ):
+
+                            os.remove(
+
+                                launcher_update_pfad
+
+                            )
+
+                    except OSError:
+
+                        pass
+
+
+
+                    input(
+
+                        "\n[Enter] Zurück ..."
+
+                    )
+
+                    return
+
+
+
+                return
+
+
+
+            elif launcher_auswahl == "2":
+
+                break
+
+
+
+            print(
+
+                "Ungültige Eingabe."
+
+            )
+
+
+
+    if update_verfuegbar:
+
+        print(
+
+            f"Verfügbar:   "
+
+            f"{online_version['name']}"
+
+        )
+
+
+
+        print()
+
+        print("\*\*\* UPDATE VERFÜGBAR \*\*\*")
+
+
+
+        patch_notes = online_version.get(
+
+            "patch_notes",
+
+            []
+
+        )
+
+
+
+        if patch_notes:
+
+            print()
+
+            print(
+
+                f"NEU IN {online_version['name'].upper()}"
+
+            )
+
+            print("-" \* 34)
+
+
+
+            for eintrag in patch_notes:
+
+                print(f"- {eintrag}")
+
+
+
+        print()
+
+        print("1. Update installieren")
+
+        print("2. Void ohne Update starten")
+
+        print("3. Launcher schließen")
+
+
+
+        while True:
+
+            auswahl = input(
+
+                "\nAuswahl: "
+
+            ).strip()
+
+
+
+            if auswahl == "1":
+
+
+
+                if not update_herunterladen(
+
+                    online_version
+
+                ):
+
+                    input(
+
+                        "\n[Enter] Zurück ..."
+
+                    )
+
+
+
+                    return
+
+
+
+                if not update_sha256_pruefen(
+
+                    online_version
+
+                ):
+
+                    update_download_loeschen()
+
+
+
+                    input(
+
+                        "\n[Enter] Zurück ..."
+
+                    )
+
+
+
+                    return
+
+
+
+                if not update_zip_entpacken():
+
+                    update_temp_loeschen()
+
+                    update_download_loeschen()
+
+
+
+                    input(
+
+                        "\n[Enter] Zurück ..."
+
+                    )
+
+
+
+                    return
+
+
+
+                if not update_lokal_installieren():
+
+                    update_temp_loeschen()
+
+                    update_download_loeschen()
+
+
+
+                    input(
+
+                        "\n[Enter] Zurück ..."
+
+                    )
+
+
+
+                    return
+
+
+
+                update_temp_loeschen()
+
+                update_download_loeschen()
+
+
+
+                print()
+
+                print(
+
+                    "Update erfolgreich installiert."
+
+                )
+
+
+
+                neue_version = version_laden()
+
+
+
+                print(
+
+                    f"Installiert: "
+
+                    f"{neue_version['name']}"
+
+                )
+
+
+
+                input(
+
+                    "\n[Enter] Weiter ..."
+
+                )
+
+
+
+                return
+
+
+
+            elif auswahl == "2":
+
+                spiel_starten()
+
+                return
+
+
+
+            elif auswahl == "3":
+
+                return
+
+
+
+            print(
+
+                "Ungültige Eingabe."
+
+            )
+
+
+
+    else:
+
+        if online_version is not None:
+
+            print(
+
+                "Void ist auf dem neuesten Stand."
+
+            )
+
+
+
+        else:
+
+            print(
+
+                "Update-Informationen konnten "
+
+                "nicht geladen werden."
+
+            )
+
+
+
+        print()
+
+        print("1. Void starten")
+
+        print("2. Launcher schließen")
+
+
+
+        while True:
+
+            auswahl = input(
+
+                "\nAuswahl: "
+
+            ).strip()
+
+
+
+            if auswahl == "1":
+
+                spiel_starten()
+
+                return
+
+
+
+            elif auswahl == "2":
+
+                return
+
+
+
+            print(
+
+                "Ungültige Eingabe."
+
+            )
+
+
+
+launcher_starten()
