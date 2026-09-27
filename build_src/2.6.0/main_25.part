@@ -1,0 +1,1000 @@
+
+        text_ausgeben(
+            "Das Tier muss von draußen in die Ruine gelangt sein."
+        )
+
+        print()
+        print("1. Dich dem Wolf stellen")
+        print("2. Langsam zur Treppe zurückweichen")
+
+        auswahl = eingabe_menu(
+            1,
+            2,
+            sonder_tasten=()
+        )
+
+        if auswahl == 2:
+            return
+
+        print()
+
+        kampf_ergebnis = kampf_starten(
+            lebenspunkte=spieler["lebenspunkte"],
+            heiltraenke=spieler["heiltränke"],
+            waffe=spieler["waffe"],
+            gegner_typ="Wolf"
+        )
+
+        spieler["lebenspunkte"] = (
+            kampf_ergebnis["lebenspunkte"]
+        )
+
+        spieler["heiltränke"] = (
+            kampf_ergebnis["heiltraenke"]
+        )
+
+        if kampf_ergebnis["gewonnen"]:
+            spieler[
+                "besiegte_gegner"
+            ] += 1
+
+            funde[
+                "keller_gefahr_aufgeloest"
+            ] = True
+
+        elif kampf_ergebnis["besiegt"]:
+            print()
+            print("Game Over")
+
+            spieler[
+                "spiel_laeuft"
+            ] = False
+
+            return
+
+        else:
+            return
+
+    # -------------------------
+    # VARIANTE: MORSCHE TREPPE
+    # -------------------------
+
+    elif variante == "morsche_treppe":
+        text_ausgeben(
+            "Als du dich tiefer in den Keller vortastest, "
+            "gibt hinter dir plötzlich eine der alten Stufen nach."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Stein splittert über den Boden. Du kannst dich noch "
+            "rechtzeitig an der Wand abfangen."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Der Weg bleibt passierbar, aber die Treppe ist deutlich "
+            "instabiler, als sie von oben wirkte."
+        )
+
+        funde[
+            "morsche_kellertreppe"
+        ] = True
+
+    # -------------------------
+    # VARIANTE: FRISCHE SPUREN
+    # -------------------------
+
+    elif variante == "frische_spuren":
+        text_ausgeben(
+            "Im Staub zwischen den Regalen erkennst du frische "
+            "Stiefelabdrücke."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Sie führen von einer vermauert wirkenden Seitentür "
+            "quer durch den Keller."
+        )
+
+        text_ausgeben(
+            "An einer scharfen Steinkante hängt ein schmaler "
+            "Streifen dunklen Stoffes."
+        )
+
+        print()
+
+        design_text(
+            "Jemand hat die Wegstation vor nicht allzu langer Zeit benutzt.",
+            design="warnung",
+            art="menue"
+        )
+
+        funde[
+            "frische_spuren_keller"
+        ] = True
+
+    # -------------------------
+    # KELLER ABGESCHLOSSEN
+    # -------------------------
+
+    funde[
+        "keller_untersucht"
+    ] = True
+
+    print()
+
+    text_ausgeben(
+        "Hinter den letzten Regalen führt der Keller zu einer "
+        "schweren Tür aus dunklem Holz und Eisen."
+    )
+
+    text_ausgeben(
+        "Eine verblasste Plakette daneben trägt nur noch "
+        "ein lesbares Wort: Archiv."
+    )
+
+    warte_auf_taste(
+        "Weiter"
+    )
+
+
+def wegstation_keller_abkuerzung_oeffnen():
+    status = wegstation_status()
+
+    abkuerzungen = status[
+        "abkuerzungen"
+    ]
+
+    if "keller_vorhof" in abkuerzungen:
+        return
+
+    ort_titel(
+        "Alte Wegstation - Keller"
+    )
+
+    text_ausgeben(
+        "Du untersuchst die alte Seitentür zwischen den Regalen."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Von innen hält nur noch ein rostiger Querbalken "
+        "die Tür geschlossen."
+    )
+
+    text_ausgeben(
+        "Mit beiden Händen hebst du ihn aus seinen Halterungen."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Die Tür öffnet sich knirschend. Dahinter führt ein kurzer "
+        "Versorgungsgang direkt in den Vorhof."
+    )
+
+    abkuerzungen.append(
+        "keller_vorhof"
+    )
+
+    print()
+    print("-" * 34)
+
+    design_text(
+        "NEUE ABKÜRZUNG ENTDECKT",
+        design="wissen",
+        art="menue"
+    )
+
+    print(
+        "Keller ↔ Vorhof"
+    )
+
+    print("-" * 34)
+
+    warte_auf_taste(
+        "Weiter"
+    )
+
+def wegstation_archiv_untersuchen():
+    status = wegstation_status()
+    funde = status[
+        "funde"
+    ]
+
+    if funde.get(
+        "archiv_untersucht",
+        False
+    ):
+        return
+
+    ort_titel(
+        "Alte Wegstation - Archivkammer"
+    )
+
+    text_ausgeben(
+        "Du löst vorsichtig mehrere verschnürte Rollen "
+        "aus einem der steinernen Fächer."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Die meisten enthalten verblasste Abrechnungen, "
+        "Wegzölle und Listen über beschädigte Straßenabschnitte."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Zwischen ihnen liegt eine breite Karte auf schwerem Papier."
+    )
+
+    print()
+
+    design_text(
+        "STRASSENKARTE DES KÖNIGSRINGS",
+        design="wissen",
+        art="ereignis"
+    )
+
+    print()
+    print("Eichenruh")
+    print("   │")
+    print("Königliche Wegstation")
+    print("   │")
+    print("Letzthafen")
+
+    print()
+
+    text_ausgeben(
+        "Die Strecke entspricht genau dem alten Weg, "
+        "dem du bis hierher gefolgt bist."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Am Rand der Karte befindet sich ein verblasster "
+        "Verwaltungsvermerk."
+    )
+
+    print()
+
+    design_text(
+        '"Abschrift nach Oros."',
+        design="wissen",
+        art="menue"
+    )
+
+    print()
+
+    text_ausgeben(
+        "Mehr verrät der beschädigte Vermerk nicht."
+    )
+
+    funde[
+        "archiv_untersucht"
+    ] = True
+
+    akt1_lernerfahrung(
+        "wegstation_archiv"
+    )
+
+    besonderen_fund_dokumentieren(
+        "strassenkarte_wegstation",
+        "gelesen"
+    )
+
+    print()
+    print("-" * 34)
+
+    design_text(
+        "BESONDERER FUND",
+        design="wissen",
+        art="ereignis"
+    )
+
+    print()
+    print("Straßenkarte der Wegstation")
+    print("-" * 34)
+
+    # Das Kartenstück ist nur EIN möglicher Zugang.
+    # Später können Wahrnehmung oder Wissen
+    # hier alternative Möglichkeiten eröffnen.
+    if (
+        item_besitzt(
+            "altes_kartenstueck"
+        )
+        or besonderer_fund_status(
+            "altes_kartenstueck"
+        ) == "zugeordnet"
+    ):
+        print()
+
+        text_ausgeben(
+            "Als du die Karte wieder zusammenrollst, "
+            "fällt dein Blick auf Tomas' altes Kartenstück."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Der kleine Grundriss darauf zeigt an der Rückseite "
+            "des Archivs einen schmalen Mauervorsprung."
+        )
+
+        text_ausgeben(
+            "Im Raum selbst gibt es dort jedoch weder eine Tür "
+            "noch eine erkennbare Nische."
+        )
+
+        funde[
+            "geheimraum_hinweis"
+        ] = True
+
+        print()
+
+        design_text(
+            "Irgendetwas an den Maßen des Raumes stimmt nicht.",
+            design="warnung",
+            art="menue"
+        )
+
+    warte_auf_taste(
+        "Weiter"
+    )
+
+def wegstation_geheimraum_oeffnen():
+    status = wegstation_status()
+    funde = status[
+        "funde"
+    ]
+
+    if status.get(
+        "geheimgang_offen",
+        False
+    ):
+        return
+
+    ort_titel(
+        "Alte Wegstation - Archivkammer"
+    )
+
+    text_ausgeben(
+        "Du vergleichst den Grundriss mit den Wänden "
+        "der Archivkammer."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Hinter einem niedrigen Steinregal verläuft eine "
+        "ungewöhnlich gerade Fuge vom Boden bis zur Decke."
+    )
+
+    text_ausgeben(
+        "Das Regal lässt sich nur wenige Fingerbreit bewegen, "
+        "doch dahinter kommt ein eingelassener Metallring zum Vorschein."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Du ziehst daran. Erst geschieht nichts."
+    )
+
+    text_ausgeben(
+        "Dann löst sich mit einem tiefen Knirschen ein schmaler "
+        "Teil der Wand aus seiner Verankerung."
+    )
+
+    status[
+        "geheimgang_offen"
+    ] = True
+
+    funde[
+        "geheimraum_entdeckt"
+    ] = True
+
+    akt1_lernerfahrung(
+        "wegstation_geheimraum"
+    )
+
+    rueckkehr_hinweis_erledigen(
+        "wegstation_archiv_kartenstueck"
+    )
+
+    print()
+    print("-" * 34)
+
+    design_text(
+        "VERBORGENER BEREICH ENTDECKT",
+        design="wissen",
+        art="ereignis"
+    )
+
+    print("Versiegelte Kammer")
+    print("-" * 34)
+
+    warte_auf_taste(
+        "Weiter"
+    )
+
+def wegstation_versiegeltes_register_untersuchen():
+    status = wegstation_status()
+    funde = status[
+        "funde"
+    ]
+
+    if funde.get(
+        "versiegeltes_register_geborgen",
+        False
+    ):
+        return
+
+    ort_titel(
+        "Alte Wegstation - Versiegelte Kammer"
+    )
+
+    text_ausgeben(
+        "Die Kammer enthält keine Regale und keine gewöhnlichen Akten."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Auf einem einzelnen steinernen Sockel liegt ein schmales "
+        "Buch, sorgfältig in dunkles Tuch eingeschlagen."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Der Einband ist mit einem verblassten Siegel verschlossen."
+    )
+
+    text_ausgeben(
+        "Du kennst weder das Zeichen noch den Grund, warum dieses "
+        "Register getrennt von allen anderen Unterlagen verwahrt wurde."
+    )
+
+    print()
+
+    design_text(
+        "VERSIEGELTES REGISTER",
+        design="wissen",
+        art="ereignis"
+    )
+
+    print()
+
+    text_ausgeben(
+        "Du entscheidest dich, es mitzunehmen. Vielleicht findet sich "
+        "später jemand, der das Siegel oder seinen Inhalt einordnen kann."
+    )
+
+    if not item_besitzt(
+        "versiegeltes_register"
+    ):
+        item_hinzufuegen(
+            "versiegeltes_register"
+        )
+
+    funde[
+        "versiegeltes_register_geborgen"
+    ] = True
+
+    besonderen_fund_dokumentieren(
+        "versiegeltes_register",
+        "geborgen"
+    )
+
+    print()
+    print("-" * 34)
+
+    design_text(
+        "BESONDERER FUND",
+        design="wissen",
+        art="ereignis"
+    )
+
+    print("Versiegeltes Register")
+    print("-" * 34)
+
+    warte_auf_taste(
+        "Weiter"
+    )
+
+def wegstation_kartenstueck_archiv_vergleichen():
+    status = wegstation_status()
+
+    funde = status[
+        "funde"
+    ]
+
+    if funde.get(
+        "geheimraum_hinweis",
+        False
+    ):
+        return
+
+    if not (
+        item_besitzt(
+            "altes_kartenstueck"
+        )
+        or besonderer_fund_status(
+            "altes_kartenstueck"
+        ) in (
+            "erhalten",
+            "zugeordnet"
+        )
+    ):
+        return
+
+    ort_titel(
+        "Alte Wegstation - Archivkammer"
+    )
+
+    text_ausgeben(
+        "Du legst Tomas' altes Kartenstück neben die "
+        "Straßenkarte aus dem Archiv."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Der kleine Grundriss darauf zeigt an der Rückseite "
+        "des Archivs einen schmalen Mauervorsprung."
+    )
+
+    text_ausgeben(
+        "Im Raum selbst gibt es dort jedoch weder eine Tür "
+        "noch eine erkennbare Nische."
+    )
+
+    funde[
+        "geheimraum_hinweis"
+    ] = True
+
+    akt1_lernerfahrung(
+        "wegstation_kartenvergleich"
+    )
+
+    rueckkehr_hinweis_erledigen(
+        "wegstation_archiv_kartenstueck"
+    )
+
+    print()
+
+    design_text(
+        "Irgendetwas an den Maßen des Raumes stimmt nicht.",
+        design="warnung",
+        art="menue"
+    )
+
+    warte_auf_taste(
+        "Weiter"
+    )
+
+def wegstation_raum_aktionen(
+    raum_id
+):
+    status = wegstation_status()
+    funde = status[
+        "funde"
+    ]
+
+    aktionen = []
+
+    if (
+        raum_id == "wachraum"
+        and not funde.get(
+            "wachraum_untersucht",
+            False
+        )
+    ):
+        aktionen.append(
+            (
+                "wachraum_untersuchen",
+                "Den Wachraum durchsuchen"
+            )
+        )
+
+    if (
+        raum_id == "schreibstube"
+        and not funde.get(
+            "stationsregister_gelesen",
+            False
+        )
+    ):
+        aktionen.append(
+            (
+                "schreibstube_untersuchen",
+                "Die alten Unterlagen untersuchen"
+            )
+        )
+
+    if (
+        raum_id == "keller"
+        and not funde.get(
+            "keller_untersucht",
+            False
+        )
+    ):
+        aktionen.append(
+            (
+                "keller_untersuchen",
+                "Den hinteren Keller untersuchen"
+            )
+        )
+
+    elif (
+        raum_id == "keller"
+        and "keller_vorhof"
+        not in status["abkuerzungen"]
+    ):
+        aktionen.append(
+            (
+                "keller_abkuerzung",
+                "Die alte Seitentür untersuchen"
+            )
+        )
+
+    if (
+        raum_id == "archivkammer"
+        and not funde.get(
+            "archiv_untersucht",
+            False
+        )
+    ):
+        aktionen.append(
+            (
+                "archiv_untersuchen",
+                "Die alten Karten und Register untersuchen"
+            )
+        )
+
+    elif (
+        raum_id == "archivkammer"
+        and not funde.get(
+            "geheimraum_hinweis",
+            False
+        )
+        and not status.get(
+            "geheimgang_offen",
+            False
+        )
+        and (
+            item_besitzt(
+                "altes_kartenstueck"
+            )
+            or besonderer_fund_status(
+                "altes_kartenstueck"
+            ) in (
+                "erhalten",
+                "zugeordnet"
+            )
+        )
+    ):
+        aktionen.append(
+            (
+                "kartenstueck_archiv",
+                "Das alte Kartenstück mit dem Archiv vergleichen [!]"
+            )
+        )
+
+    elif (
+        raum_id == "archivkammer"
+        and funde.get(
+            "geheimraum_hinweis",
+            False
+        )
+        and not status.get(
+            "geheimgang_offen",
+            False
+        )
+    ):
+        aktionen.append(
+            (
+                "geheimraum_oeffnen",
+                "Die Maße des Archivs genauer prüfen"
+            )
+        )
+
+    if (
+        raum_id == "versiegelte_kammer"
+        and not funde.get(
+            "versiegeltes_register_geborgen",
+            False
+        )
+    ):
+        aktionen.append(
+            (
+                "versiegeltes_register",
+                "Den steinernen Sockel untersuchen"
+            )
+        )
+
+    return aktionen
+
+def wegstation_verbindungen(raum_id):
+    raum = WEGSTATION_RAEUME.get(
+        raum_id
+    )
+
+    if not raum:
+        return []
+
+    verbindungen = list(
+        raum.get(
+            "wege",
+            []
+        )
+    )
+
+    status = wegstation_status()
+
+    if (
+        raum_id == "keller"
+        and not status["funde"].get(
+            "keller_untersucht",
+            False
+        )
+        and "archivkammer" in verbindungen
+    ):
+        verbindungen.remove(
+            "archivkammer"
+        )
+
+    # Spätere Abkürzung:
+    # Keller <-> Vorhof
+    if (
+        "keller_vorhof"
+        in status["abkuerzungen"]
+    ):
+        if (
+            raum_id == "keller"
+            and "vorhof" not in verbindungen
+        ):
+            verbindungen.append(
+                "vorhof"
+            )
+
+        elif (
+            raum_id == "vorhof"
+            and "keller" not in verbindungen
+        ):
+            verbindungen.append(
+                "keller"
+            )
+
+    # Späterer Geheimgang
+    if status.get(
+        "geheimgang_offen",
+        False
+    ):
+        if (
+            raum_id == "archivkammer"
+            and "versiegelte_kammer"
+            not in verbindungen
+        ):
+            verbindungen.append(
+                "versiegelte_kammer"
+            )
+
+    return verbindungen
+
+
+def wegstation_gebietskarte_anzeigen():
+    daten = wegstation_status()
+
+    aktueller_raum = daten.get(
+        "aktueller_raum",
+        "vorhof"
+    )
+
+    besuchte_raeume = set(
+        daten.get(
+            "besuchte_raeume",
+            []
+        )
+    )
+
+    # -------------------------
+    # SICHTBARKEIT
+    # -------------------------
+
+    def raum_sichtbar(raum_id):
+        if raum_id in besuchte_raeume:
+            return True
+
+        for besucht_id in besuchte_raeume:
+            if raum_id in wegstation_verbindungen(
+                besucht_id
+            ):
+                return True
+
+        return False
+
+    # -------------------------
+    # KARTENFELD
+    # -------------------------
+
+    def feld(raum_id):
+        if not raum_sichtbar(
+            raum_id
+        ):
+            return None
+
+        if raum_id not in besuchte_raeume:
+            return "[?]"
+
+        name = WEGSTATION_KARTENNAMEN[
+            raum_id
+        ]
+
+        if raum_id == aktueller_raum:
+            return f">{name}<"
+
+        return f"[{name}]"
+
+    # -------------------------
+    # ZEICHENBEREICH
+    # -------------------------
+
+    breite = 56
+    hoehe = 9
+
+    karte = [
+        [" "] * breite
+        for _ in range(hoehe)
+    ]
+
+    # -------------------------
+    # VERBINDUNGSLINIEN
+    # -------------------------
+
+    def mittelpunkt(raum_id):
+        text = feld(
+            raum_id
+        )
+
+        if text is None:
+            return None
+
+        zeile, spalte = (
+            WEGSTATION_KARTENPOSITIONEN[
+                raum_id
+            ]
+        )
+
+        return (
+            zeile,
+            spalte + len(text) // 2
+        )
+
+    def linie_setzen(
+        zeile,
+        spalte,
+        zeichen
+    ):
+        if not (
+            0 <= zeile < hoehe
+            and 0 <= spalte < breite
+        ):
+            return
+
+        if karte[zeile][spalte] == " ":
+            karte[zeile][spalte] = zeichen
+
+    def verbindung_zeichnen(
+        start_id,
+        ziel_id
+    ):
+        start = mittelpunkt(
+            start_id
+        )
+
+        ziel = mittelpunkt(
+            ziel_id
+        )
+
+        if (
+            start is None
+            or ziel is None
+        ):
+            return
+
+        start_zeile, start_spalte = start
+        ziel_zeile, ziel_spalte = ziel
+
+        # Gleiche Höhe
+        if start_zeile == ziel_zeile:
+            von = min(
+                start_spalte,
+                ziel_spalte
+            )
+
+            bis = max(
+                start_spalte,
+                ziel_spalte
+            )
+
+            for spalte in range(
+                von + 1,
+                bis
+            ):
+                linie_setzen(
+                    start_zeile,
+                    spalte,
+                    "─"
+                )
+
+            return
+
+        # Gleiche Spalte
+        if start_spalte == ziel_spalte:
+            von = min(
+                start_zeile,
+                ziel_zeile
+            )
+
+            bis = max(
+                start_zeile,
+                ziel_zeile
+            )
+
+            for zeile in range(
+                von + 1,
+                bis
+            ):
+                linie_setzen(
+                    zeile,
+                    start_spalte,
+                    "│"
+                )
+
+            return
+
+        # Unterschiedliche Höhe und Spalte
+        schritt = (
+            1
+            if ziel_spalte > start_spalte
+            else -1
+        )
+
+        for spalte in range(
+            start_spalte + schritt,
+            ziel_spalte,
+            schritt
+        ):
+            linie_setzen(
+                start_zeile,
+                spalte,
+                "─"
+            )
+
+        schritt = (
+            1
+            if ziel_zeile > start_zeile
+            else -1
+        )
+
+        for zeile in range(
+            start_zeile + schritt,
+            ziel_zeile,
+            schritt
+        ):
+            linie_setzen(
+                zeile,
+                ziel_spalte,
+                "│"
+            )
+
+    # -------------------------
