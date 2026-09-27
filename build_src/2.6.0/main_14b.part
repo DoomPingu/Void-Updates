@@ -1,0 +1,1000 @@
+            return zahl
+
+        fehler = True
+
+def heiltrank_benutzen(lebenspunkte, heiltränke):
+    blutung_aktiv = status_aktiv(
+        "bluten"
+    )
+
+    if (
+        heiltränke > 0
+        and (
+            lebenspunkte < 100
+            or blutung_aktiv
+        )
+    ):
+        lebenspunkte = min(
+            100,
+            lebenspunkte + 30
+        )
+
+        heiltränke -= 1
+
+        print()
+        print("Du benutzt einen Heiltrank")
+        print(
+            f"Du hast jetzt {lebenspunkte} HP"
+        )
+
+        if blutung_aktiv:
+            status_entfernen(
+                "bluten",
+                meldung=False
+            )
+
+            design_text(
+                "Die Blutung kommt zum Stillstand.",
+                design="positiv",
+                art="menue"
+            )
+
+    elif heiltränke == 0:
+        print("Du hast keine Heiltränke!")
+
+    elif lebenspunkte == 100:
+        print(
+            "Du hast schon volle Lebenspunkte!"
+        )
+
+    return lebenspunkte, heiltränke  
+
+def start_build_empfehlungen_anzeigen():
+    ort_titel(
+        "Build-Empfehlungen"
+    )
+
+    text_ausgeben(
+        "Diese Vorschläge sind keine Klassen. "
+        "Sie zeigen nur Veranlagungen, "
+        "die gut miteinander zusammenspielen.",
+        art="menue"
+    )
+
+    print()
+
+    design_text(
+        "Kraftvoller Wanderer",
+        design="wissen",
+        art="menue"
+    )
+
+    print(
+        "Hauptveranlagung: Stärke +1"
+    )
+    print(
+        "Zweite Neigung: Ausdauer (2/4 Prägung)"
+    )
+    print(
+        "Spielstil: Hindernisse direkt überwinden und "
+        "körperliche Belastungen besser verkraften."
+    )
+
+    print()
+
+    design_text(
+        "Standhafter Reisender",
+        design="wissen",
+        art="menue"
+    )
+
+    print(
+        "Hauptveranlagung: Ausdauer +1"
+    )
+    print(
+        "Zweite Neigung: Zähigkeit (2/4 Prägung)"
+    )
+    print(
+        "Spielstil: Lange Wege, Erschöpfung und "
+        "widriges Gelände besser bewältigen."
+    )
+
+    print()
+
+    design_text(
+        "Kundschafter",
+        design="wissen",
+        art="menue"
+    )
+
+    print(
+        "Hauptveranlagung: Geschick +1"
+    )
+    print(
+        "Zweite Neigung: Wahrnehmung (2/4 Prägung)"
+    )
+    print(
+        "Spielstil: Präzise Lösungen finden, schwierige "
+        "Passagen meistern und Details schneller bemerken."
+    )
+
+    print()
+
+    design_text(
+        "Unverwüstlicher",
+        design="wissen",
+        art="menue"
+    )
+
+    print(
+        "Hauptveranlagung: Zähigkeit +1"
+    )
+    print(
+        "Zweite Neigung: Stärke (2/4 Prägung)"
+    )
+    print(
+        "Spielstil: Schmerz und körperlichen Druck aushalten "
+        "und sich durch schwierige Wege kämpfen."
+    )
+
+    warte_auf_taste(
+        "Weitere Empfehlungen"
+    )
+
+    ort_titel(
+        "Build-Empfehlungen"
+    )
+
+    design_text(
+        "Gelehrter",
+        design="wissen",
+        art="menue"
+    )
+
+    print(
+        "Hauptveranlagung: Wissen +1"
+    )
+    print(
+        "Zweite Neigung: Wahrnehmung (2/4 Prägung)"
+    )
+    print(
+        "Spielstil: Rätsel, alte Aufzeichnungen und "
+        "größere Zusammenhänge untersuchen."
+    )
+
+    print()
+
+    design_text(
+        "Spurensucher",
+        design="wissen",
+        art="menue"
+    )
+
+    print(
+        "Hauptveranlagung: Wahrnehmung +1"
+    )
+    print(
+        "Zweite Neigung: Ausdauer (2/4 Prägung)"
+    )
+    print(
+        "Spielstil: Spuren und Widersprüche entdecken "
+        "und bei längeren Erkundungen durchhalten."
+    )
+
+    print()
+
+    design_text(
+        "Unbeugsamer",
+        design="wissen",
+        art="menue"
+    )
+
+    print(
+        "Hauptveranlagung: Willenskraft +1"
+    )
+    print(
+        "Zweite Neigung: Zähigkeit (2/4 Prägung)"
+    )
+    print(
+        "Spielstil: Angst und mentalem Druck standhalten "
+        "und auch körperlich belastende Situationen ertragen."
+    )
+
+    print()
+
+    design_text(
+        "Menschenkenner",
+        design="wissen",
+        art="menue"
+    )
+
+    print(
+        "Hauptveranlagung: Empathie +1"
+    )
+    print(
+        "Zweite Neigung: Wahrnehmung (2/4 Prägung)"
+    )
+    print(
+        "Spielstil: Gefühle, Motive und ungewöhnliche "
+        "Reaktionen von Menschen erkennen."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Keiner dieser Builds ist notwendig. "
+        "Die Hauptgeschichte soll mit jeder "
+        "Veranlagung spielbar bleiben.",
+        art="menue"
+    )
+
+    warte_auf_taste(
+        "Zurück"
+    )
+
+def start_veranlagung_waehlen():
+    attribut_system_sicherstellen()
+
+    optionen = [
+        (
+            "staerke",
+            "Stärke",
+            "Kraft einsetzen und körperliche Hindernisse überwinden."
+        ),
+        (
+            "ausdauer",
+            "Ausdauer",
+            "Belastung, Erschöpfung und körperliche Grenzen einschätzen."
+        ),
+        (
+            "geschick",
+            "Geschick",
+            "Präzision, Balance und schnelle Handgriffe."
+        ),
+        (
+            "zaehigkeit",
+            "Zähigkeit",
+            "Schmerz, Widerstand und körperlichen Druck aushalten."
+        ),
+        (
+            "wissen",
+            "Wissen",
+            "Gelerntes einordnen und Zusammenhänge verstehen."
+        ),
+        (
+            "wahrnehmung",
+            "Wahrnehmung",
+            "Spuren, Details und Widersprüche bemerken."
+        ),
+        (
+            "willenskraft",
+            "Willenskraft",
+            "Angst, Druck und mentale Belastung aushalten."
+        ),
+        (
+            "empathie",
+            "Empathie",
+            "Gefühle, Motive und Zwischentöne verstehen."
+        )
+    ]
+
+    while True:
+        ort_titel(
+            "Deine Veranlagung"
+        )
+
+        text_ausgeben(
+            "Noch bevor dein Weg beginnt, gibt es Dinge, "
+            "die dir etwas leichter fallen als andere.",
+            art="menue"
+        )
+
+        print()
+
+        text_ausgeben(
+            "Das ist keine Klasse und keine endgültige Entscheidung. "
+            "Deine Fähigkeiten entwickeln sich später durch das, "
+            "was du tatsächlich tust und lernst.",
+            art="menue"
+        )
+
+        print()
+
+        design_text(
+            "Wähle deine stärkste Veranlagung.",
+            design="wissen",
+            art="menue"
+        )
+
+        print()
+
+        for nummer, (_, name, beschreibung) in enumerate(
+            optionen,
+            start=1
+        ):
+            print(
+                f"{nummer}. {name} - {beschreibung}"
+            )
+
+        empfehlungen_nummer = (
+            len(optionen) + 1
+        )
+
+        print()
+
+        print(
+            f"{empfehlungen_nummer}. "
+            "Build-Empfehlungen ansehen"
+        )
+
+        haupt_auswahl = eingabe_menu(
+            1,
+            empfehlungen_nummer,
+            sonder_tasten=()
+        )
+
+        if (
+            haupt_auswahl
+            == empfehlungen_nummer
+        ):
+            start_build_empfehlungen_anzeigen()
+            continue
+
+        break
+
+    haupt_id = optionen[
+        haupt_auswahl - 1
+    ][0]
+
+    spieler[
+        "verfassungs_praegung"
+    ][
+        haupt_id
+    ] = 4
+
+    verfassung_neuberechnen(
+        haupt_id,
+        meldung=False
+    )
+
+    zweite_optionen = [
+        eintrag
+        for eintrag in optionen
+        if eintrag[0] != haupt_id
+    ]
+
+    ort_titel(
+        "Deine Veranlagung"
+    )
+
+    design_text(
+        f"Stärkste Veranlagung: "
+        f"{VERFASSUNG_DEFINITIONEN[haupt_id]['name']} +1",
+        design="positiv",
+        art="menue"
+    )
+
+    print()
+
+    text_ausgeben(
+        "Wähle nun eine zweite Neigung. Sie gibt noch keinen "
+        "direkten Bonus, ist aber bereits teilweise ausgeprägt "
+        "und kann sich dadurch schneller entwickeln.",
+        art="menue"
+    )
+
+    print()
+
+    for nummer, (_, name, beschreibung) in enumerate(
+        zweite_optionen,
+        start=1
+    ):
+        print(
+            f"{nummer}. {name} - {beschreibung}"
+        )
+
+    zweite_auswahl = eingabe_menu(
+        1,
+        len(zweite_optionen),
+        sonder_tasten=()
+    )
+
+    zweite_id = zweite_optionen[
+        zweite_auswahl - 1
+    ][0]
+
+    spieler[
+        "verfassungs_praegung"
+    ][
+        zweite_id
+    ] = 2
+
+    verfassung_neuberechnen(
+        zweite_id,
+        meldung=False
+    )
+
+    spieler[
+        "start_veranlagung"
+    ] = {
+        "haupt": haupt_id,
+        "neigung": zweite_id
+    }
+
+    ort_titel(
+        "Deine Veranlagung"
+    )
+
+    design_text(
+        "Deine Ausgangslage",
+        design="wissen",
+        art="menue"
+    )
+
+    print()
+
+    print(
+        f"Stärkste Veranlagung: "
+        f"{VERFASSUNG_DEFINITIONEN[haupt_id]['name']} +1"
+    )
+
+    print(
+        f"Zweite Neigung: "
+        f"{VERFASSUNG_DEFINITIONEN[zweite_id]['name']} (2/4 Prägung)"
+    )
+
+    print()
+
+    design_text(
+        "Übersinnliches: ???",
+        design="wissen",
+        art="menue"
+    )
+
+    warte_auf_taste(
+        "Weiter"
+    )
+
+def neuer_spieler(name):
+    return {
+        "name": name,
+        "lebenspunkte": 100,
+        "gold": 0,
+        "heiltränke": 0,
+        "diamanten": 0,
+        "spiel_laeuft": True,
+        "ort": "spieler_zimmer",
+        "ort_nachricht": None,
+        "reise": None,
+        "textverlauf": [],
+        "besiegte_gegner": 0,        
+        "attribute": {
+            "koerper": 1,
+            "geist": 1,
+            "uebersinnliches": 0
+        },
+
+        "attribut_fortschritt": {
+            "koerper": 0,
+            "geist": 0,
+            "uebersinnliches": 0
+        },
+
+        "verfassungen": {
+            "staerke": 0,
+            "ausdauer": 0,
+            "geschick": 0,
+            "zaehigkeit": 0,
+
+            "wissen": 0,
+            "wahrnehmung": 0,
+            "willenskraft": 0,
+            "empathie": 0,
+
+            "sensibilitaet": 0,
+            "resonanz": 0,
+            "kontrolle": 0,
+            "anker": 0
+        },
+
+        "verfassungs_praegung": {
+            "staerke": 0,
+            "ausdauer": 0,
+            "geschick": 0,
+            "zaehigkeit": 0,
+
+            "wissen": 0,
+            "wahrnehmung": 0,
+            "willenskraft": 0,
+            "empathie": 0,
+
+            "sensibilitaet": 0,
+            "resonanz": 0,
+            "kontrolle": 0,
+            "anker": 0
+        },
+
+        "lernquellen": {},
+
+        "quest_schmied": "nicht_entdeckt",
+        "fackeln": 0,
+        "fackel_dauer": 0,
+        "reisender_status": "nicht_getroffen",
+        "ressourcen_vorkommen": {},
+        "erfolge_freigeschaltet": [],
+        "rueckkehr_hinweise": {},
+        "besondere_funde": {},
+        "wege_status": {},
+        "neue_wege": [],
+        "routenkenntnis": [],
+        "status_effekte": {},
+        "wald_wegstein_untersucht": False,
+        "wald_fragment_gefunden": False,    
+        "wald_erforschung": {
+            "aktueller_knoten": None,
+            "besuchte_knoten": [],
+            "abkuerzungen": [],
+            "funde": {}
+        },
+
+
+        "prolog_status": "aufgewacht",
+        "prolog_besuchte_orte": {
+        "gasthaus": False,
+        "schmiede": False,
+        "marktplatz": False
+        },
+        "prolog_joris_hinweise": {
+            "mara": False,
+            "tomas": False
+        },
+        "dialog_themen": {},
+        "inventar_items": {},
+        "rezepte_gelernt": [],
+
+        "besuchte_orte": [],
+        "waffe": None,
+
+        "waffen_inventar": [],
+        "akt": "PROLOG - EICHENRUH",
+        "quest_hilda": "nicht_entdeckt",
+        "quest_ein_name_fehlt": "nicht_entdeckt",
+        "quest_wiegenlied": "nicht_entdeckt",
+        "koehler_nachricht_bjorn": "nicht_erhalten",
+        "waldwaechter_besiegt": False,
+        "markt_weg": "nicht_entdeckt",
+        "dorf_haus_gepluendert": False,
+        "tageszeit": "Tag",
+        "textgeschwindigkeit": STANDARD_EINSTELLUNGEN["textgeschwindigkeit"],
+        "menue_eingabe": STANDARD_EINSTELLUNGEN["menue_eingabe"],
+        "bildschirm_leeren": STANDARD_EINSTELLUNGEN["bildschirm_leeren"],
+        "spieler_name_farbe": STANDARD_EINSTELLUNGEN["spieler_name_farbe"]
+    }
+
+
+def optionen():
+    if isinstance(spieler, dict):
+        einstellungen = spieler
+    else:
+        einstellungen = STANDARD_EINSTELLUNGEN
+    while True:
+        ort_titel("Optionen")
+
+        if einstellungen["menue_eingabe"] == "direkt":
+            eingabe_text = "Direkte Tasteneingabe"
+        else:
+            eingabe_text = "Mit Enter bestätigen"
+
+        if einstellungen["bildschirm_leeren"]:
+            bildschirm_text = "An"
+        else:
+            bildschirm_text = "Aus"
+
+        print(
+            f"Textgeschwindigkeit: "
+            f"{einstellungen['textgeschwindigkeit'].capitalize()}"
+        )
+        print(f"Menü-Eingabe: {eingabe_text}")
+        print(f"Bildschirm leeren: {bildschirm_text}")
+        print(
+            f"Spielername-Farbe: "
+            f"{einstellungen.get('spieler_name_farbe', 'standard').capitalize()}"
+        )
+
+        print()
+        print("1. Textgeschwindigkeit")
+        print("2. Menü-Eingabe")
+        print("3. Bildschirm leeren")
+        print("4. Spielername-Farbe")
+        print("5. Zurück")
+
+        optionen_auswahl = eingabe_menu(
+            1,
+            5,
+            sonder_tasten=()
+        )
+
+        # -------------------------
+        # TEXTGESCHWINDIGKEIT
+        # -------------------------
+
+        if optionen_auswahl == 1:
+            ort_titel("Textgeschwindigkeit")
+
+            print("1. Sofort")
+            print("2. Schnell")
+            print("3. Normal")
+            print("4. Langsam")
+            print("5. Zurück")
+
+            tempo_auswahl = eingabe_menu(
+                1,
+                5,
+                sonder_tasten=()
+            )
+
+            if tempo_auswahl == 1:
+                einstellungen['textgeschwindigkeit'] = "sofort"
+
+            elif tempo_auswahl == 2:
+                einstellungen['textgeschwindigkeit'] = "schnell"
+
+            elif tempo_auswahl == 3:
+                einstellungen['textgeschwindigkeit'] = "normal"
+
+            elif tempo_auswahl == 4:
+                einstellungen['textgeschwindigkeit'] = "langsam"
+
+            elif tempo_auswahl == 5:
+                continue
+
+            einstellungen_speichern(
+                einstellungen
+            )
+
+            print()
+            print(
+                f"Textgeschwindigkeit wurde auf "
+                f"{einstellungen['textgeschwindigkeit'].capitalize()} gesetzt."
+            )
+
+            print()
+            text_ausgeben(
+                "Der Wind bewegt leise die Blätter über dir.",
+                art="atmosphaere"
+            )
+
+            warte_auf_taste()
+
+        # -------------------------
+        # MENÜ-EINGABE
+        # -------------------------
+
+        elif optionen_auswahl == 2:
+            ort_titel("Menü-Eingabe")
+
+            print("1. Mit Enter bestätigen")
+            print("2. Direkte Tasteneingabe")
+            print("3. Zurück")
+
+            eingabe_auswahl = eingabe_menu(
+                1,
+                3,
+                sonder_tasten=()
+            )
+
+            if eingabe_auswahl == 1:
+                einstellungen["menue_eingabe"] = "enter"
+
+                einstellungen_speichern(
+                    einstellungen
+                )
+
+                print()
+                print("Menüs werden jetzt mit Enter bestätigt.")
+
+                warte_auf_taste()
+
+            elif eingabe_auswahl == 2:
+                einstellungen["menue_eingabe"] = "direkt"
+
+                einstellungen_speichern(
+                    einstellungen
+                )
+
+                print()
+                print("Menüs reagieren jetzt direkt auf Tastendruck.")
+
+                warte_auf_taste()
+
+            elif eingabe_auswahl == 3:
+                continue
+
+        elif optionen_auswahl == 3:
+            ort_titel("Bildschirm leeren")
+
+            print("1. An")
+            print("2. Aus")
+            print("3. Zurück")
+
+            bildschirm_auswahl = eingabe_menu(
+                1,
+                3,
+                sonder_tasten=()
+            )
+
+            if bildschirm_auswahl == 1:
+                einstellungen["bildschirm_leeren"] = True
+
+                einstellungen_speichern(
+                    einstellungen
+                )
+
+                print()
+                print("Neue Ansichten löschen jetzt den vorherigen Bildschirm.")
+
+                warte_auf_taste()
+
+            elif bildschirm_auswahl == 2:
+                einstellungen["bildschirm_leeren"] = False
+
+                einstellungen_speichern(
+                    einstellungen
+                )
+
+                print()
+                print("Das Spiel läuft jetzt fortlaufend nach unten weiter.")
+
+                warte_auf_taste()
+
+            elif bildschirm_auswahl == 3:
+                continue
+
+        elif optionen_auswahl == 4:
+            ort_titel("Spielername-Farbe")
+
+            print("1. Standard")
+            print("2. Blau")
+            print("3. Cyan")
+            print("4. Grün")
+            print("5. Gelb")
+            print("6. Lila")
+            print("7. Rot")
+            print("8. Zurück")
+
+            farbe_auswahl = eingabe_menu(
+                1,
+                9,
+                sonder_tasten=()
+            )
+
+            if farbe_auswahl == 8:
+                continue
+
+            farben = {
+                1: "standard",
+                2: "blau",
+                3: "cyan",
+                4: "gruen",
+                5: "gelb",
+                6: "lila",
+                7: "rot",
+                9: "schwarz"
+            }
+
+            einstellungen[
+                "spieler_name_farbe"
+            ] = farben[farbe_auswahl]
+
+            einstellungen_speichern(
+                einstellungen
+            )
+
+            print()
+            print(
+                "Die Spielername-Farbe wurde geändert."
+            )
+
+            warte_auf_taste()
+
+        elif optionen_auswahl == 5:
+            return
+
+def spiel_intro():
+    ort_titel("Void")
+
+    text_ausgeben(
+        "Manche Orte werden durch Mauern und Tore "
+        "zusammengehalten."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Andere durch Namen, Gewohnheiten und Geschichten, "
+        "die niemand mehr bewusst erzählen muss."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Eichenruh gehört zu den letzteren."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Hier weiß man, welches Dach bei starkem Regen tropft, "
+        "wer morgens zuerst den Ofen anheizt und welcher Weg "
+        "nach einem Gewitter voller Schlamm steht."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Man grüßt dieselben Gesichter, hört dieselben alten "
+        "Geschichten und streitet über Gerüchte, deren Anfang "
+        "längst niemand mehr kennt."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Niemand nennt das Erinnerung."
+    )
+
+    text_ausgeben(
+        "Es ist einfach das Leben hier."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Und solange etwas selbstverständlich ist, "
+        "fragt kaum jemand, was davon bleibt, "
+        "wenn es eines Tages fehlt."
+    )
+
+    warte_auf_taste(
+        "Weiter"
+    )
+
+    ort_titel("Prolog")
+
+    design_text(
+        "EICHENRUH",
+        design="wichtig",
+        art="ereignis"
+    )
+
+    print()
+
+    warte_auf_taste(
+        "Beginnen"
+    )
+
+def hauptmenue():
+    ort_titel("Void")
+
+    print("1. Neues Spiel")
+    print("2. Spiel laden")
+    print("3. Optionen")
+    print("4. Beenden")
+
+    return eingabe_menu(
+        1,
+        4,
+        sonder_tasten=()
+    )
+
+def speicherplatz_auswahl_laden():
+    while True:
+        ort_titel(
+            "Spiel laden"
+        )
+
+        for slot in range(
+            1,
+            ANZAHL_SPEICHER_SLOTS + 1
+        ):
+            print(
+                speicherplatz_text(
+                    slot
+                )
+            )
+
+        zurueck_option = (
+            ANZAHL_SPEICHER_SLOTS + 1
+        )
+
+        print(
+            f"{zurueck_option}. Zurück"
+        )
+
+        auswahl = eingabe_menu(
+            1,
+            zurueck_option,
+            sonder_tasten=()
+        )
+
+        if auswahl == zurueck_option:
+            return None
+
+        if not os.path.exists(
+            speicherdatei_pfad(
+                auswahl
+            )
+        ):
+            print()
+            print(
+                "Dieser Speicherplatz ist leer."
+            )
+
+            warte_auf_taste(
+                "Zurück"
+            )
+
+            continue
+
+        return auswahl
+
+def speicherplatz_auswahl_neues_spiel():
+    while True:
+        ort_titel(
+            "Neues Spiel - Speicherplatz"
+        )
+
+        for slot in range(
+            1,
+            ANZAHL_SPEICHER_SLOTS + 1
+        ):
+            print(
+                speicherplatz_text(
+                    slot
+                )
+            )
+
+        zurueck_option = (
+            ANZAHL_SPEICHER_SLOTS + 1
+        )
+
+        print(
+            f"{zurueck_option}. Zurück"
+        )
+
+        auswahl = eingabe_menu(
+            1,
+            zurueck_option,
+            sonder_tasten=()
+        )
+
+        if auswahl == zurueck_option:
+            return None
+
+        speicher_datei = (
+            speicherdatei_pfad(
+                auswahl
+            )
+        )
+
+        if not os.path.exists(
+            speicher_datei
+        ):
+            return auswahl
+
+        print()
+
+        design_text(
+            "SPIELSTAND VORHANDEN",
+            design="warnung",
+            art="menue"
+        )
+
+        print()
+        print(
+            "Dieser Speicherplatz enthält "
+            "bereits einen Spielstand."
+        )
+
+        print()
+        print(
