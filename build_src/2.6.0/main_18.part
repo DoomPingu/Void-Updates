@@ -1,0 +1,999 @@
+                    "[Joris] Mein Körper und mein Kopf sind sich "
+                    "darüber immer noch nicht einig."
+                )
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+        elif aktion == "bjorn":
+            dialog_thema_markieren(
+                "joris",
+                "bjorn"
+            )
+
+            text_ausgeben(
+                "[Joris] Dass ich mich ausruhen soll."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Joris] Was bei Bjorn vermutlich bedeutet, "
+                "dass ich morgen doppelt so viel arbeiten darf."
+            )
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+        elif aktion == "ende":
+            abschied = npc_variante_waehlen(
+                "joris",
+                "letzter_abschied",
+                [
+                    "[Joris] Bis später.",
+                    "[Joris] Und danke nochmal.",
+                    (
+                        "[Joris] Wenn ich wieder in einen Keller gehe, "
+                        "nehme ich dich mit."
+                    ),
+                    (
+                        "[Joris] Ich bleibe heute lieber hier oben. "
+                        "Nur zur Sicherheit."
+                    )
+                ]
+            )
+
+            text_ausgeben(
+                abschied
+            )
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+            return
+
+def gasthaus():
+    ort_titel(
+        "Gasthaus"
+    )
+
+    gasthaus_erstbesuch = (
+        spieler.get(
+            "prolog_status"
+        ) == "dorf_freigeschaltet"
+        and not spieler.get(
+            "prolog_besuchte_orte",
+            {}
+        ).get(
+            "gasthaus",
+            False
+        )
+    )
+
+    prolog_ort_besucht(
+        "gasthaus"
+    )
+
+    ort_nachricht_anzeigen()
+
+    if gasthaus_erstbesuch:
+        print()
+
+        text_ausgeben(
+            "Die Gaststube ist um diese Stunde bereits belebt, "
+            "ohne wirklich laut zu sein.",
+            art="atmosphaere"
+        )
+
+        text_ausgeben(
+            "An den schweren Holztischen stehen Becher und Teller, "
+            "während aus der Küche der Geruch von warmem Brot herüberzieht.",
+            art="atmosphaere"
+        )
+
+        text_ausgeben(
+            "Hinter dem Tresen bewegt sich Mara mit der Ruhe von jemandem, "
+            "der diesen Morgen schon unzählige Male erlebt hat.",
+            art="atmosphaere"
+        )
+
+    joris_da = joris_im_gasthaus()
+
+    optionen = [
+        (
+            "mara",
+            "Mit Mara reden"
+        )
+    ]
+
+    if joris_da:
+        optionen.append(
+            (
+                "joris",
+                "Mit Joris reden"
+            )
+        )
+
+    optionen.append(
+        (
+            "gaststube",
+            "Dich in der Gaststube umsehen"
+        )
+    )
+
+    if not prolog_laeuft():
+        optionen.append(
+            (
+                "proviant",
+                "Bei Mara Proviant kaufen"
+            )
+        )
+
+    optionen.append(
+        (
+            "verlassen",
+            "Gasthaus verlassen"
+        )
+    )
+
+    menue_trenner()
+
+    for nummer, (_, text) in enumerate(
+        optionen,
+        start=1
+    ):
+        print(
+            f"{nummer}. {text}"
+        )
+
+    gasthaus_auswahl = eingabe_menu(
+        1,
+        len(optionen),
+        sonder_tasten=()
+    )
+
+    aktion = optionen[
+        gasthaus_auswahl - 1
+    ][0]
+
+    if not prolog_laeuft():
+        mara_daten = npc_status(
+            "mara"
+        )
+
+        if aktion == "mara":
+            mara_daten["direkte_besuche"] = (
+                mara_daten.get(
+                    "direkte_besuche",
+                    0
+                ) + 1
+            )
+
+        else:
+            mara_daten[
+                "direkte_besuche"
+            ] = 0
+
+    if aktion == "mara":
+        dialog_mara()
+
+    elif aktion == "joris":
+        dialog_joris()
+
+    elif aktion == "gaststube":
+        ort_titel(
+            "Gasthaus"
+        )
+
+        text_ausgeben(
+            "Du lässt deinen Blick durch die Gaststube schweifen."
+        )
+
+        text_ausgeben(
+            "Einige Dorfbewohner sitzen an schweren Holztischen "
+            "und unterhalten sich."
+        )
+
+        text_ausgeben(
+            "Aus der Küche dringt der Geruch von frisch gebackenem Brot."
+        )
+
+        warte_auf_taste()
+
+    elif aktion == "proviant":
+        mara_proviant_kaufen()
+
+    elif aktion == "verlassen":
+        spieler[
+            "ort"
+        ] = "Eichenruh"
+
+        ort_nachricht_setzen(
+            "Du verlässt das Gasthaus.",
+            "Die vertrauten Straßen von Eichenruh "
+            "liegen wieder vor dir."
+        )
+
+def schmiede():
+    ort_titel("Bjorns Schmiede")
+
+    schmiede_erstbesuch = (
+        spieler.get(
+            "prolog_status"
+        ) == "dorf_freigeschaltet"
+        and not spieler.get(
+            "prolog_besuchte_orte",
+            {}
+        ).get(
+            "schmiede",
+            False
+        )
+    )
+
+    prolog_ort_besucht(
+        "schmiede"
+    )
+
+    ort_nachricht_anzeigen()
+
+    if schmiede_erstbesuch:
+        print()
+
+        text_ausgeben(
+            "Die Wärme der Esse liegt sofort auf deiner Haut.",
+            art="atmosphaere"
+        )
+
+        text_ausgeben(
+            "Kohle und heißes Metall geben der Luft einen "
+            "trockenen, scharfen Geruch.",
+            art="atmosphaere"
+        )
+
+        text_ausgeben(
+            "Bjorns Hammer setzt wieder ein: zwei schwere Schläge, "
+            "eine kurze Pause, dann noch einer.",
+            art="atmosphaere"
+        )
+
+    if prolog_laeuft():
+        menue_trenner()
+
+        keller_verfuegbar = (
+            spieler.get("prolog_status") == "joris_keller"
+        )
+
+        print("1. Mit Bjorn reden")
+        print("2. Dich in der Schmiede umsehen")
+
+        if keller_verfuegbar:
+            print("3. Zum alten Lagerkeller gehen")
+            print("4. Schmiede verlassen")
+
+            prolog_schmiede_auswahl = eingabe_menu(
+                1,
+                4,
+                sonder_tasten=()
+            )
+
+        else:
+            print("3. Schmiede verlassen")
+
+            prolog_schmiede_auswahl = eingabe_menu(
+                1,
+                3,
+                sonder_tasten=()
+            )
+
+        if prolog_schmiede_auswahl == 1:
+            dialog_bjorn()
+
+        elif prolog_schmiede_auswahl == 2:
+            ort_titel("Bjorns Schmiede")
+
+            text_ausgeben(
+                "Nahe der Esse flimmert die Luft vor Hitze."
+            )
+
+            text_ausgeben(
+                "An der Wand hängen Zangen und Hämmer in festen Reihen. "
+                "Die Griffe sind dunkel vom jahrelangen Gebrauch."
+            )
+
+            text_ausgeben(
+                "Auf Bjorns Werkbank liegen ein unfertiges Hufeisen, "
+                "ein gesprungener Axtkopf und mehrere kleine Metallstücke."
+            )
+
+            text_ausgeben(
+                "Nichts daran wirkt besonders wertvoll. "
+                "Alles wartet nur darauf, wieder brauchbar zu werden."
+            )
+
+            warte_auf_taste()
+
+        elif (
+            prolog_schmiede_auswahl == 3
+            and keller_verfuegbar
+        ):
+            spieler["ort"] = "lagerkeller"
+
+            ort_nachricht_setzen(
+                "Du gehst hinter die Schmiede.",
+                "Zwischen Holzstapeln und alten Kisten findest du "
+                "die schwere Falltür.",
+                "Als du sie anhebst, steigt dir kühle, abgestandene "
+                "Luft entgegen.",
+                "Eine schmale Treppe führt in den Lagerkeller hinab."
+            )
+
+        elif (
+            prolog_schmiede_auswahl == 4
+            and keller_verfuegbar
+        ) or (
+            prolog_schmiede_auswahl == 3
+            and not keller_verfuegbar
+        ):
+            spieler["ort"] = "Eichenruh"
+
+            ort_nachricht_setzen(
+                "Du verlässt Bjorns Schmiede.",
+                "Hinter dir setzt kurz darauf wieder "
+                "das rhythmische Hämmern ein."
+            )
+
+        return
+    menue_trenner()
+
+    print("1. Reden")
+    print("2. Herstellen")
+    print("3. Handeln")
+    print("4. Schmiede verlassen")
+
+    schmied_auswahl = eingabe_menu(
+        1,
+        4,
+        sonder_tasten=()
+    )
+
+    bjorn_daten = npc_status(
+        "bjorn"
+    )
+
+    if schmied_auswahl == 1:
+        bjorn_daten["direkte_besuche"] = (
+            bjorn_daten.get(
+                "direkte_besuche",
+                0
+            ) + 1
+        )
+
+    else:
+        bjorn_daten[
+            "direkte_besuche"
+        ] = 0
+
+    if schmied_auswahl == 1:
+        dialog_bjorn()
+    elif schmied_auswahl == 2:
+        ort_titel(
+            "Bjorns Schmiede - Herstellen"
+        )
+
+        text_ausgeben(
+            "Bjorns Werkbank ist vorbereitet, aber für eigene "
+            "Herstellungsaufträge fehlt dir momentan noch die "
+            "passende Grundlage.",
+            art="menue"
+        )
+
+        warte_auf_taste(
+            "Zurück"
+        )
+        # herstellen_auswahl = eingabe_zahl(1, 2)
+        # if herstellen_auswahl == 1:
+        #     if spieler["gold"] >= 10:
+        #         spieler["gold"] -= 10
+        #         spieler["fackeln"] += 1
+        #         print("Bjorn stellt dir eine Fackel her.")
+        #         print(f"Du besitzt jetzt {spieler["fackeln"]} Fackel(n).")
+        #     else:
+        #         print("Du hast nicht genug Gold!")
+
+    elif schmied_auswahl == 3:
+        while True:
+            ort_titel(
+                "Bjorns Schmiede - Handeln"
+            )
+
+            speer_preis = 40
+
+            print(
+                f"Gold: {spieler['gold']}"
+            )
+
+            print(
+                f"Heiltränke: {spieler['heiltränke']}"
+            )
+
+            print()
+
+            design_text(
+                "KAUFEN",
+                design="wichtig",
+                art="menue"
+            )
+
+            print()
+
+            print(
+                "1. Heiltrank - 25 Gold"
+            )
+
+            print(
+                f"2. Einfacher Speer - "
+                f"{speer_preis} Gold"
+            )
+
+            print()
+
+            design_text(
+                "VERKAUFEN",
+                design="wichtig",
+                art="menue"
+            )
+
+            print()
+
+            print(
+                "3. Waffe verkaufen"
+            )
+
+            print()
+
+            print(
+                "4. Zurück"
+            )
+
+            kaufen_auswahl = eingabe_menu(
+                1,
+                4,
+                sonder_tasten=()
+            )
+
+            # -------------------------
+            # HEILTRÄNKE
+            # -------------------------
+
+            if kaufen_auswahl == 1:
+                max_heiltrank = (
+                    spieler["gold"] // 25
+                )
+
+                if max_heiltrank == 0:
+                    design_text(
+                        "Du hast nicht genug Gold.",
+                        design="warnung",
+                        art="menue"
+                    )
+
+                    warte_auf_taste(
+                        "Weiter"
+                    )
+
+                else:
+                    print(
+                        f"Du kannst maximal "
+                        f"{max_heiltrank} Heiltränke kaufen."
+                    )
+
+                    anzahl_heiltraenke = eingabe_zahl(
+                        1,
+                        max_heiltrank
+                    )
+
+                    spieler["gold"] -= (
+                        anzahl_heiltraenke * 25
+                    )
+
+                    spieler["heiltränke"] += (
+                        anzahl_heiltraenke
+                    )
+
+                    design_text(
+                        f"{anzahl_heiltraenke} Heiltränke gekauft",
+                        design="positiv",
+                        art="menue"
+                    )
+
+                    print()
+
+                    print(
+                        f"Heiltränke: "
+                        f"{spieler['heiltränke']}"
+                    )
+
+                    print(
+                        f"Gold: {spieler['gold']}"
+                    )
+
+                    warte_auf_taste(
+                        "Weiter"
+                    )
+
+            # -------------------------
+            # SPEER
+            # -------------------------
+
+            elif kaufen_auswahl == 2:
+                if spieler["gold"] < speer_preis:
+                    design_text(
+                        "Du hast nicht genug Gold.",
+                        design="warnung",
+                        art="menue"
+                    )
+
+                    warte_auf_taste(
+                        "Weiter"
+                    )
+
+                else:
+                    spieler["gold"] -= (
+                        speer_preis
+                    )
+
+                    spieler[
+                        "waffen_inventar"
+                    ].append({
+                        "name": "Einfacher Speer",
+                        "min_schaden": 12,
+                        "max_schaden": 18,
+                        "verkaufswert": 15
+                    })
+
+                    design_text(
+                        "Einfacher Speer gekauft",
+                        design="positiv",
+                        art="menue"
+                    )
+
+                    print()
+
+                    print(
+                        f"Gold: {spieler['gold']}"
+                    )
+
+                    warte_auf_taste(
+                        "Weiter"
+                    )
+
+            # -------------------------
+            # VERKAUFEN
+            # -------------------------
+
+            elif kaufen_auswahl == 3:
+                waffe_verkaufen()
+
+            elif kaufen_auswahl == 4:
+                break
+
+    elif schmied_auswahl == 4:
+        spieler["ort"] = "Eichenruh"
+
+        ort_nachricht_setzen(
+            "Du verlässt die Schmiede.",
+            "Die Geräusche von Eichenruh empfangen dich wieder."
+        )
+
+def koehlerei():
+    ort_titel("Köhlerei am Waldrand")
+
+    ort_nachricht_anzeigen()
+
+    prolog_status = spieler.get("prolog_status")
+
+    if prolog_status == "koehlerei_lieferung":
+        text_ausgeben(
+            "Zwischen den schwarzen Erdmeilern hängt ein grauer "
+            "Rauchschleier über der Lichtung."
+        )
+
+        text_ausgeben(
+            "Ein Köhler schaufelt feuchte Erde an die Flanke eines "
+            "Meilers, während ein anderer mit einem langen Stock "
+            "die Luftöffnungen prüft."
+        )
+
+        print()
+        text_ausgeben(
+            "Weiter hinten ruft jemand etwas über einen Meiler, "
+            "der zu stark zieht."
+        )
+
+        text_ausgeben(
+            'Aus dem Rauch kommt die knappe Antwort: '
+            '"Dann mach das Zugloch kleiner!"'
+        )
+
+        print()
+        text_ausgeben(
+            "Ein rußverschmierter Köhler bemerkt dich und kommt "
+            "zwischen den Meilern auf dich zu."
+        )
+
+        dialog_titel("Köhler")
+
+        text_ausgeben(
+            "[Köhler] Eichenruh?"
+        )
+
+        print()
+        text_ausgeben(
+            "Du stellst den schweren Sack vor ihm ab und erklärst, "
+            "dass Bjorn dich geschickt hat."
+        )
+
+        text_ausgeben(
+            "Der Köhler geht in die Hocke, öffnet den Sack und zieht "
+            "einen der frisch geschmiedeten Keile heraus."
+        )
+
+        text_ausgeben(
+            "Er dreht ihn einmal zwischen den Fingern und prüft die Schneide."
+        )
+
+        print()
+        text_ausgeben(
+            "[Köhler] Ja. Bjorns Arbeit."
+        )
+
+        text_ausgeben(
+            "[Köhler] Genau darauf haben wir gewartet."
+        )
+
+        if item_besitzt("bjorns_lieferung"):
+            item_entfernen(
+                "bjorns_lieferung"
+            )
+
+        print()
+        text_ausgeben(
+            "[Köhler] Sag ihm, die nächste Ladung Kohle "
+            "steht morgen bereit."
+        )
+
+        spieler[
+            "koehler_nachricht_bjorn"
+        ] = "offen"
+
+        print()
+        text_ausgeben(
+            "Der Köhler greift nach einem kleinen Bündel trockenem Holz, "
+            "das neben einem der Meiler liegt."
+        )
+
+        text_ausgeben(
+            "[Köhler] Hier. Nimm das mit."
+        )
+
+        text_ausgeben(
+            "[Köhler] Trockenes Holz findet man meistens genau dann nicht, "
+            "wenn man welches braucht."
+        )
+
+        item_hinzufuegen(
+            "holz",
+            3
+        )
+
+        print()
+        design_text(
+            "3x Holz erhalten",
+            design="positiv",
+            art="menue"
+        )
+
+        quest_meldung(
+            "abgeschlossen",
+            "Zur Köhlerei",
+            belohnungen=[
+                "3x Holz"
+            ]
+        )
+
+        spieler["prolog_status"] = "prolog_abgeschlossen"
+        spieler["akt"] = "AKT 1"
+        spieler["prolog_rueckweg_sicher"] = True
+
+        seite_wechseln(
+            "Köhlerei am Waldrand"
+        )
+
+        design_text(
+            "PROLOG ABGESCHLOSSEN",
+            design="quest_abgeschlossen",
+            art="ereignis"
+        )
+
+        print()
+        design_text(
+            "AKT 1",
+            design="wichtig",
+            art="ereignis"
+        )
+
+        design_text(
+            "DAS BRÜCHIGE FUNDAMENT",
+            design="wichtig",
+            art="ereignis"
+        )
+
+        print()
+        text_ausgeben(
+            "Rauch zieht langsam über die Lichtung und verliert sich "
+            "zwischen den Baumkronen."
+        )
+
+        text_ausgeben(
+            "An deinem Gürtel hängt zum ersten Mal eine Waffe. "
+            "Hinter dir liegt der Weg zurück nach Eichenruh."
+        )
+
+        print()
+        text_ausgeben(
+            "Der Auftrag ist erledigt. Trotzdem bleibt dir Joris' "
+            "ungläubiger Blick auf das Tageslicht im Gedächtnis."
+        )
+
+        text_ausgeben(
+            "Der Morgen ist noch nicht vorbei. Ganz so gewöhnlich wie "
+            "zu Beginn fühlt er sich nicht mehr an."
+        )
+
+        warte_auf_taste(
+            "Weiter"
+        )
+        return
+
+    menue_trenner()
+
+    print("1. Zurück nach Eichenruh")
+    print("2. Noch einen Moment bleiben")
+
+    koehlerei_auswahl = eingabe_menu(
+        1,
+        2,
+        sonder_tasten=()
+    )
+
+    if koehlerei_auswahl == 1:
+        reise(
+            "Eichenruh",
+            (
+                "Vor dir erscheinen wieder die "
+                "vertrauten Dächer Eichenruhs."
+            ),
+            gebiet_modus=True
+        )
+
+    elif koehlerei_auswahl == 2:
+        print()
+        text_ausgeben(
+            "Du bleibst noch einen Moment am Rand der Lichtung stehen."
+        )
+
+        text_ausgeben(
+            "Zwischen den Erdmeilern wird weiter geschaufelt, gerufen "
+            "und nach den Rauchfahnen gesehen."
+        )
+
+        warte_auf_taste(
+            "Zurück"
+        )
+        return
+
+def lagerkeller():
+    ort_titel("Alter Lagerkeller")
+
+    ort_nachricht_anzeigen()
+
+    if spieler.get("prolog_status") != "joris_keller":
+        text_ausgeben(
+            "Zwischen alten Kisten und Regalen ist "
+            "nichts Auffälliges zu erkennen."
+        )
+
+        warte_auf_taste()
+
+        spieler["ort"] = "Schmiede"
+        return
+
+    text_ausgeben(
+        "Mit den ersten Stufen verschwinden die Geräusche "
+        "des Dorfes hinter dir."
+    )
+
+    text_ausgeben(
+        "Nur durch die offene Falltür fällt noch ein schmaler "
+        "Streifen Tageslicht in den niedrigen Keller."
+    )
+
+    text_ausgeben(
+        "Die Luft riecht nach feuchtem Holz, Kohlenstaub "
+        "und kaltem Eisen."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Zwischen den dicht stehenden Regalen hörst du plötzlich "
+        "ein dumpfes Klopfen."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Es kommt von einer schweren Zwischentür "
+        "am anderen Ende des Raumes."
+    )
+
+    text_ausgeben(
+        "Ein morsches Holzregal ist davor umgestürzt "
+        "und verkeilt den Zugang."
+    )
+
+    menue_trenner()
+
+    optionen = [
+        (
+            "regal",
+            "Das Regal wegdrücken"
+        ),
+        (
+            "hebel",
+            "Nach etwas suchen, das als Hebel dienen kann"
+        )
+    ]
+
+    if spieler_pruefung(
+        "geschick",
+        2
+    ):
+        optionen.append(
+            (
+                "geschick",
+                "[Geschick] Durch die schmale Lücke "
+                "an die verkeilten Bretter gelangen"
+            )
+        )
+
+    for nummer, (_, text) in enumerate(
+        optionen,
+        start=1
+    ):
+        print(
+            f"{nummer}. {text}"
+        )
+
+    keller_auswahl = eingabe_menu(
+        1,
+        len(optionen),
+        sonder_tasten=()
+    )
+
+    aktion = optionen[
+        keller_auswahl - 1
+    ][0]
+
+    ort_titel("Alter Lagerkeller")
+
+    if aktion == "regal":
+        text_ausgeben(
+            "Du setzt beide Hände gegen das schwere Regal "
+            "und stemmst dich dagegen."
+        )
+
+        text_ausgeben(
+            "Das alte Holz ächzt unter dem Druck. "
+            "Ein Brett springt knarrend aus seiner Halterung."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Beim nächsten Stoß schabt das Regal über den Steinboden "
+            "und rückt endlich weit genug zur Seite."
+        )
+
+        akt1_lernerfahrung(
+            "lagerkeller_regal"
+        )
+
+    elif aktion == "hebel":
+        text_ausgeben(
+            "Du gehst zwischen den Kisten in die Hocke und suchst "
+            "zwischen Werkzeugen und Holzresten."
+        )
+
+        text_ausgeben(
+            "Unter einer Kiste ragt das Ende eines langen, "
+            "stabilen Balkens hervor."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Du verkeilst ihn unter der unteren Strebe des Regals "
+            "und verlagerst langsam dein Gewicht."
+        )
+
+        text_ausgeben(
+            "Holz knackt. Das Regal hebt sich ein Stück und kippt "
+            "gerade weit genug von der Tür weg."
+        )
+
+        akt1_lernerfahrung(
+            "lagerkeller_hebel"
+        )
+
+    elif aktion == "geschick":
+        text_ausgeben(
+            "Zwischen Regal und Wand bleibt kaum mehr "
+            "als eine schmale Lücke."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Du drehst dich seitlich hinein. Raues Holz streift "
+            "deine Kleidung, während du nach den verkeilten "
+            "Brettern tastest."
+        )
+
+        text_ausgeben(
+            "Du löst erst die obere Strebe und ziehst dann "
+            "das verklemmte Brett vorsichtig aus der Spannung."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Mit einem dumpfen Ruck sackt das Regal zur Seite "
+            "und gibt die Tür frei."
+        )
+
+        akt1_lernerfahrung(
+            "lagerkeller_geschick"
+        )
+
+    print()
+
+    text_ausgeben(
+        "Kaum ist der Weg frei, wird von der anderen Seite "
+        "gegen die Tür gedrückt."
+    )
+
+    text_ausgeben(
+        "Sie öffnet sich einen Spalt."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Ein junger Mann zwängt sich hindurch."
+    )
+
+    print()
+
+    dialog_titel("Joris")
+
+    text_ausgeben("[Joris] Endlich.")
+
+    print()
+    text_ausgeben(
+        "Joris hält sich einen Moment am Türrahmen fest, "
+        "bevor er sich auf eine der Kisten setzt."
+    )
