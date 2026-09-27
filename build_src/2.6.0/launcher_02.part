@@ -1,0 +1,999 @@
+
+
+    teil_pfad = (
+
+        ziel_pfad + ".part"
+
+    )
+
+
+
+    print()
+
+    print(
+
+        "Launcher-Update wird "
+
+        "heruntergeladen ..."
+
+    )
+
+
+
+    try:
+
+        anfrage = urllib.request.Request(
+
+            download_url,
+
+            headers={
+
+                "User-Agent": "Void-Launcher"
+
+            }
+
+        )
+
+
+
+        with urllib.request.urlopen(
+
+            anfrage,
+
+            timeout=30
+
+        ) as antwort:
+
+
+
+            with open(
+
+                teil_pfad,
+
+                "wb"
+
+            ) as datei:
+
+
+
+                while True:
+
+                    block = antwort.read(
+
+                        1024 \* 256
+
+                    )
+
+
+
+                    if not block:
+
+                        break
+
+
+
+                    datei.write(
+
+                        block
+
+                    )
+
+
+
+        os.replace(
+
+            teil_pfad,
+
+            ziel_pfad
+
+        )
+
+
+
+    except (
+
+        urllib.error.URLError,
+
+        urllib.error.HTTPError,
+
+        TimeoutError,
+
+        OSError
+
+    ) as fehler:
+
+
+
+        if os.path.exists(
+
+            teil_pfad
+
+        ):
+
+            try:
+
+                os.remove(
+
+                    teil_pfad
+
+                )
+
+            except OSError:
+
+                pass
+
+
+
+        print()
+
+        print(
+
+            "Das Launcher-Update konnte "
+
+            "nicht heruntergeladen werden."
+
+        )
+
+
+
+        print(
+
+            f"Fehler: {fehler}"
+
+        )
+
+
+
+        return False
+
+
+
+    print(
+
+        "Download abgeschlossen."
+
+    )
+
+
+
+    berechneter_hash = datei_sha256(
+
+        ziel_pfad
+
+    )
+
+
+
+    if berechneter_hash is None:
+
+        print()
+
+        print(
+
+            "Das Launcher-Update konnte "
+
+            "nicht geprüft werden."
+
+        )
+
+
+
+        return False
+
+
+
+    if (
+
+        berechneter_hash.lower()
+
+        != erwarteter_hash
+
+    ):
+
+        print()
+
+        print(
+
+            "\*\*\* LAUNCHER-UPDATE "
+
+            "ABGEBROCHEN \*\*\*"
+
+        )
+
+        print()
+
+        print(
+
+            "Die SHA256-Prüfsumme stimmt "
+
+            "nicht überein."
+
+        )
+
+
+
+        try:
+
+            os.remove(
+
+                ziel_pfad
+
+            )
+
+        except OSError:
+
+            pass
+
+
+
+        return False
+
+
+
+    print()
+
+    print(
+
+        "Launcher SHA256-Prüfung erfolgreich."
+
+    )
+
+
+
+    return True
+
+
+
+def zip_sicher_entpacken(
+
+    zip_datei,
+
+    ziel_ordner
+
+):
+
+    ziel_ordner = os.path.realpath(
+
+        ziel_ordner
+
+    )
+
+
+
+    for eintrag in zip_datei.infolist():
+
+        ziel_pfad = os.path.realpath(
+
+            os.path.join(
+
+                ziel_ordner,
+
+                eintrag.filename
+
+            )
+
+        )
+
+
+
+        if not (
+
+            ziel_pfad == ziel_ordner
+
+            or ziel_pfad.startswith(
+
+                ziel_ordner + os.sep
+
+            )
+
+        ):
+
+            raise ValueError(
+
+                "Unsicherer Pfad im Update-Paket."
+
+            )
+
+
+
+    zip_datei.extractall(
+
+        ziel_ordner
+
+    )
+
+
+
+def update_zip_entpacken():
+
+    zip_pfad = os.path.join(
+
+        basis_ordner(),
+
+        UPDATE_ZIP
+
+    )
+
+
+
+    temp_pfad = os.path.join(
+
+        basis_ordner(),
+
+        TEMP_UPDATE_ORDNER
+
+    )
+
+
+
+    if not os.path.exists(
+
+        zip_pfad
+
+    ):
+
+        print()
+
+        print(
+
+            "Update-ZIP wurde nicht gefunden."
+
+        )
+
+
+
+        return False
+
+
+
+    # Alten temporären Ordner entfernen
+
+    if os.path.exists(
+
+        temp_pfad
+
+    ):
+
+        shutil.rmtree(
+
+            temp_pfad
+
+        )
+
+
+
+    try:
+
+        os.makedirs(
+
+            temp_pfad,
+
+            exist_ok=True
+
+        )
+
+
+
+        with zipfile.ZipFile(
+
+            zip_pfad,
+
+            "r"
+
+        ) as zip_datei:
+
+            zip_sicher_entpacken(
+
+                zip_datei,
+
+                temp_pfad
+
+            )
+
+
+
+    except (
+
+        OSError,
+
+        zipfile.BadZipFile,
+
+        ValueError
+
+    ) as fehler:
+
+        print()
+
+        print(
+
+            "Das Update-Paket konnte "
+
+            "nicht entpackt werden."
+
+        )
+
+
+
+        print(
+
+            f"Fehler: {fehler}"
+
+        )
+
+
+
+        return False
+
+
+
+    print()
+
+    print(
+
+        "Update-Paket wurde entpackt."
+
+    )
+
+
+
+    return True
+
+
+
+def update_temp_loeschen():
+
+    temp_pfad = os.path.join(
+
+        basis_ordner(),
+
+        TEMP_UPDATE_ORDNER
+
+    )
+
+
+
+    if not os.path.isdir(
+
+        temp_pfad
+
+    ):
+
+        return True
+
+
+
+    try:
+
+        shutil.rmtree(
+
+            temp_pfad
+
+        )
+
+
+
+        return True
+
+
+
+    except OSError as fehler:
+
+        print()
+
+        print(
+
+            "Temporäre Update-Dateien konnten "
+
+            "nicht vollständig entfernt werden."
+
+        )
+
+
+
+        print(
+
+            f"Fehler: {fehler}"
+
+        )
+
+
+
+        return False
+
+
+
+def update_lokal_installieren():
+
+    quell_ordner = os.path.join(
+
+        basis_ordner(),
+
+        TEMP_UPDATE_ORDNER
+
+    )
+
+
+
+    if not os.path.isdir(
+
+        quell_ordner
+
+    ):
+
+        print()
+
+        print(
+
+            "Entpacktes Update wurde nicht gefunden."
+
+        )
+
+
+
+        return False
+
+
+
+    # Inhalt des entpackten ZIPs prüfen
+
+    inhalt = os.listdir(
+
+        quell_ordner
+
+    )
+
+
+
+    # Falls die ZIP nur einen einzigen
+
+    # Verpackungsordner enthält:
+
+    #
+
+    # \_void_update_temp/
+
+    #     update_paket/
+
+    #         Dateien...
+
+    #
+
+    # gehen wir automatisch eine Ebene tiefer.
+
+    if len(inhalt) == 1:
+
+        moeglicher_ordner = os.path.join(
+
+            quell_ordner,
+
+            inhalt[0]
+
+        )
+
+
+
+        if os.path.isdir(
+
+            moeglicher_ordner
+
+        ):
+
+            quell_ordner = moeglicher_ordner
+
+
+
+    print()
+
+    print("Update wird installiert ...")
+
+    print()
+
+
+
+    installierte_dateien = 0
+
+
+
+    try:
+
+        for name in os.listdir(
+
+            quell_ordner
+
+        ):
+
+            quell_pfad = os.path.join(
+
+                quell_ordner,
+
+                name
+
+            )
+
+
+
+            ziel_pfad = os.path.join(
+
+                basis_ordner(),
+
+                name
+
+            )
+
+
+
+            if name in GESCHUETZTE_DATEIEN:
+
+                print(
+
+                    f"Geschützt, übersprungen: {name}"
+
+                )
+
+
+
+                continue
+
+
+
+            if os.path.isdir(
+
+                quell_pfad
+
+            ):
+
+                shutil.copytree(
+
+                    quell_pfad,
+
+                    ziel_pfad,
+
+                    dirs_exist_ok=True
+
+                )
+
+
+
+            else:
+
+                shutil.copy2(
+
+                    quell_pfad,
+
+                    ziel_pfad
+
+                )
+
+
+
+            print(
+
+                f"Installiert: {name}"
+
+            )
+
+
+
+            installierte_dateien += 1
+
+
+
+    except OSError as fehler:
+
+        print()
+
+        print(
+
+            "Das Update konnte nicht vollständig "
+
+            "installiert werden."
+
+        )
+
+
+
+        print(
+
+            f"Fehler: {fehler}"
+
+        )
+
+
+
+        return False
+
+
+
+    print()
+
+    print(
+
+        f"{installierte_dateien} Datei(en) "
+
+        f"installiert."
+
+    )
+
+
+
+    return True
+
+
+
+def launcher_update_installieren():
+
+    if not getattr(
+
+        sys,
+
+        "frozen",
+
+        False
+
+    ):
+
+        print()
+
+        print(
+
+            "Launcher-Updates können nur "
+
+            "mit der gebauten EXE installiert werden."
+
+        )
+
+        return False
+
+
+
+    neuer_launcher = os.path.join(
+
+        basis_ordner(),
+
+        LAUNCHER_UPDATE_DATEI
+
+    )
+
+
+
+    aktueller_launcher = os.path.abspath(
+
+        sys.executable
+
+    )
+
+
+
+    script_pfad = os.path.join(
+
+        basis_ordner(),
+
+        LAUNCHER_UPDATE_SCRIPT
+
+    )
+
+
+
+    backup_pfad = (
+
+        aktueller_launcher + ".bak"
+
+    )
+
+
+
+    launcher_pid = os.getpid()
+
+
+
+    if not os.path.exists(
+
+        neuer_launcher
+
+    ):
+
+        print()
+
+        print(
+
+            "Das heruntergeladene Launcher-Update "
+
+            "wurde nicht gefunden."
+
+        )
+
+        return False
+
+
+
+    batch_inhalt = f"""@echo off
+
+setlocal EnableDelayedExpansion
+
+
+
+set "ALTER_LAUNCHER={aktueller_launcher}"
+
+set "NEUER_LAUNCHER={neuer_launcher}"
+
+set "BACKUP={backup_pfad}"
+
+set "LOG=%\~dp0_void_launcher_update.log"
+
+
+
+del /Q "%LOG%" >NUL 2>&1
+
+
+
+echo ==== VOID LAUNCHER UPDATE ==== > "%LOG%"
+
+echo Start: %DATE% %TIME% >> "%LOG%"
+
+echo Alt: %ALTER_LAUNCHER% >> "%LOG%"
+
+echo Neu: %NEUER_LAUNCHER% >> "%LOG%"
+
+echo. >> "%LOG%"
+
+
+
+set /a VERSUCHE=0
+
+
+
+timeout /t 2 /nobreak >NUL
+
+
+
+echo Backup wird erstellt ... >> "%LOG%"
+
+copy /Y "%ALTER_LAUNCHER%" "%BACKUP%" >> "%LOG%" 2>&1
+
+echo Backup Errorlevel: !ERRORLEVEL! >> "%LOG%"
+
+
+
+:ersetzen
+
+echo Ersetzversuch !VERSUCHE! ... >> "%LOG%"
+
+
+
+copy /Y "%NEUER_LAUNCHER%" "%ALTER_LAUNCHER%" >> "%LOG%" 2>&1
+
+
+
+if errorlevel 1 (
+
+    set /a VERSUCHE+=1
+
+
+
+    echo Ersetzen fehlgeschlagen. >> "%LOG%"
+
+
+
+    if !VERSUCHE! GEQ 15 (
+
+        goto fehler
+
+    )
+
+
+
+    timeout /t 1 /nobreak >NUL
+
+    goto ersetzen
+
+)
+
+
+
+echo Launcher erfolgreich ersetzt. >> "%LOG%"
+
+
+
+del /Q "%NEUER_LAUNCHER%" >> "%LOG%" 2>&1
+
+del /Q "%BACKUP%" >> "%LOG%" 2>&1
+
+
+
+echo Launcher wird ueber Explorer gestartet ... >> "%LOG%"
+
+
+
+explorer.exe "%ALTER_LAUNCHER%" >> "%LOG%" 2>&1
+
+
+
+echo Explorer Errorlevel: !ERRORLEVEL! >> "%LOG%"
+
+
+
+timeout /t 3 /nobreak >NUL
+
+
+
+echo Laufende Launcher-Prozesse: >> "%LOG%"
+
+tasklist /FI "IMAGENAME eq Void Launcher.exe" >> "%LOG%" 2>&1
+
+
+
+echo Ende: %DATE% %TIME% >> "%LOG%"
+
+
+
+del "%\~f0"
+
+exit /b 0
+
+
+
+:fehler
+
+echo FEHLER: Launcher konnte nicht ersetzt werden. >> "%LOG%"
+
+
+
+if exist "%BACKUP%" (
+
+    copy /Y "%BACKUP%" "%ALTER_LAUNCHER%" >> "%LOG%" 2>&1
+
+)
+
+
+
+del /Q "%BACKUP%" >> "%LOG%" 2>&1
+
+
+
+echo Alter Launcher wird wieder gestartet ... >> "%LOG%"
+
+
+
+explorer.exe "%ALTER_LAUNCHER%" >> "%LOG%" 2>&1
+
+
+
+echo Explorer Errorlevel: !ERRORLEVEL! >> "%LOG%"
+
+
+
+del "%\~f0"
+
+exit /b 1
+
+"""
+
+
+
+    try:
+
+        with open(
+
+            script_pfad,
+
+            "w",
+
+            encoding="utf-8",
+
+            newline="\r\n"
+
+        ) as datei:
+
+            datei.write(
+
+                batch_inhalt
+
+            )
+
+
+
+        subprocess.Popen(
+
+            [
+
+                "cmd.exe",
