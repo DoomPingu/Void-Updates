@@ -1,0 +1,1000 @@
+
+        spieler[
+            "verfassungs_praegung"
+        ][
+            verfassung_id
+        ] += praegung_menge
+
+        verfassung_neuberechnen(
+            verfassung_id,
+            meldung=meldung
+        )
+
+    # -------------------------
+    # HAUPTATTRIBUT
+    # -------------------------
+
+    spieler[
+        "attribut_fortschritt"
+    ][
+        attribut_id
+    ] += menge
+
+    entwickelt = False
+
+    while True:
+        schwelle = attribut_schwelle(
+            attribut_id
+        )
+
+        if schwelle is None:
+            break
+
+        fortschritt = spieler[
+            "attribut_fortschritt"
+        ][
+            attribut_id
+        ]
+
+        if fortschritt < schwelle:
+            break
+
+        spieler[
+            "attribut_fortschritt"
+        ][
+            attribut_id
+        ] -= schwelle
+
+        alter_wert = spieler[
+            "attribute"
+        ][
+            attribut_id
+        ]
+
+        spieler[
+            "attribute"
+        ][
+            attribut_id
+        ] += 1
+
+        neuer_wert = spieler[
+            "attribute"
+        ][
+            attribut_id
+        ]
+
+        entwickelt = True
+
+        if meldung:
+            print()
+
+            design_text(
+                "ATTRIBUT ENTWICKELT",
+                design="positiv",
+                art="menue"
+            )
+
+            print()
+
+            print(
+                f"{ATTRIBUT_DEFINITIONEN[attribut_id]['name']}: "
+                f"{alter_wert} → {neuer_wert}"
+            )
+
+    return entwickelt
+
+def lernerfahrung_hinzufuegen(
+    quelle_id,
+    attribut_id,
+    menge=1,
+    praegungen=None,
+    max_nutzungen=1,
+    meldung=True
+):
+    attribut_system_sicherstellen()
+
+    if (
+        not isinstance(
+            quelle_id,
+            str
+        )
+        or not quelle_id
+    ):
+        return False
+
+    if attribut_id not in ATTRIBUT_DEFINITIONEN:
+        return False
+
+    if (
+        isinstance(
+            menge,
+            bool
+        )
+        or not isinstance(
+            menge,
+            (int, float)
+        )
+        or menge <= 0
+    ):
+        return False
+
+    if praegungen is None:
+        praegungen = {}
+
+    if not isinstance(
+        praegungen,
+        dict
+    ):
+        return False
+
+    if (
+        isinstance(
+            max_nutzungen,
+            bool
+        )
+        or not isinstance(
+            max_nutzungen,
+            int
+        )
+        or max_nutzungen <= 0
+    ):
+        return False
+
+    bisher = spieler[
+        "lernquellen"
+    ].get(
+        quelle_id,
+        0
+    )
+
+    if bisher >= max_nutzungen:
+        return False
+
+    spieler[
+        "lernquellen"
+    ][
+        quelle_id
+    ] = bisher + 1
+
+    attribut_fortschritt_hinzufuegen(
+        attribut_id,
+        menge=menge,
+        praegungen=praegungen,
+        meldung=meldung
+    )
+
+    return True
+
+AKT1_LERNQUELLEN = {
+    # -------------------------
+    # KÖRPER
+    # -------------------------
+
+    "holzsuche": {
+        "attribut": "koerper",
+        "menge": 1,
+        "praegungen": {
+            "staerke": 1,
+            "ausdauer": 1
+        },
+        "max_nutzungen": 2
+    },
+
+    "lagerkeller_regal": {
+        "attribut": "koerper",
+        "menge": 2,
+        "praegungen": {
+            "staerke": 2
+        }
+    },
+
+    "lagerkeller_geschick": {
+        "attribut": "koerper",
+        "menge": 1,
+        "praegungen": {
+            "geschick": 2
+        }
+    },
+
+    "alte_schmiede_aufbrechen": {
+        "attribut": "koerper",
+        "menge": 2,
+        "praegungen": {
+            "staerke": 2
+        }
+    },
+
+    "bjorn_schmiedetechnik": {
+        "attribut": "koerper",
+        "menge": 1,
+        "praegungen": {
+            "staerke": 2
+        }
+    },
+
+    "joris_zeitgefuehl": {
+        "attribut": "koerper",
+        "menge": 1,
+        "praegungen": {
+            "ausdauer": 1
+        }
+    },
+
+    "reise_koehlerei": {
+        "attribut": "koerper",
+        "menge": 1,
+        "praegungen": {
+            "ausdauer": 1
+        }
+    },
+
+    "reise_koenigsring": {
+        "attribut": "koerper",
+        "menge": 2,
+        "praegungen": {
+            "ausdauer": 2
+        }
+    },
+
+    "reise_pfad_des_vergessens": {
+        "attribut": "koerper",
+        "menge": 3,
+        "praegungen": {
+            "ausdauer": 2,
+            "zaehigkeit": 1
+        }
+    },
+
+    "kampf_erfahrung": {
+        "attribut": "koerper",
+        "menge": 1,
+        "praegungen": {
+            "zaehigkeit": 1
+        },
+        "max_nutzungen": 3
+    },
+
+    "wald_unterholz_zaehigkeit": {
+        "attribut": "koerper",
+        "menge": 1,
+        "praegungen": {
+            "zaehigkeit": 2
+        }
+    },
+
+    "waldwaechter_koerper": {
+        "attribut": "koerper",
+        "menge": 2,
+        "praegungen": {
+            "zaehigkeit": 2
+        }
+    },
+
+    # -------------------------
+    # GEIST
+    # -------------------------
+
+    "lagerkeller_hebel": {
+        "attribut": "geist",
+        "menge": 2,
+        "praegungen": {
+            "wahrnehmung": 1,
+            "wissen": 1
+        }
+    },
+
+    "alte_schmiede": {
+        "attribut": "geist",
+        "menge": 3,
+        "praegungen": {
+            "wissen": 3
+        }
+    },
+
+    "unbekanntes_fragment": {
+        "attribut": "geist",
+        "menge": 2,
+        "praegungen": {
+            "wahrnehmung": 2
+        }
+    },
+
+    "wegstation_register": {
+        "attribut": "geist",
+        "menge": 2,
+        "praegungen": {
+            "wissen": 2
+        }
+    },
+
+    "wegstation_archiv": {
+        "attribut": "geist",
+        "menge": 2,
+        "praegungen": {
+            "wissen": 1,
+            "wahrnehmung": 1
+        }
+    },
+
+    "wegstation_kartenvergleich": {
+        "attribut": "geist",
+        "menge": 3,
+        "praegungen": {
+            "wissen": 2,
+            "wahrnehmung": 1
+        }
+    },
+
+    "wegstation_geheimraum": {
+        "attribut": "geist",
+        "menge": 2,
+        "praegungen": {
+            "wahrnehmung": 2
+        }
+    },
+
+    "edda_raetsel": {
+        "attribut": "geist",
+        "menge": 3,
+        "praegungen": {
+            "wissen": 1,
+            "wahrnehmung": 2
+        }
+    },
+
+    "edda_truhe_spuren": {
+        "attribut": "geist",
+        "menge": 1,
+        "praegungen": {
+            "wahrnehmung": 2
+        }
+    },
+
+    "marek_quest": {
+        "attribut": "geist",
+        "menge": 3,
+        "praegungen": {
+            "empathie": 4,
+            "wissen": 1
+        }
+    },
+
+    "mara_hilda_sorge": {
+        "attribut": "geist",
+        "menge": 1,
+        "praegungen": {
+            "empathie": 2
+        }
+    },
+
+    "tomas_alte_wege": {
+        "attribut": "geist",
+        "menge": 1,
+        "praegungen": {
+            "wissen": 2
+        }
+    },
+
+    "hilda_haendler_sorge": {
+        "attribut": "geist",
+        "menge": 1,
+        "praegungen": {
+            "empathie": 2
+        }
+    },
+
+    "hilda_erinnerungsanker": {
+        "attribut": "geist",
+        "menge": 1,
+        "praegungen": {
+            "empathie": 2
+        }
+    },
+
+    "sera_marek_widerspruch": {
+        "attribut": "geist",
+        "menge": 1,
+        "praegungen": {
+            "wahrnehmung": 2
+        }
+    },
+
+    "marek_erinnerungsmuster": {
+        "attribut": "geist",
+        "menge": 1,
+        "praegungen": {
+            "wahrnehmung": 1,
+            "wissen": 1
+        }
+    },
+
+    "elian_marek_restspuren": {
+        "attribut": "geist",
+        "menge": 1,
+        "praegungen": {
+            "empathie": 2
+        }
+    },
+
+    "waldwaechter_willenskraft": {
+        "attribut": "geist",
+        "menge": 1,
+        "praegungen": {
+            "willenskraft": 2
+        }
+    },
+
+    # -------------------------
+    # ÜBERSINNLICHES
+    # -------------------------
+
+    "waldwaechter_erwachen": {
+        "attribut": "uebersinnliches",
+        "menge": 6,
+        "praegungen": {
+            "sensibilitaet": 4
+        }
+    },
+
+    "wegstein_sensibilitaet": {
+        "attribut": "uebersinnliches",
+        "menge": 1,
+        "praegungen": {
+            "sensibilitaet": 1
+        }
+    }
+}
+
+
+AKT1_REISE_LERNQUELLEN = {
+    frozenset(
+        ("Eichenruh", "Köhlerei")
+    ): "reise_koehlerei",
+
+    frozenset(
+        ("Eichenruh", "Letzthafen")
+    ): "reise_koenigsring",
+
+    frozenset(
+        (
+            "Eichenruh",
+            "verlassenes_dorf"
+        )
+    ): "reise_pfad_des_vergessens"
+}
+
+
+def akt1_lernerfahrung(
+    quelle_id
+):
+    daten = AKT1_LERNQUELLEN.get(
+        quelle_id
+    )
+
+    if not daten:
+        return False
+
+    return lernerfahrung_hinzufuegen(
+        "akt1_" + quelle_id,
+        daten["attribut"],
+        menge=daten.get(
+            "menge",
+            1
+        ),
+        praegungen=daten.get(
+            "praegungen",
+            {}
+        ),
+        max_nutzungen=daten.get(
+            "max_nutzungen",
+            1
+        )
+    )
+
+
+def akt1_reise_lernerfahrung(
+    start,
+    ziel
+):
+    quelle_id = (
+        AKT1_REISE_LERNQUELLEN.get(
+            frozenset(
+                (start, ziel)
+            )
+        )
+    )
+
+    if not quelle_id:
+        return False
+
+    return akt1_lernerfahrung(
+        quelle_id
+    )
+
+def spieler_pruefwert(wert_id):
+    attribut_system_sicherstellen()
+
+    basis_wert = None
+
+    attribute = spieler.get(
+        "attribute",
+        {}
+    )
+
+    verfassungen = spieler.get(
+        "verfassungen",
+        {}
+    )
+
+    # -------------------------
+    # HAUPTATTRIBUT
+    # -------------------------
+
+    if wert_id in ATTRIBUT_DEFINITIONEN:
+        wert = attribute.get(
+            wert_id
+        )
+
+        if (
+            not isinstance(
+                wert,
+                bool
+            )
+            and isinstance(
+                wert,
+                (int, float)
+            )
+        ):
+            basis_wert = wert
+
+    # -------------------------
+    # VERFASSUNG
+    # -------------------------
+
+    elif wert_id in VERFASSUNG_DEFINITIONEN:
+        attribut_id = (
+            VERFASSUNG_DEFINITIONEN[
+                wert_id
+            ][
+                "attribut"
+            ]
+        )
+
+        attribut_wert = attribute.get(
+            attribut_id,
+            0
+        )
+
+        verfassung_wert = (
+            verfassungen.get(
+                wert_id,
+                0
+            )
+        )
+
+        if (
+            isinstance(
+                attribut_wert,
+                (int, float)
+            )
+            and not isinstance(
+                attribut_wert,
+                bool
+            )
+            and isinstance(
+                verfassung_wert,
+                (int, float)
+            )
+            and not isinstance(
+                verfassung_wert,
+                bool
+            )
+        ):
+            basis_wert = (
+                attribut_wert
+                + verfassung_wert
+            )
+
+    # -------------------------
+    # ALTE / SONSTIGE WERTE
+    # -------------------------
+
+    if basis_wert is None:
+        wert = spieler.get(
+            wert_id
+        )
+
+        if (
+            not isinstance(
+                wert,
+                bool
+            )
+            and isinstance(
+                wert,
+                (int, float)
+            )
+        ):
+            basis_wert = wert
+
+    status_bonus = status_modifikator(
+        wert_id
+    )
+
+    if basis_wert is None:
+        if status_bonus != 0:
+            return status_bonus
+
+        return None
+
+    return (
+        basis_wert
+        + status_bonus
+    )
+
+
+def spieler_pruefung(
+    wert_id,
+    mindestwert
+):
+    wert = spieler_pruefwert(
+        wert_id
+    )
+
+    if (
+        isinstance(
+            wert,
+            bool
+        )
+        or not isinstance(
+            wert,
+            (int, float)
+        )
+    ):
+        return False
+
+    if (
+        isinstance(
+            mindestwert,
+            bool
+        )
+        or not isinstance(
+            mindestwert,
+            (int, float)
+        )
+    ):
+        return False
+
+    return wert >= mindestwert
+
+def reise_bedingung_erfuellt(bedingung):
+    if not bedingung:
+        return True
+
+    if not isinstance(
+        bedingung,
+        dict
+    ):
+        return False
+
+    typ = bedingung.get(
+        "typ"
+    )
+
+    if typ in (
+        "alle",
+        "eine"
+    ):
+        bedingungen = bedingung.get(
+            "bedingungen",
+            []
+        )
+
+        if not bedingungen:
+            return False
+
+        ergebnisse = [
+            reise_bedingung_erfuellt(
+                einzelne_bedingung
+            )
+            for einzelne_bedingung
+            in bedingungen
+        ]
+
+        if typ == "alle":
+            return all(
+                ergebnisse
+            )
+
+        return any(
+            ergebnisse
+        )
+
+    if typ == "nicht":
+        einzelne_bedingung = bedingung.get(
+            "bedingung"
+        )
+
+        if not einzelne_bedingung:
+            return False
+
+        return not reise_bedingung_erfuellt(
+            einzelne_bedingung
+        )
+
+    if typ == "besonderer_fund_status":
+        return besonderer_fund_status(
+            bedingung.get("id")
+        ) == bedingung.get("status")
+
+    if typ == "weg_status":
+        return weg_status(
+            bedingung.get("id")
+        ) == bedingung.get("status")
+
+    if typ == "quest_status":
+        return spieler.get(
+            bedingung.get("id")
+        ) == bedingung.get("status")
+
+    if typ == "quest_status_in":
+        return spieler.get(
+            bedingung.get("id")
+        ) in bedingung.get(
+            "werte",
+            []
+        )
+
+    if typ in (
+        "spieler_wert_min",
+        "spieler_wert_max"
+    ):
+        wert = spieler_pruefwert(
+            bedingung.get("id")
+        )
+
+        grenze = bedingung.get(
+            "grenze"
+        )
+
+        if not isinstance(
+            wert,
+            (int, float)
+        ):
+            return False
+
+        if not isinstance(
+            grenze,
+            (int, float)
+        ):
+            return False
+
+        if typ == "spieler_wert_min":
+            return wert >= grenze
+
+        return wert <= grenze
+
+    return False
+
+def reise_ereignisse_pruefen(
+    reise_daten,
+    schritt
+):
+    richtung = (
+        f'{reise_daten["start"]}>'
+        f'{reise_daten["ziel"]}'
+    )
+
+    ausgeloest = reise_daten.setdefault(
+        "ausgeloeste_ereignisse",
+        []
+    )
+
+    dauerhaft_erlebt = spieler.setdefault(
+        "reise_ereignisse",
+        []
+    )
+
+    ereignis_angezeigt = False
+
+    strecken_daten = reise_strecken_daten(
+        reise_daten
+    )
+
+    for ereignis in strecken_daten.get(
+        "ereignisse",
+        []
+    ):
+        ereignis_id = ereignis.get(
+            "id"
+        )
+
+        if not ereignis_id:
+            continue
+
+        if ereignis.get(
+            "schritt"
+        ) != schritt:
+            continue
+
+        ereignis_richtung = ereignis.get(
+            "richtung"
+        )
+
+        if (
+            ereignis_richtung
+            and ereignis_richtung != richtung
+        ):
+            continue
+
+        if ereignis_id in ausgeloest:
+            continue
+
+        if (
+            ereignis.get(
+                "einmalig",
+                False
+            )
+            and ereignis_id
+            in dauerhaft_erlebt
+        ):
+            continue
+
+        if not reise_bedingung_erfuellt(
+            ereignis.get(
+                "bedingung"
+            )
+        ):
+            continue
+
+        ausgeloest.append(
+            ereignis_id
+        )
+
+        if (
+            ereignis.get(
+                "einmalig",
+                False
+            )
+            and ereignis_id
+            not in dauerhaft_erlebt
+        ):
+            dauerhaft_erlebt.append(
+                ereignis_id
+            )
+
+        aktion = ereignis.get(
+            "aktion"
+        )
+
+        if aktion == "hilda_karren":
+            ereignis_angezeigt = bool(
+                hilda_karren_ereignis()
+            )
+
+            continue
+
+        print()
+
+        titel = ereignis.get(
+            "titel"
+        )
+
+        if titel:
+            design_text(
+                titel,
+                design=ereignis.get(
+                    "design",
+                    "wissen"
+                ),
+                art="menue"
+            )
+
+            print()
+
+        zeilen = ereignis.get(
+            "text",
+            []
+        )
+
+        for nummer, zeile in enumerate(
+            zeilen
+        ):
+            text_ausgeben(
+                zeile
+            )
+
+            if nummer < len(zeilen) - 1:
+                print()
+
+        warte_auf_taste(
+            ereignis.get(
+                "weiter_text",
+                "Weiterreisen"
+            )
+        )
+
+        ereignis_angezeigt = True
+
+    return ereignis_angezeigt
+
+def reise_bekannte_abzweigung_vorhanden(
+    reise_daten,
+    schritt
+):
+    richtung = (
+        f'{reise_daten["start"]}>'
+        f'{reise_daten["ziel"]}'
+    )
+
+    angebotene = reise_daten.setdefault(
+        "angebotene_abzweigungen",
+        []
+    )
+
+    strecken_daten = reise_strecken_daten(
+        reise_daten
+    )
+
+    for abzweigung in strecken_daten.get(
+        "abzweigungen",
+        []
+    ):
+        abzweigung_id = abzweigung.get(
+            "id"
+        )
+
+        if not abzweigung_id:
+            continue
+
+        if abzweigung_id in angebotene:
+            continue
+
+        abzweigung_schritt = abzweigung.get(
+            "schritt"
+        )
+
+        richtungs_schritte = abzweigung.get(
+            "schritte",
+            {}
+        )
+
+        if richtung in richtungs_schritte:
+            abzweigung_schritt = (
+                richtungs_schritte[richtung]
+            )
+
+        if abzweigung_schritt != schritt:
+            continue
+
+        if not reise_bedingung_erfuellt(
+            abzweigung.get("bedingung")
+        ):
+            continue
+
+        weg_id = abzweigung.get(
+            "weg_id"
+        )
+
+        if (
+            weg_id
+            and weg_status(weg_id)
+            == "entdeckt"
+        ):
+            return True
+
+    return False
+
+def reise_abzweigungen_pruefen(
+    reise_daten,
+    schritt,
+    ziel,
+    erkundung=False
+):
+    angebotene = reise_daten.setdefault(
+        "angebotene_abzweigungen",
+        []
+    )
+
+    verfuegbar = []
+
+    strecken_daten = reise_strecken_daten(
