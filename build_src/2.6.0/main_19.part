@@ -1,0 +1,1000 @@
+    text_ausgeben(
+        "Staub liegt auf seiner Kleidung und in seinen Haaren."
+    )
+
+    print()
+    text_ausgeben(
+        "[Joris] Ich dachte schon, ich müsste "
+        "die ganze Nacht hier unten bleiben."
+    )
+
+    print()
+    text_ausgeben(
+        "Du blickst zur Kellertreppe. Durch die offene Falltür "
+        "fällt noch immer helles Vormittagslicht."
+    )
+
+    print()
+    text_ausgeben(
+        f'[{spieler["name"]}] Die ganze Nacht? '
+        "Es ist nicht einmal Mittag. Du bist erst seit heute Morgen weg."
+    )
+
+    print()
+    text_ausgeben(
+        "Joris antwortet nicht sofort. Sein Blick wandert langsam "
+        "zum Licht auf der Treppe."
+    )
+
+    print()
+    text_ausgeben("[Joris] Heute Morgen?")
+
+    seite_wechseln(
+        "Alter Lagerkeller",
+        "Joris"
+    )
+
+    text_ausgeben(
+        "Joris reibt sich über die Stirn und schaut noch einmal "
+        "zur verschobenen Tür zurück."
+    )
+
+    print()
+    text_ausgeben(
+        "[Joris] Dann habe ich wohl vollkommen "
+        "das Zeitgefühl verloren."
+    )
+
+    text_ausgeben(
+        "Er sagt es leiser, als würde er die Erklärung "
+        "vor allem sich selbst geben."
+    )
+
+    print()
+    text_ausgeben(
+        "[Joris] Hier unten ist es verdammt dunkel."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Neben der Tür liegt das lange Hanfseil, "
+        "von dem Tomas erzählt hat."
+    )
+
+    text_ausgeben(
+        "Joris wirkt ansonsten unverletzt."
+    )
+
+    print()
+
+    spieler["prolog_status"] = "joris_gefunden"
+
+    quest_meldung(
+        "update",
+        "Der verlorene Lehrling",
+        "Bring Joris zurück zu Bjorn."
+    )
+
+    warte_auf_taste()
+
+    spieler["ort"] = "Schmiede"
+
+    ort_nachricht_setzen(
+        "Gemeinsam mit Joris steigst du aus dem Keller.",
+        "Als ihr die Schmiede betretet, fährt Bjorn herum."
+    )
+
+def alte_schmiede_symbolraetsel():
+    symbole = [
+        "Flamme",
+        "Amboss",
+        "Wasser"
+    ]
+
+    reihenfolge = []
+
+    wissen_hinweis = spieler_pruefung(
+        "wissen",
+        2
+    )
+
+    for position in range(
+        1,
+        4
+    ):
+        ort_titel(
+            "Alte Schmiede - Werkbank"
+        )
+
+        text_ausgeben(
+            "Die drei Metallplatten sitzen bündig in der Front der alten Schublade.",
+            art="menue"
+        )
+
+        text_ausgeben(
+            "Flamme, Amboss und Wellenlinie lassen sich jeweils einige Millimeter eindrücken.",
+            art="menue"
+        )
+
+        if (
+            position == 1
+            and wissen_hinweis
+        ):
+            print()
+
+            design_text(
+                "Du denkst an die drei Sätze an den Arbeitsplätzen der Schmiede.",
+                design="wissen",
+                art="menue"
+            )
+
+            design_text(
+                "Erst Hitze, dann Form, zuletzt Abkühlung.",
+                design="wissen",
+                art="menue"
+            )
+
+        if reihenfolge:
+            print()
+
+            design_text(
+                "Bisher: "
+                + " → ".join(
+                    reihenfolge
+                ),
+                design="wissen",
+                art="menue"
+            )
+
+        menue_trenner()
+
+        print(
+            f"Position {position} von 3"
+        )
+
+        print()
+
+        for nummer, symbol in enumerate(
+            symbole,
+            start=1
+        ):
+            print(
+                f"{nummer}. {symbol}"
+            )
+
+        abbrechen_nummer = (
+            len(symbole) + 1
+        )
+
+        print(
+            f"{abbrechen_nummer}. Abbrechen"
+        )
+
+        auswahl = eingabe_menu(
+            1,
+            abbrechen_nummer,
+            sonder_tasten=()
+        )
+
+        if (
+            auswahl
+            == abbrechen_nummer
+        ):
+            return False
+
+        symbol = symbole.pop(
+            auswahl - 1
+        )
+
+        reihenfolge.append(
+            symbol
+        )
+
+    ort_titel(
+        "Alte Schmiede - Werkbank"
+    )
+
+    design_text(
+        " → ".join(
+            reihenfolge
+        ),
+        design="wissen",
+        art="menue"
+    )
+
+    print()
+
+    if reihenfolge == [
+        "Flamme",
+        "Amboss",
+        "Wasser"
+    ]:
+        text_ausgeben(
+            "Die letzte Metallplatte bleibt gedrückt. Einen Augenblick später "
+            "rastet auch im Inneren der Werkbank etwas ein."
+        )
+
+        text_ausgeben(
+            "Ein verrosteter Riegel gleitet mit einem rauen Schaben zurück."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Die feststeckende Schublade springt einen Fingerbreit auf."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Zwischen rostigen Nägeln und altem Werkzeug "
+            "liegt ein gefaltetes Stück Papier."
+        )
+
+        text_ausgeben(
+            "Die Schrift darauf ist fast verblasst."
+        )
+
+        print()
+
+        text_ausgeben(
+            '"Was bleiben soll, ruht dort, '
+            'wo selbst das Feuer stirbt."'
+        )
+
+        akt1_lernerfahrung(
+            "alte_schmiede"
+        )
+
+        spieler[
+            "quest_schmied"
+        ] = "neuer_hinweis"
+
+        quest_meldung(
+            "update",
+            "Der Schmied des Weges",
+            "Deute den Hinweis in der alten Schmiede."
+        )
+
+        warte_auf_taste(
+            "Weiter"
+        )
+
+        return True
+
+    text_ausgeben(
+        "Für einen Moment hörst du etwas "
+        "im Inneren der Werkbank klicken."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Dann springen alle drei Metallplatten "
+        "wieder in ihre Ausgangsposition zurück."
+    )
+
+    text_ausgeben(
+        "Die Reihenfolge war offenbar falsch."
+    )
+
+    warte_auf_taste(
+        "Noch einmal überlegen"
+    )
+
+    return False
+
+def alte_schmiede_schublade_aufbrechen():
+    ort_titel(
+        "Alte Schmiede - Werkbank"
+    )
+
+    text_ausgeben(
+        "Du greifst mit beiden Händen unter die Kante "
+        "der festsitzenden Schublade."
+    )
+
+    text_ausgeben(
+        "Das alte Holz ächzt, als du dein Gewicht "
+        "dagegenstemmt."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Für einen Moment bewegt sich nichts."
+    )
+
+    text_ausgeben(
+        "Dann bricht irgendwo im Inneren ein verrosteter "
+        "Widerstand mit einem trockenen Knacken nach."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Die Schublade springt ruckartig auf."
+    )
+
+    text_ausgeben(
+        "Zwischen rostigen Nägeln und altem Werkzeug "
+        "liegt ein gefaltetes Stück Papier."
+    )
+
+    text_ausgeben(
+        "Die Schrift darauf ist fast verblasst."
+    )
+
+    print()
+
+    text_ausgeben(
+        '"Was bleiben soll, ruht dort, '
+        'wo selbst das Feuer stirbt."'
+    )
+
+    akt1_lernerfahrung(
+        "alte_schmiede_aufbrechen"
+    )
+
+    spieler[
+        "quest_schmied"
+    ] = "neuer_hinweis"
+
+    quest_meldung(
+        "update",
+        "Der Schmied des Weges",
+        "Deute den Hinweis in der alten Schmiede."
+    )
+
+    warte_auf_taste(
+        "Weiter"
+    )
+
+    return True
+
+def alte_schmiede_hinweis_suche():
+    while True:
+        ort_titel(
+            "Alte Schmiede - Der Hinweis"
+        )
+
+        text_ausgeben(
+            "Du denkst noch einmal über die Worte "
+            "auf dem alten Zettel nach.",
+            art="menue"
+        )
+
+        print()
+
+        design_text(
+            "„Was bleiben soll, ruht dort, "
+            "wo selbst das Feuer stirbt.“",
+            design="wissen",
+            art="menue"
+        )
+
+        print()
+
+        text_ausgeben(
+            "Mehrere Stellen in der alten Schmiede "
+            "könnten damit gemeint sein.",
+            art="menue"
+        )
+
+        if spieler_pruefung(
+            "wahrnehmung",
+            2
+        ):
+            print()
+
+            design_text(
+                "Am Fuß des alten Abschreckbeckens fällt dir auf, "
+                "dass die Staubschicht an einer Stelle "
+                "ungewöhnlich unterbrochen ist.",
+                design="wissen",
+                art="menue"
+            )
+
+        menue_trenner()
+
+        print("1. Die kalte Asche der Esse durchsuchen")
+        print("2. Den alten Rauchabzug untersuchen")
+        print("3. Das Abschreckbecken ansehen")
+        print("4. Zurück")
+
+        auswahl = eingabe_menu(
+            1,
+            4,
+            sonder_tasten=()
+        )
+
+        ort_titel(
+            "Alte Schmiede - Der Hinweis"
+        )
+
+        if auswahl == 1:
+            text_ausgeben(
+                "Du gehst vor der alten Esse in die Hocke."
+            )
+
+            text_ausgeben(
+                "Zwischen kalter Asche, Kohleresten "
+                "und verkohltem Holz suchst du sorgfältig."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Hier brannte das Feuer einst."
+            )
+
+            text_ausgeben(
+                "Aber genau deshalb fühlt sich diese Stelle "
+                "nicht ganz richtig an."
+            )
+
+            print()
+
+            design_text(
+                "„... wo selbst das Feuer stirbt.“",
+                design="wissen",
+                art="menue"
+            )
+
+            warte_auf_taste(
+                "Weiter überlegen"
+            )
+
+        elif auswahl == 2:
+            text_ausgeben(
+                "Du blickst in den alten Rauchabzug."
+            )
+
+            text_ausgeben(
+                "Ruß klebt noch immer dick an den Steinen."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Der Rauch verschwand früher hier nach draußen."
+            )
+
+            text_ausgeben(
+                "Doch der Rauchabzug löschte das Feuer nicht."
+            )
+
+            warte_auf_taste(
+                "Weiter überlegen"
+            )
+
+        elif auswahl == 3:
+            text_ausgeben(
+                "Neben der Esse steht ein flaches "
+                "steinernes Becken."
+            )
+
+            text_ausgeben(
+                "Sein Inneres ist trocken und von einer "
+                "dicken Staubschicht bedeckt."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Früher wurde hier glühendes Metall "
+                "in Wasser abgeschreckt."
+            )
+
+            print()
+
+            design_text(
+                "Hier starb das Feuer.",
+                design="wissen",
+                art="menue"
+            )
+
+            print()
+
+            text_ausgeben(
+                "Du streichst mit der Hand über den Rand des alten Beckens."
+            )
+
+            text_ausgeben(
+                "Unterhalb des Steins ist die Staubschicht unterbrochen. "
+                "Direkt daneben sitzt ein Bodenstein nicht bündig mit den übrigen."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Als du mit den Fingern über seine Kante fährst, bewegt er sich leicht."
+            )
+
+            text_ausgeben(
+                "Unter dem Abschreckbecken wurde offenbar etwas verborgen."
+            )
+
+            spieler[
+                "quest_schmied"
+            ] = "versteck_gefunden"
+
+            quest_meldung(
+                "update",
+                "Der Schmied des Weges",
+                "Untersuche den lockeren Stein am Abschreckbecken."
+            )
+
+            warte_auf_taste(
+                "Zurück in die Schmiede"
+            )
+
+            return True
+
+        elif auswahl == 4:
+            return False
+
+def alte_schmiede():
+    ort_titel("Alte Schmiede")
+
+    if not spieler.get(
+        "alte_schmiede_eindruck_gezeigt",
+        False
+    ):
+        text_ausgeben(
+            "Die Schmiede ist größer als die übrigen Häuser des Dorfes. "
+            "Durch Löcher im Dach fällt fahles Licht auf den Steinboden."
+        )
+
+        text_ausgeben(
+            "Die Esse ist kalt. Rostige Werkzeuge liegen auf einer schweren Werkbank, "
+            "und neben der Feuerstelle steht ein flaches steinernes Abschreckbecken."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Ruß liegt noch immer wie ein dunkler Schatten über den Wänden."
+        )
+
+        spieler[
+            "alte_schmiede_eindruck_gezeigt"
+        ] = True
+
+    menue_trenner()
+
+    werkbank_text = "1. Werkbank untersuchen"
+
+    if spieler.get(
+        "quest_schmied"
+    ) in (
+        "dorf_entdeckt",
+        "hinweis_gefunden"
+    ):
+        werkbank_text += " [!]"
+
+    print(werkbank_text)
+    print("2. Die Wände ansehen")
+    print("3. Zurück zum verlassenen Dorf")
+
+    if spieler["quest_schmied"] == "neuer_hinweis":
+        print("4. Den Hinweis deuten [!]")
+        menu_auswahl = eingabe_menu(
+            1,
+            4,
+            sonder_tasten=()
+        )
+
+    elif spieler["quest_schmied"] == "versteck_gefunden":
+        print("4. Den lockeren Stein anheben [!]")
+        menu_auswahl = eingabe_menu(
+            1,
+            4,
+            sonder_tasten=()
+        )
+
+    else:
+        menu_auswahl = eingabe_menu(
+            1,
+            3,
+            sonder_tasten=()
+        )
+
+    if (
+        menu_auswahl == 1
+        and spieler["quest_schmied"] == "dorf_entdeckt"
+    ):
+        text_ausgeben(
+            "Du streichst mit der Hand über die alte Werkbank."
+        )
+
+        text_ausgeben(
+            "Eine dicke Staubschicht bedeckt verrostete "
+            "Zangen, Nägel und Werkzeug."
+        )
+
+        text_ausgeben(
+            "Eine der Schubladen sitzt vollständig fest."
+        )
+
+        text_ausgeben(
+            "Tiefe Kratzspuren im Holz zeigen, dass bereits "
+            "jemand versucht hat, sie mit Gewalt zu öffnen."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Als du den Staub von der Vorderseite wischst, "
+            "entdeckst du etwas, das dir vorher entgangen ist."
+        )
+
+        text_ausgeben(
+            "Drei kleine Metallplatten sind direkt in "
+            "die Schublade eingelassen."
+        )
+
+        print()
+
+        design_text(
+            "Flamme  •  Amboss  •  Wasser",
+            design="wissen",
+            art="menue"
+        )
+
+        print()
+
+        text_ausgeben(
+            "Die Platten lassen sich eindrücken, "
+            "springen danach aber wieder zurück."
+        )
+
+        text_ausgeben(
+            "Offenbar gehört die Schublade zu einem "
+            "alten mechanischen Schloss."
+        )
+
+        quest_meldung(
+            "update",
+            "Der Schmied des Weges",
+            "Finde heraus, in welcher Reihenfolge "
+            "die Symbole gedrückt werden müssen."
+        )
+
+        spieler[
+            "quest_schmied"
+        ] = "hinweis_gefunden"
+
+    elif (
+        menu_auswahl == 1
+        and spieler[
+            "quest_schmied"
+        ] == "hinweis_gefunden"
+    ):
+        if spieler_pruefung(
+            "staerke",
+            2
+        ):
+            ort_titel(
+                "Alte Schmiede - Werkbank"
+            )
+
+            text_ausgeben(
+                "Die Schublade sitzt noch immer fest."
+            )
+
+            print()
+            print(
+                "1. Die Symbolplatten verwenden"
+            )
+            print(
+                "2. [Stärke] Die Schublade mit Gewalt öffnen"
+            )
+            print(
+                "3. Zurück"
+            )
+
+            werkbank_auswahl = eingabe_menu(
+                1,
+                3,
+                sonder_tasten=()
+            )
+
+            if werkbank_auswahl == 1:
+                alte_schmiede_symbolraetsel()
+
+            elif werkbank_auswahl == 2:
+                alte_schmiede_schublade_aufbrechen()
+
+            return
+
+        alte_schmiede_symbolraetsel()
+        return
+
+    elif menu_auswahl == 1:
+        text_ausgeben(
+            "Du untersuchst die Werkbank erneut, "
+            "findest aber nichts Neues."
+        )
+
+    elif menu_auswahl == 2:
+        text_ausgeben(
+            "Unter dem Ruß erkennst du Namen, kleine Kerben und Zeichen, "
+            "die über viele Jahre in den Stein geritzt wurden."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Über der Esse steht eine sorgfältiger ausgeführte Zeile."
+        )
+
+        design_text(
+            "„Das Feuer weckt das Eisen.“",
+            design="wissen",
+            art="menue"
+        )
+
+        print()
+
+        text_ausgeben(
+            "Nahe der Werkbank findest du eine zweite."
+        )
+
+        design_text(
+            "„Der Schlag gibt ihm Gestalt.“",
+            design="wissen",
+            art="menue"
+        )
+
+        print()
+
+        text_ausgeben(
+            "Die dritte wurde in den Stein über dem alten Abschreckbecken geritzt."
+        )
+
+        design_text(
+            "„Das Wasser bewahrt, was geschaffen wurde.“",
+            design="wissen",
+            art="menue"
+        )
+
+        print()
+
+        text_ausgeben(
+            "Neben den drei Sätzen wiederholen sich dieselben Symbole, die du "
+            "an der Werkbank gesehen hast: Flamme, Amboss und Welle."
+        )
+
+    elif (
+        menu_auswahl == 4
+        and spieler["quest_schmied"] == "neuer_hinweis"
+    ):
+        alte_schmiede_hinweis_suche()
+        return
+
+    elif (
+        menu_auswahl == 4
+        and spieler["quest_schmied"] == "versteck_gefunden"
+    ):
+        text_ausgeben(
+            "Du gehst neben dem Abschreckbecken in die Hocke und greifst "
+            "unter die Kante des lockeren Bodensteins."
+        )
+
+        text_ausgeben(
+            "Mit einem dumpfen Schaben löst er sich aus seinem Bett."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Darunter liegt ein schmaler Hohlraum. Darin steckt ein Bündel, "
+            "eingewickelt in öliges, fast zerfallenes Tuch."
+        )
+
+        text_ausgeben(
+            "Du hebst es heraus und schlägst den Stoff vorsichtig zurück."
+        )
+
+        print()
+
+        design_text(
+            "Alter Schmiedehammer",
+            design="positiv",
+            art="menue"
+        )
+
+        print()
+
+        text_ausgeben(
+            "Der Kopf ist dunkel und fleckig, doch der Hammer ist erstaunlich gut erhalten."
+        )
+
+        text_ausgeben(
+            "Auf dem abgenutzten Griff erkennst du die eingeritzten Worte:"
+        )
+
+        design_text(
+            "„Ein guter Schmied hinterlässt mehr als nur Stahl.“",
+            design="wissen",
+            art="atmosphaere"
+        )
+
+        quest_meldung(
+            "update",
+            "Der Schmied des Weges",
+            "Bringe den alten Schmiedehammer zu Bjorn."
+        )
+
+        spieler["quest_schmied"] = "hammer_gefunden"
+
+        text_ausgeben(
+            "Du greifst unter den lockeren Stein "
+            "und hebst ihn vorsichtig an."
+        )
+
+        text_ausgeben(
+            "Darunter befindet sich ein kleiner Hohlraum."
+        )
+
+        text_ausgeben(
+            "Etwas ist darin in ein altes, halb zerfallenes "
+            "Tuch gewickelt."
+        )
+
+        text_ausgeben(
+            "Du ziehst es hervor und entfernst "
+            "vorsichtig den Stoff."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Ein alter Schmiedehammer kommt zum Vorschein."
+        )
+
+        text_ausgeben(
+            "Auf seinem Griff erkennst du die eingeritzten Worte:"
+        )
+
+        text_ausgeben(
+            "„Ein guter Schmied hinterlässt mehr als nur Stahl.“"
+        )
+
+        quest_meldung(
+            "update",
+            "Der Schmied des Weges",
+            "Bringe den alten Schmiedehammer zu Bjorn."
+        )
+
+        spieler["quest_schmied"] = "hammer_gefunden"
+
+    elif menu_auswahl == 3:
+        spieler["ort"] = "verlassenes_dorf"
+
+    if menu_auswahl != 3:
+        warte_auf_taste()
+
+def verlassenes_dorf():
+    ort_titel("Verlassenes Dorf")
+
+    ort_nachricht_anzeigen()
+
+    if not spieler.get(
+        "verlassenes_dorf_eindruck_gezeigt",
+        False
+    ):
+        text_ausgeben(
+            "Der alte Weg setzt sich zwischen den Häusern fort, doch Gras und "
+            "Moos haben große Teile davon zurückerobert."
+        )
+
+        text_ausgeben(
+            "Ein Dach ist vollständig eingefallen. An einem anderen Haus hängt "
+            "noch eine schiefe Fensterlade an einem einzigen Eisenband."
+        )
+
+        print()
+
+        text_ausgeben(
+            "Zwischen zwei Grundstücken wächst ein junger Baum dort, wo früher "
+            "ein Zaun gestanden haben muss."
+        )
+
+        text_ausgeben(
+            "Nichts bewegt sich außer Blättern im Wind."
+        )
+
+        spieler[
+            "verlassenes_dorf_eindruck_gezeigt"
+        ] = True
+
+    if spieler.get(
+        "quest_schmied"
+    ) == "suche_verlassenes_dorf":
+        spieler[
+            "quest_schmied"
+        ] = "dorf_entdeckt"
+
+        quest_meldung(
+            "update",
+            "Der Schmied des Weges",
+            "Untersuche die alte Schmiede."
+        )
+
+    menue_trenner()
+
+    schmiede_text = "1. Die alte Schmiede untersuchen"
+
+    if spieler.get(
+        "quest_schmied"
+    ) == "dorf_entdeckt":
+        schmiede_text += " [!]"
+
+    print(schmiede_text)
+    print("2. Das Dorf durchsuchen")
+    print("3. Zurück nach Eichenruh")
+
+    print()
+    print("[S] Status")
+    print("[I] Inventar")
+    print("[J] Questlog/Erfolge")
+    print("[Q] Speichern / Menü")
+
+    dorf_auswahl = eingabe_menu(
+        1,
+        3,
+        sonder_tasten=(
+            "s",
+            "i",
+            "j",
+            "q"
+        )
+    )
+
+    if dorf_auswahl == "s":
+        status()
+        return
+
+    elif dorf_auswahl == "i":
+        inventar()
+        return
+
+    elif dorf_auswahl == "j":
+        questlog()
+        return
+
+    elif dorf_auswahl == "q":
+        spielmenue()
+        return
+
+    if dorf_auswahl == 1:
+        spieler["ort"] = "alte_schmiede"
+
+    elif dorf_auswahl == 3:
+
+        if weg_status(
+            "pfad_des_vergessens"
+        ) == "entdeckt":
+            reise(
+                "Eichenruh",
+                (
+                    "Die Felder Eichenruhs öffnen sich vor dir."
+                ),
+                (
+                    "Zwischen den Häusern kehren vertraute Stimmen und "
+                    "Arbeitsgeräusche zurück."
+                ),
+                gebiet_modus=True
+            )
+
+        else:
+            spieler["reise"] = None
+            spieler["ort"] = "Eichenruh"
+
+    elif dorf_auswahl == 2:
+        while True:
+            ort_titel(
+                "Verlassenes Dorf - Häuser"
