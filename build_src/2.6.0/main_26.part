@@ -1,0 +1,1000 @@
+    # SICHTBARE VERBINDUNGEN
+    # -------------------------
+
+    gezeichnete_verbindungen = set()
+
+    for start_id in besuchte_raeume:
+        for ziel_id in wegstation_verbindungen(
+            start_id
+        ):
+            if (
+                start_id
+                not in WEGSTATION_KARTENPOSITIONEN
+                or ziel_id
+                not in WEGSTATION_KARTENPOSITIONEN
+            ):
+                continue
+
+            if not raum_sichtbar(
+                ziel_id
+            ):
+                continue
+
+            verbindung = frozenset(
+                (
+                    start_id,
+                    ziel_id
+                )
+            )
+
+            if verbindung in gezeichnete_verbindungen:
+                continue
+
+            gezeichnete_verbindungen.add(
+                verbindung
+            )
+
+            verbindung_zeichnen(
+                start_id,
+                ziel_id
+            )
+
+    # -------------------------
+    # RÄUME EINZEICHNEN
+    # -------------------------
+
+    for (
+        raum_id,
+        position
+    ) in WEGSTATION_KARTENPOSITIONEN.items():
+
+        text = feld(
+            raum_id
+        )
+
+        if text is None:
+            continue
+
+        zeile, spalte = position
+
+        for index, zeichen in enumerate(
+            text
+        ):
+            x = spalte + index
+
+            if (
+                0 <= zeile < hoehe
+                and 0 <= x < breite
+            ):
+                karte[
+                    zeile
+                ][x] = zeichen
+
+    # -------------------------
+    # KARTE AUSGEBEN
+    # -------------------------
+
+    ort_titel(
+        "Gebietskarte - Alte Wegstation"
+    )
+
+    sichtbare_zeilen = [
+        index
+        for index, zeile in enumerate(karte)
+        if any(
+            zeichen != " "
+            for zeichen in zeile
+        )
+    ]
+
+    if sichtbare_zeilen:
+        erste_zeile = min(
+            sichtbare_zeilen
+        )
+
+        letzte_zeile = max(
+            sichtbare_zeilen
+        )
+
+        sichtbarer_bereich = karte[
+            erste_zeile:
+            letzte_zeile + 1
+        ]
+
+        belegte_spalten = []
+
+        for zeile in sichtbarer_bereich:
+            for index, zeichen in enumerate(
+                zeile
+            ):
+                if zeichen != " ":
+                    belegte_spalten.append(
+                        index
+                    )
+
+        if belegte_spalten:
+            erste_spalte = min(
+                belegte_spalten
+            )
+
+            letzte_spalte = max(
+                belegte_spalten
+            )
+
+            for zeile in sichtbarer_bereich:
+                print(
+                    "  "
+                    + "".join(
+                        zeile[
+                            erste_spalte:
+                            letzte_spalte + 1
+                        ]
+                    ).rstrip()
+                )
+
+    # -------------------------
+    # STANDORT / LEGENDE
+    # -------------------------
+
+    print()
+    print("-" * 34)
+
+    print(
+        "Standort: "
+        + WEGSTATION_RAEUME[
+            aktueller_raum
+        ]["name"]
+    )
+
+    print()
+    print("-" * 34)
+    print()
+
+    print(
+        ">XX< = Dein Standort"
+    )
+
+    print(
+        "[XX] = Erkundeter Raum"
+    )
+
+    print(
+        "[?] = Bekannter, noch nicht erkundeter Raum"
+    )
+
+    warte_auf_taste(
+        "Zurück"
+    )
+
+def alte_wegstation():
+    dungeon_status = wegstation_status()
+
+    if not dungeon_status[
+        "entdeckt"
+    ]:
+        dungeon_status[
+            "entdeckt"
+        ] = True
+
+    raum_id = dungeon_status.get(
+        "aktueller_raum",
+        "vorhof"
+    )
+
+    if raum_id not in WEGSTATION_RAEUME:
+        raum_id = "vorhof"
+
+    erstmals = wegstation_raum_betreten(
+        raum_id
+    )
+
+    raum = WEGSTATION_RAEUME[
+        raum_id
+    ]
+
+    ort_titel(
+        f"Alte Wegstation - {raum['name']}"
+    )
+
+    ort_nachricht_anzeigen()
+
+    if erstmals:
+        for zeile in raum.get(
+            "beschreibung",
+            []
+        ):
+            text_ausgeben(
+                zeile
+            )
+
+            print()
+
+        if raum_id == "vorhof":
+            design_text(
+                "KÖNIGLICHE WEGSTATION",
+                design="wissen",
+                art="menue"
+            )
+
+            print()
+
+            text_ausgeben(
+                "Ein zweiter Schriftzug darunter ist fast "
+                "vollständig verwittert."
+            )
+
+    else:
+        print(
+            raum.get(
+                "kurztext",
+                "Du siehst dich erneut um."
+            )
+        )
+
+    wegstation_varianten_initialisieren()
+
+    verbindungen = wegstation_verbindungen(
+        raum_id
+    )
+
+    aktionen = wegstation_raum_aktionen(
+        raum_id
+    )
+
+    menue_eintraege = []
+
+    for ziel_id in verbindungen:
+        menue_eintraege.append(
+            (
+                "weg",
+                ziel_id,
+                WEGSTATION_RAEUME[
+                    ziel_id
+                ]["name"]
+            )
+        )
+
+    for (
+        aktion_id,
+        aktion_text
+    ) in aktionen:
+        menue_eintraege.append(
+            (
+                "aktion",
+                aktion_id,
+                aktion_text
+            )
+        )
+
+    if raum_id == "vorhof":
+        menue_eintraege.append(
+            (
+                "verlassen",
+                None,
+                "Zum Königsring zurückkehren"
+            )
+        )
+
+    menue_trenner()
+
+    for nummer, (
+        eintrag_typ,
+        eintrag_id,
+        eintrag_text
+    ) in enumerate(
+        menue_eintraege,
+        start=1
+    ):
+        print(
+            f"{nummer}. "
+            f"{eintrag_text}"
+        )
+
+    print()
+    print("[K] Gebietskarte")
+    print("[S] Status")
+    print("[I] Inventar")
+    print("[J] Questlog/Erfolge")
+    print("[Q] Speichern / Menü")
+
+    auswahl = eingabe_menu(
+        1,
+        len(menue_eintraege),
+        sonder_tasten=(
+            "k",
+            "s",
+            "i",
+            "j",
+            "q"
+        )
+    )
+
+    if auswahl == "k":
+        wegstation_gebietskarte_anzeigen()
+        return
+    
+    if auswahl == "s":
+        status()
+        return
+
+    if auswahl == "i":
+        inventar()
+        return
+
+    if auswahl == "j":
+        questlog()
+        return
+
+    if auswahl == "q":
+        spielmenue()
+        return
+
+    (
+        eintrag_typ,
+        eintrag_id,
+        eintrag_text
+    ) = menue_eintraege[
+        auswahl - 1
+    ]
+
+    if eintrag_typ == "verlassen":
+        aktive_reise = spieler.get(
+            "reise"
+        )
+
+        if isinstance(
+            aktive_reise,
+            dict
+        ):
+            spieler["ort"] = aktive_reise.get(
+                "gebiet",
+                "Wald"
+            )
+
+            ort_nachricht_setzen(
+                "Du lässt die alte Wegstation hinter dir.",
+                "Wenig später stehst du wieder auf dem Königsring."
+            )
+
+        else:
+            spieler["ort"] = "Eichenruh"
+
+            ort_nachricht_setzen(
+                "Du lässt die alte Wegstation hinter dir.",
+                "Nach einiger Zeit erreichst du wieder Eichenruh."
+            )
+
+        dungeon_status[
+            "aktueller_raum"
+        ] = "vorhof"
+
+        return
+
+    if eintrag_typ == "weg":
+        dungeon_status[
+            "aktueller_raum"
+        ] = eintrag_id
+
+        return
+
+    if eintrag_typ == "aktion":
+
+        if (
+            eintrag_id
+            == "wachraum_untersuchen"
+        ):
+            wegstation_wachraum_untersuchen()
+
+        elif (
+            eintrag_id
+            == "schreibstube_untersuchen"
+        ):
+            wegstation_schreibstube_untersuchen()
+
+        elif (
+            eintrag_id
+            == "keller_untersuchen"
+        ):
+            wegstation_keller_untersuchen()
+
+        elif (
+            eintrag_id
+            == "keller_abkuerzung"
+        ):
+            wegstation_keller_abkuerzung_oeffnen()
+
+        elif (
+            eintrag_id
+            == "archiv_untersuchen"
+        ):
+            wegstation_archiv_untersuchen()
+
+
+        elif (
+            eintrag_id
+            == "kartenstueck_archiv"
+        ):
+            wegstation_kartenstueck_archiv_vergleichen()
+
+        elif (
+            eintrag_id
+            == "geheimraum_oeffnen"
+        ):
+            wegstation_geheimraum_oeffnen()
+
+        elif (
+            eintrag_id
+            == "versiegeltes_register"
+        ):
+            wegstation_versiegeltes_register_untersuchen()
+
+        return
+
+            
+def marktplatz():
+    ort_titel("Marktplatz von Eichenruh")
+
+    marktplatz_erstbesuch = (
+        spieler.get(
+            "prolog_status"
+        ) == "dorf_freigeschaltet"
+        and not spieler.get(
+            "prolog_besuchte_orte",
+            {}
+        ).get(
+            "marktplatz",
+            False
+        )
+    )
+
+    prolog_ort_besucht(
+        "marktplatz"
+    )
+
+    ort_nachricht_anzeigen()
+
+    if marktplatz_erstbesuch:
+        print()
+
+        text_ausgeben(
+            "Zwischen den kleinen Holzständen wechseln Münzen, "
+            "Körbe und kurze Grüße die Hände.",
+            art="atmosphaere"
+        )
+
+        text_ausgeben(
+            "Vor einem Stand schneidet jemand noch warmes Brot auf, "
+            "während ein Händler zwei Plätze weiter laut über den "
+            "Preis seiner Äpfel verhandelt.",
+            art="atmosphaere"
+        )
+
+        text_ausgeben(
+            "Am Rand des Platzes sitzt Tomas auf seiner gewohnten Bank. "
+            "Hilda ordnet bereits die ersten Waren auf ihrem Stand.",
+            art="atmosphaere"
+        )
+
+        print()
+
+        text_ausgeben(
+            "Hilda stellt eine kleine Holzkiste neben Tomas' Bank ab.",
+            art="atmosphaere"
+        )
+
+        text_ausgeben(
+            "[Hilda] Wenn du schon jeden Morgen hier sitzt, "
+            "kannst du wenigstens auf die Kiste achten.",
+            art="atmosphaere"
+        )
+
+        text_ausgeben(
+            "Tomas legt beide Hände auf den Griff seines Spazierstocks.",
+            art="atmosphaere"
+        )
+
+        text_ausgeben(
+            "[Tomas] Ich passe doch ohnehin auf den ganzen Platz auf.",
+            art="atmosphaere"
+        )
+
+        text_ausgeben(
+            "[Hilda] Genau das macht mir Sorgen.",
+            art="atmosphaere"
+        )
+
+    if (
+        not prolog_laeuft()
+        and spieler.get(
+            "quest_hilda"
+        ) == "nicht_entdeckt"
+        and not npc_reaktion_gezeigt(
+            "hilda",
+            "lieferung_markt_ambiente"
+        )
+    ):
+        print()
+
+        text_ausgeben(
+            "Hilda tritt vor ihren Stand und späht die Straße "
+            "Richtung Wald hinunter.",
+            art="atmosphaere"
+        )
+
+        text_ausgeben(
+            "[Hilda] Tomas. Hast du heute einen Wagen von dort kommen sehen?",
+            art="atmosphaere"
+        )
+
+        text_ausgeben(
+            "Tomas hebt den Blick von seiner Bank.",
+            art="atmosphaere"
+        )
+
+        text_ausgeben(
+            "[Tomas] Zwei Wagen. Keiner davon hat am Markt gehalten.",
+            art="atmosphaere"
+        )
+
+        text_ausgeben(
+            "Hilda presst kurz die Lippen zusammen und schaut noch einmal "
+            "zur Straße.",
+            art="atmosphaere"
+        )
+
+        text_ausgeben(
+            "[Hilda] Dann ist er spät.",
+            art="atmosphaere"
+        )
+
+        npc_reaktion_markieren(
+            "hilda",
+            "lieferung_markt_ambiente"
+        )
+
+    menue_trenner()
+
+    hilda_text = "1. Mit Hilda sprechen"
+    tomas_text = "2. Mit Tomas sprechen"
+
+    if spieler.get(
+        "quest_ein_name_fehlt"
+    ) == "tomas_befragen":
+        tomas_text += " [!]"
+
+    print(hilda_text)
+    print(tomas_text)
+
+    if prolog_laeuft():
+        print("3. Den Marktplatz ansehen")
+        print("4. Marktplatz verlassen")
+
+        markt_auswahl = eingabe_menu(
+            1,
+            4,
+            sonder_tasten=()
+        )
+
+    else:
+        print("3. Bei Hilda Zutaten kaufen")
+        print("4. Den Marktplatz ansehen")
+        print("5. Marktplatz verlassen")
+
+        if weg_status(
+            "koenigsring"
+        ) == "entdeckt":
+
+            koenigsring_text = (
+                "6. Königsring - nach Letzthafen"
+            )
+
+            if spieler.get(
+                "quest_ein_name_fehlt"
+            ) == "letzthafen_suchen":
+                koenigsring_text += " [!]"
+
+            print(
+                koenigsring_text
+            )
+
+            markt_auswahl = eingabe_menu(
+                1,
+                6,
+                sonder_tasten=()
+            )
+
+        else:
+            markt_auswahl = eingabe_menu(
+                1,
+                5,
+                sonder_tasten=()
+            )
+    if not prolog_laeuft():
+        hilda_daten = npc_status(
+            "hilda"
+        )
+
+        tomas_daten = npc_status(
+            "tomas"
+        )
+
+        if markt_auswahl == 1:
+            hilda_daten["direkte_besuche"] = (
+                hilda_daten.get(
+                    "direkte_besuche",
+                    0
+                ) + 1
+            )
+        else:
+            hilda_daten[
+                "direkte_besuche"
+            ] = 0
+
+        if markt_auswahl == 2:
+            tomas_daten["direkte_besuche"] = (
+                tomas_daten.get(
+                    "direkte_besuche",
+                    0
+                ) + 1
+            )
+        else:
+            tomas_daten[
+                "direkte_besuche"
+            ] = 0
+
+    if markt_auswahl == 1:
+        dialog_hilda()
+
+    elif markt_auswahl == 2:
+        dialog_tomas()
+
+    elif (
+        markt_auswahl == 3
+        and not prolog_laeuft()
+    ):
+        hilda_zutaten_kaufen()
+
+    elif (
+        markt_auswahl == 3
+        and prolog_laeuft()
+    ) or (
+        markt_auswahl == 4
+        and not prolog_laeuft()
+    ):
+        ort_titel("Marktplatz von Eichenruh")
+
+        if prolog_laeuft():
+            text_ausgeben(
+                "Du bleibst einen Moment am Rand des Platzes stehen."
+            )
+
+            text_ausgeben(
+                "Ein Händler zählt Wechselgeld in die Hand einer Kundin, "
+                "während hinter ihm eine lose Stoffplane im Wind flattert."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Zwei Kinder tragen gemeinsam einen viel zu großen Korb "
+                "zwischen den Ständen hindurch und geraten dabei beinahe "
+                "mit einem Gemüsestand aneinander."
+            )
+
+            text_ausgeben(
+                "Der Verkäufer fängt den Korb im letzten Moment ab. "
+                "Die Kinder murmeln eine Entschuldigung und verschwinden lachend."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Niemand schenkt der kleinen Aufregung lange Beachtung."
+            )
+
+        else:
+            text_ausgeben(
+                "Du lässt deinen Blick über den Marktplatz schweifen."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Ein Bäcker verkauft noch warmes Brot."
+            )
+
+            text_ausgeben(
+                "Ein Händler versucht lautstark, "
+                "einen viel zu teuren Teppich loszuwerden."
+            )
+
+            text_ausgeben(
+                "Am Rand des Platzes führt eine breite Straße "
+                "aus Eichenruh hinaus."
+            )
+
+            print()
+
+            if weg_status(
+                "koenigsring"
+            ) == "entdeckt":
+                text_ausgeben(
+                    "Zwischen Gras und festgetretener Erde erkennst du "
+                    "nun die alten Pflastersteine des Königsrings."
+                )
+
+                text_ausgeben(
+                    "Die Straße führt nach Osten in Richtung Letzthafen."
+                )
+
+            else:
+                text_ausgeben(
+                    "Du hast diesen Weg schon oft gesehen, "
+                    "aber bisher hattest du keinen Grund, ihm zu folgen."
+                )
+
+        warte_auf_taste()
+
+    elif (
+        markt_auswahl == 4
+        and prolog_laeuft()
+    ) or (
+        markt_auswahl == 5
+        and not prolog_laeuft()
+    ):
+        spieler["ort"] = "Eichenruh"
+
+        ort_nachricht_setzen(
+            "Du verlässt den Marktplatz.",
+            "Wenig später stehst du wieder im Zentrum von Eichenruh."
+        )
+
+    elif (
+        markt_auswahl == 6
+        and not prolog_laeuft()
+        and weg_status(
+            "koenigsring"
+        ) == "entdeckt"
+    ):
+        spieler[
+            "ort"
+        ] = "Eichenruh"
+
+        reise(
+            "Letzthafen",
+            "Die letzten Bäume bleiben hinter dir.",
+            "Der Königsring führt zwischen den ersten Häusern hindurch.",
+            "Mit dem Wald im Rücken wird das Rauschen des Meeres deutlicher.",
+            gebiet_modus=True
+        )
+  
+def dialog_bjorn():
+    npc_besuch_starten(
+        "bjorn"
+    )
+
+    erste_runde = True
+
+    themen_dieses_gespraech = set()
+    nach_prolog_besuch = None
+
+    ort_titel("Bjorns Schmiede")
+    dialog_titel("Bjorn")
+
+    prolog_status = spieler.get(
+        "prolog_status"
+    )
+
+    # -------------------------
+    # ERSTER NORMALER BESUCH
+    # -------------------------
+
+    if prolog_status == "dorf_freigeschaltet":
+        while True:
+            ort_titel("Bjorns Schmiede")
+            dialog_titel("Bjorn")
+
+            text_ausgeben(
+                f'[Bjorn] Morgen, {spieler["name"]}.'
+            )
+
+            text_ausgeben(
+                "Bjorn legt seinen Hammer kurz beiseite "
+                "und wischt sich über die Stirn."
+            )
+
+            print()
+            text_ausgeben(
+                "[Bjorn] Die Esse ist kaum warm "
+                "und ich habe schon mehr Arbeit als mir lieb ist."
+            )
+
+            print()
+            print(
+                "1. " + dialog_option(
+                    "bjorn",
+                    "normaler_morgen",
+                    "Klingt nach einem normalen Morgen."
+                )
+            )
+
+            print(
+                "2. " + dialog_option(
+                    "bjorn",
+                    "aktuelle_arbeit",
+                    "Was arbeitest du gerade?"
+                )
+            )
+
+            print("3. Gespräch beenden")
+
+            bjorn_auswahl = eingabe_menu(
+                1,
+                3,
+                sonder_tasten=()
+            )
+
+            print()
+
+            if bjorn_auswahl == 1:
+                text_ausgeben("Bjorn schnaubt amüsiert.")
+                print()
+
+                text_ausgeben(
+                    "[Bjorn] Genau deshalb sollte ich "
+                    "mich vermutlich nicht beschweren."
+                )
+                dialog_thema_markieren(
+                    "bjorn",
+                    "normaler_morgen"
+                )
+                warte_auf_taste("Weiter")
+
+            elif bjorn_auswahl == 2:
+                text_ausgeben(
+                    "[Bjorn] Nichts Spannendes. "
+                    "Ein paar Werkzeuge, zwei Hufeisen "
+                    "und eine Axt mit gebrochenem Stiel."
+                )
+
+                print()
+                text_ausgeben(
+                    "[Bjorn] Die gewöhnlichen Dinge "
+                    "halten einen Schmied schließlich am Leben."
+                )
+                dialog_thema_markieren(
+                    "bjorn",
+                    "aktuelle_arbeit"
+                )
+                warte_auf_taste("Weiter")
+
+            elif bjorn_auswahl == 3:
+                return
+            
+    # -------------------------
+    # QUESTSTART: JORIS FEHLT
+    # -------------------------
+
+    elif prolog_status == "dorf_kennengelernt":
+        text_ausgeben(
+            "Bjorns Hammer liegt unbenutzt neben dem Amboss."
+        )
+
+        text_ausgeben(
+            "Er selbst steht mit dem Rücken zu dir und durchsucht "
+            "eine offene Kiste unter seiner Werkbank."
+        )
+
+        print()
+        text_ausgeben(
+            "Als er dich bemerkt, richtet er sich auf."
+        )
+
+        text_ausgeben(
+            f'[Bjorn] Ah, {spieler["name"]}. '
+            "Hast du Joris heute irgendwo gesehen?"
+        )
+
+        print()
+        print("1. Nein. Ist etwas passiert?")
+        print("2. Seit wann suchst du ihn?")
+
+        bjorn_auswahl = eingabe_menu(
+            1,
+            2,
+            sonder_tasten=()
+        )
+
+        print()
+
+        if bjorn_auswahl == 1:
+            text_ausgeben(
+                "[Bjorn] Passiert? Hoffentlich nicht."
+            )
+
+        elif bjorn_auswahl == 2:
+            text_ausgeben(
+                "[Bjorn] Seit dem frühen Morgen."
+            )
+
+            text_ausgeben(
+                "[Bjorn] Lange genug, dass ich langsam wissen möchte, "
+                "wo der Junge steckt."
+            )
+
+        print()
+        text_ausgeben(
+            "Bjorn wirft einen Blick zu den Kohlesäcken "
+            "an der hinteren Wand."
+        )
+
+        text_ausgeben(
+            "[Bjorn] Er sollte die neue Lieferung zählen "
+            "und danach wieder zu mir kommen."
+        )
+
+        text_ausgeben(
+            "[Bjorn] Seitdem habe ich nichts mehr von ihm gesehen."
+        )
+
+        print()
+        text_ausgeben(
+            "Er fährt sich mit der rußigen Hand über den Bart."
+        )
+
+        text_ausgeben(
+            "[Bjorn] Wahrscheinlich hat er sich irgendwo festgeredet "
+            "oder wieder die Zeit vergessen."
+        )
+
+        text_ausgeben(
+            "[Bjorn] Aber so lange bleibt er sonst nicht einfach weg."
+        )
+
+        print()
+        text_ausgeben(
+            "[Bjorn] Wenn du ohnehin durchs Dorf gehst, "
+            "frag bei Mara und auf dem Marktplatz nach."
+        )
+
+        text_ausgeben(
+            "[Bjorn] Irgendjemand muss ihn heute Morgen gesehen haben."
+        )
+
+        spieler["prolog_status"] = "joris_suche"
+
+        quest_meldung(
+            "neu",
+            "Der verlorene Lehrling",
+            "Finde heraus, wo Joris geblieben ist."
+        )
+
+        warte_auf_taste()
+        return
+
+    # -------------------------
+    # JORIS WIRD GESUCHT
+    # -------------------------
+
+    elif prolog_status == "joris_suche":
+        while True:
+            ort_titel("Bjorns Schmiede")
+            dialog_titel("Bjorn")
+
+            text_ausgeben(
+                "[Bjorn] Noch keine Spur von Joris?"
+            )
+
+            print()
+            print(
+                "1. " + dialog_option(
+                    "bjorn",
+                    "joris_suchen",
+                    "Wo sollte ich nach ihm suchen?"
+                )
+            )
+
+            print(
+                "2. " + dialog_option(
+                    "bjorn",
+                    "joris_arbeit",
