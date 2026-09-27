@@ -1,0 +1,165 @@
+name: Build and release Void 2.6.0
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "release_trigger_2.6.0.txt"
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout build branch
+        uses: actions/checkout@v4
+        with:
+          ref: release-build-2.6.0-temp
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Assemble and verify sources
+        shell: pwsh
+        run: |
+          @'
+          from pathlib import Path
+          import hashlib
+          import html
+          import re
+
+          src = Path("build_src/2.6.0")
+          out = Path("build")
+          out.mkdir(exist_ok=True)
+
+          def combine(pattern):
+              parts = sorted(src.glob(pattern), key=lambda p: p.name)
+              if not parts:
+                  raise SystemExit(f"No parts for {pattern}")
+              return "\n".join(p.read_text(encoding="utf-8") for p in parts)
+
+          main = combine("main_*.part")
+          start = main.index('        text_ausgeben(\n            "Du greifst unter den lockeren Stein "')
+          end = main.index('    elif menu_auswahl == 3:', start)
+          main = main[:start] + main[end:]
+          main = main.replace("\r\n", "\n").replace("\r", "\n")
+
+          combat = combine("combat_*.part").replace("\r\n", "\n").replace("\r", "\n")
+
+          launcher = combine("launcher_*.part")
+          launcher = launcher.replace("\u00a0", " ")
+          launcher = html.unescape(launcher)
+          launcher = re.sub(r'\\([_*.:~])', r'\1', launcher)
+          launcher = launcher.replace("\r\n", "\n").replace("\r", "\n")
+
+          (out / "void.py").write_text(main, encoding="utf-8", newline="\n")
+          (out / "kampfsystem.py").write_text(combat, encoding="utf-8", newline="\n")
+          (out / "void_launcher.py").write_text(launcher, encoding="utf-8", newline="\n")
+
+          expected = {
+              "void.py": "b77f4482ff99e5342140d84f1a7e8a8157508e52309a6abfd459a85ebf58c33e",
+              "kampfsystem.py": "0a7f93ecec3cebcee8b381654175883b7ef67850dbfb1ec1c7f8391f21ea7158",
+              "void_launcher.py": "2f03acab5a39dfc15214985a207a30fa2d14d5dbaee609963af4c2775ca7f9ce",
+          }
+          for name, wanted in expected.items():
+              got = hashlib.sha256((out / name).read_bytes()).hexdigest()
+              print(name, got)
+              if got != wanted:
+                  raise SystemExit(f"Hash mismatch for {name}: {got} != {wanted}")
+          '@ | Set-Content -Encoding UTF8 assemble.py
+          python assemble.py
+          Copy-Item build_src/2.6.0/void_version.json build/void_version.json
+          Copy-Item build_src/2.6.0/PATCH_NOTES_2.6.0.md build/PATCH_NOTES_2.6.0.md
+
+      - name: Compile sources
+        run: python -m py_compile build/void.py build/kampfsystem.py build/void_launcher.py
+
+      - name: Install build dependencies
+        run: python -m pip install --upgrade pyinstaller truststore
+
+      - name: Build Void
+        run: pyinstaller --clean --noconfirm --onefile --console --name Void --paths build build/void.py
+
+      - name: Build launcher
+        run: pyinstaller --clean --noconfirm --onefile --console --name "Void Launcher" --collect-all truststore build/void_launcher.py
+
+      - name: Smoke-test game executable
+        shell: pwsh
+        run: |
+          "4" | & ".\dist\Void.exe"
+          if ($LASTEXITCODE -ne 0) { throw "Void.exe smoke test failed with $LASTEXITCODE" }
+
+      - name: Package release
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force release | Out-Null
+          Copy-Item ".\dist\Void.exe" ".\release\Void.exe"
+          Copy-Item ".\dist\Void Launcher.exe" ".\release\Void Launcher.exe"
+          Copy-Item ".\build\void_version.json" ".\release\void_version.json"
+          Copy-Item ".\build\PATCH_NOTES_2.6.0.md" ".\release\PATCH_NOTES_2.6.0.md"
+          Compress-Archive -Path ".\release\*" -DestinationPath ".\Void_alpha_2.6.0.zip" -Force
+          $hash = (Get-FileHash ".\Void_alpha_2.6.0.zip" -Algorithm SHA256).Hash
+          "VOID_ZIP_SHA256=$hash" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "ZIP SHA256: $hash"
+
+      - name: Publish GitHub release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create v2.6.0 ".\Void_alpha_2.6.0.zip" --target "${{ github.sha }}" --title "Alpha 2.6.0" --notes-file ".\build\PATCH_NOTES_2.6.0.md"
+
+      - name: Update online version metadata on main
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          @'
+          import json
+          import os
+          data = {
+              "version": "2.6.0",
+              "name": "Alpha 2.6.0",
+              "sha256": os.environ["VOID_ZIP_SHA256"],
+              "download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v2.6.0/Void_alpha_2.6.0.zip",
+              "patch_notes": [
+                  "Letzthafen und die Marek-Handlung wurden atmosphärisch und erzählerisch stark erweitert",
+                  "Das stumme Wiegenlied wurde als offene Ermittlungsquest mit mehreren Hinweiswegen überarbeitet",
+                  "Pfad des Vergessens, verlassenes Dorf und Der Schmied des Weges wurden umfassend ausgebaut",
+                  "Der Waldwächter ist jetzt ein erzählerischer Schwellenwächter statt über vier besiegte Gegner freigeschaltet zu werden",
+                  "Übersinnliches und Sensibilität erhalten nach dem Waldwächter erste echte erzählerische Anwendungen",
+                  "Reisewege, Erstbesuche, Rückwege, NPC-Reaktionen und [!]-Hinweise wurden umfassend poliert",
+                  "Save-Version 1 bleibt migrierbar; Save-Version bleibt 2",
+                  "Release-QA: 45 automatisierte Prüfungen inklusive 24 Kampf-Smoke-Tests erfolgreich"
+              ],
+              "launcher_version": "1.2.8",
+              "launcher_sha256": "980F63F5D48AF345F6272B666472B932618E9D17B7879687763181CE7A8C12F1",
+              "launcher_download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v2.1.0/Void_Launcher_1.2.8.exe"
+          }
+          with open("void_online_version.json", "w", encoding="utf-8") as f:
+              json.dump(data, f, ensure_ascii=False, indent=2)
+              f.write("\n")
+          '@ | Set-Content -Encoding UTF8 write_online.py
+
+          git fetch origin main
+          git checkout main
+          python write_online.py
+          git config user.name "Void Release Bot"
+          git config user.email "void-release-bot@users.noreply.github.com"
+          git add void_online_version.json
+          git commit -m "release: publish Alpha 2.6.0 metadata"
+          git push origin main
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Void-alpha-2.6.0
+          path: Void_alpha_2.6.0.zip
+
+# retrigger
