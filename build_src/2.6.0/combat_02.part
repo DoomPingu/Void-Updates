@@ -1,0 +1,999 @@
+        schwerer_stich_schaden_umgebung = 1.0
+        print()
+        print("=== Kampfvorbereitung ===")
+        print(f"{situation['gebiet']} | {situation['umgebung']}")
+        print(f"{situation['tageszeit']} | Wetter: {situation['wetter']}")
+        print()
+        print("=== Umgebung ===")
+
+        if situation["wetter"] == "Regen":
+            print("− Regen verschlechtert die Sicht und macht den Boden rutschig.")
+
+        if umgebungs_sicht < 0:
+            print("− Schlechte Sicht: Gegner sind schwerer zu entdecken.")
+        elif umgebungs_sicht > 0:
+            print("+ Gute Sicht: Gegner sind leichter zu entdecken.")
+        else:
+            print("Neutrale Sichtverhältnisse.")
+        if spieler_sicht < 0:
+            print(f"− Schlechte Sicht: {abs(spieler_sicht * 5)} Prozentpunkte weniger Paradechance.")
+        if bewegungsfreiheit < 0:
+            print("− Eingeschränkte Bewegung: Ausweichen und Flucht sind erschwert.")
+        elif bewegungsfreiheit > 0:
+            print("+ Gute Bewegungsbedingungen: Ausweichen und Flucht sind erleichtert.")
+
+        if spieler_bewegung < 0:
+            print(f"− Eingeschränkte Bewegung: {abs(spieler_bewegung * 5)} Prozentpunkte weniger Paradechance.")
+        if deckung > 0:
+            if spieler_hat_deckung:
+                print("+ Du hast Deckung: +10 Prozentpunkte Ausweichen.")
+            else:
+                print("Deckung ist vorhanden, aber du stehst ungeschützt.")
+        print()
+        print(f"=== Deine Waffe: {spieler['waffe']['typ']} ===")
+
+        if spieler_bewegung < 0 and spieler["waffe"]["wendigkeit"] >= 2:
+            print("+ Wendige Waffe: +5 Prozentpunkte Trefferchance bei eingeschränkter Bewegung.")
+
+        print(f"Reichweite im Gelände: {spieler_effektive_reichweite} von {spieler_reichweite}")
+        print(f"Paradechance vor Aktions- und Hinterhalt-Effekten: {effekte['paradechance_spieler']} %")
+
+        if (spieler["waffe"]["typ"] == "Speer" and situation["umgebung"] == "Dichter Wald"):
+
+            schwerer_stich_treffer_umgebung -= 10
+            schwerer_stich_schaden_umgebung *= 0.90
+
+            print()
+            print("Der dichte Wald erschwert weite Speerbewegungen.")
+            print(f"− Schwerer Stich: {abs(schwerer_stich_treffer_umgebung)} Prozentpunkte weniger Trefferchance.")
+            print(f"− Schwerer Stich: {round((1 - schwerer_stich_schaden_umgebung) * 100)} % weniger Schaden.")
+
+        elif (spieler["waffe"]["typ"] == "Speer" and situation["umgebung"] == "Lichtung"):
+
+            schneller_stich_treffer_umgebung += 5
+
+            schwerer_stich_treffer_umgebung += 5
+            schwerer_stich_schaden_umgebung *= 1.10
+
+            print()
+            print("Auf der Lichtung kannst du die Reichweite deines Speers besser ausnutzen.")
+            print(f"+ Schneller Stich: {schneller_stich_treffer_umgebung} Prozentpunkte Trefferchance.")
+            print(f"+ Schwerer Stich: {schwerer_stich_treffer_umgebung} Prozentpunkte Trefferchance.")
+            print(f"+ Schwerer Stich: {round((schwerer_stich_schaden_umgebung - 1) * 100)} % Schaden.")
+
+        print()
+        if gegner_entdeckt:
+            print(f"Du bemerkst den {gegner['typ']} rechtzeitig.")
+        elif not hinterhalt:
+            print("Du bemerkst die Gefahr erst im letzten Moment.")
+        if hinterhalt:
+            print("Hinterhalt! Keine Zeit zum Waffenwechsel.")
+            input("Drücke Enter, um den Kampf zu beginnen ...")
+            break
+
+        if waffe is not None:
+            input("Drücke Enter, um den Kampf zu beginnen ...")
+            break
+
+        print("1. Kampf beginnen")
+        print("2. Speer ausrüsten")
+        print("3. Schwert ausrüsten")
+        print("4. Hammer ausrüsten")
+
+        vorbereitung_auswahl = kampf_eingabe(
+            ("1", "2", "3", "4")
+        )
+
+        if vorbereitung_auswahl == "1":
+            break
+        elif vorbereitung_auswahl == "2":
+            spieler["waffe"] = speer
+            bildschirm_leeren()
+        elif vorbereitung_auswahl == "3":
+            spieler["waffe"] = schwert
+            bildschirm_leeren()
+        elif vorbereitung_auswahl == "4":
+            spieler["waffe"] = hammer
+            bildschirm_leeren()
+        else:
+            print("Bitte 1, 2, 3 oder 4 eingeben.")
+
+    # =========================
+    # KAMPF
+    # =========================
+
+    oeffnung_naechste_runde = False
+    starkes_taumeln_naechste_runde = False
+
+    wolf_sprungbereit = False
+    wolf_sprung_verstaerkt = False
+
+    keiler_ansturm_bereit = False
+    keiler_ansturm_verstaerkt = False
+    keiler_ausweichen_versucht = False
+    keiler_ausweichen_erfolgreich = False
+    keiler_speer_abfangen_versucht = False
+    keiler_speer_abfangen_erfolgreich = False
+
+    geflohen = False
+    bandit_raserei = False
+    letzter_combo_angriff = None
+    gegner_zurueckgedraengt_naechste_runde = False
+
+
+    runde = 1
+
+    standhalten_bereit_ab = 1
+
+    abstand_halten_bereit_ab = 1
+    messer_oeffnung_naechste_runde = False
+    stab_kontrolle_naechste_runde = False
+
+    while (spieler["hp"] > 0 and gegner["hp"] > 0 and not geflohen):
+
+        print()
+        if runde > 1:
+            text_pause("rundenwechsel")
+
+        print(f"────────── Runde {runde} ──────────")
+        print(
+            f"Du: {spieler['hp']}/{spieler['max_hp']} HP | "
+            f"{gegner['typ']}: {gegner['hp']}/{gegner['max_hp']} HP"
+        )
+        print()
+
+        schaden_bonus_diese_runde = (
+            kampf_status_rundenstart(
+                spieler,
+                status_effekte,
+                status_definitionen
+            )
+        )
+
+        if spieler["hp"] <= 0:
+            print(
+                "Du wurdest besiegt."
+            )
+            break
+
+        aktion = None
+        parade_mod_diese_runde = 0
+        ausweich_mod_diese_runde = 0
+        bandit_konter_bonus = 0
+        beil_druck_diese_runde = False
+        krit_mod_diese_runde = 0
+        messer_oeffnung_aktiv = False
+        stab_kontrolle_aktiv = False
+
+        bonus_durch_oeffnung = 0
+        schadensbonus_durch_taumeln = 1.0
+        starkes_taumeln_aktiv = False
+        gegner_spezialangriff = False
+
+        wolf_sprung_diese_runde = False
+        wolf_sprung_abgefangen = False
+        wolf_konter_versucht = False
+        wolf_bereitet_sprung_vor = False
+        wolf_schwert_konter = False
+        wolf_schwert_konter_erfolgreich = False
+        wolf_sprung_verstaerkt_diese_runde = False 
+
+        gegner_zurueckgedraengt_aktiv = False
+        combo_durchbruch = False
+        combo_nachsetzen = False
+
+        keiler_ansturm_diese_runde = False
+        keiler_bereitet_ansturm_vor = False
+        keiler_ansturm_verstaerkt_diese_runde = False
+        keiler_ausweichen_versucht = False
+        keiler_ausweichen_erfolgreich = False
+        keiler_speer_abfangen_versucht = False
+        keiler_speer_abfangen_erfolgreich = False
+
+
+        if (
+            messer_oeffnung_naechste_runde
+            and spieler["waffe"]["typ"] == "Messer"
+        ):
+            messer_oeffnung_aktiv = True
+            messer_oeffnung_naechste_runde = False
+
+            print()
+            print("=== PRÄZISIONSFENSTER ===")
+
+            print(
+                "Dein letzter Schnitt hat die Deckung "
+                "des Gegners geöffnet."
+            )
+
+            print(
+                "Ein gezielter Stich ist jetzt "
+                "wesentlich gefährlicher."
+            )
+
+        if gegner_zurueckgedraengt_naechste_runde:
+            gegner_zurueckgedraengt_aktiv = True
+            gegner_zurueckgedraengt_naechste_runde = False
+            bonus_durch_oeffnung += 10
+
+            print(f"Der {gegner['typ']} wurde zurückgedrängt und muss sich neu positionieren.")
+
+            if stab_kontrolle_naechste_runde:
+                stab_kontrolle_naechste_runde = False
+
+                if spieler["waffe"]["typ"] == "Stab":
+                    stab_kontrolle_aktiv = True
+                    bonus_durch_oeffnung += 10
+
+                    print()
+                    print(
+                        "Du hältst den Gegner genau auf der "
+                        "Reichweite deines Wanderstabs."
+                    )
+
+                    print(
+                        "Dein Schneller Stoß kann diese Öffnung "
+                        "besonders gut ausnutzen."
+                    )
+
+            if gegner["typ"] == "Wolf" and wolf_sprungbereit:
+                wolf_sprungbereit = False
+                print("Der Wolf verliert seinen Ansatz zum Sprung!")
+
+
+        if starkes_taumeln_naechste_runde:
+            bonus_durch_oeffnung = 20
+            schadensbonus_durch_taumeln = 1.50
+            starkes_taumeln_aktiv = True
+
+            starkes_taumeln_naechste_runde = False
+
+            print(f"Der {gegner['typ']} taumelt!")
+
+            if spieler["waffe"]["typ"] == "Speer":
+                print("Ein schneller Stich verursacht mehr Schaden!")
+
+            elif spieler["waffe"]["typ"] == "Schwert":
+                print("Seine offene Deckung bietet die Chance für einen präzisen Konter!")
+
+        elif oeffnung_naechste_runde:
+            bonus_durch_oeffnung = 15
+            oeffnung_naechste_runde = False
+
+            print("Der Gegner ist aus dem Gleichgewicht.")
+            print("Diese Runde hast du eine günstige Angriffsposition.")
+
+            gegner_spezialangriff = False
+
+
+        if gegner["typ"] == "Bandit" and not starkes_taumeln_aktiv and not gegner_zurueckgedraengt_aktiv:
+            gegner_spezialangriff = random.randint(1, 100) <= 50
+
+        elif gegner["typ"] == "Wolf" and not starkes_taumeln_aktiv and not gegner_zurueckgedraengt_aktiv:
+            if wolf_sprungbereit:
+                wolf_sprung_diese_runde = True
+                wolf_sprungbereit = False
+
+                wolf_sprung_verstaerkt_diese_runde = wolf_sprung_verstaerkt
+                wolf_sprung_verstaerkt = False
+
+            elif random.randint(1, 100) <= 30:
+                wolf_sprungbereit = True
+                wolf_bereitet_sprung_vor = True
+                print()
+                print("Der Wolf beginnt dich zu umkreisen und duckt sich tief.")
+
+        elif gegner["typ"] == "Keiler" and not starkes_taumeln_aktiv and not gegner_zurueckgedraengt_aktiv:
+            if keiler_ansturm_bereit:
+                keiler_ansturm_diese_runde = True
+                keiler_ansturm_bereit = False
+
+                keiler_ansturm_verstaerkt_diese_runde = keiler_ansturm_verstaerkt
+                keiler_ansturm_verstaerkt = False
+
+            elif random.randint(1, 100) <= 30:
+                keiler_ansturm_bereit = True
+                keiler_bereitet_ansturm_vor = True
+                print()
+                print("Der Keiler scharrt mit den Hufen über den Boden.")
+                print("Er senkt den Kopf und bereitet einen Ansturm vor.")
+
+        waldwaechter_spezialangriff = False
+
+        if (
+            gegner["typ"] == "Waldwächter"
+            and not starkes_taumeln_aktiv
+            and not gegner_zurueckgedraengt_aktiv
+        ):
+            waldwaechter_spezialangriff = random.randint(1, 100) <= 20
+
+        if waldwaechter_spezialangriff:
+            print()
+            print("Der Waldwächter bereitet einen mächtigen Angriff vor!")
+            print("Der Waldwächter hebt seine gewaltigen Arme und sammelt seine Kraft...")
+
+        if gegner_spezialangriff:
+            print()
+            print("Der Bandit holt zu einem heftigen Angriff aus!")
+
+        elif wolf_sprung_diese_runde:
+            print()
+            print("Der Wolf stößt sich vom Boden ab und springt auf dich zu!")
+
+        elif keiler_ansturm_diese_runde:
+            print()
+            print("Der Keiler stürmt mit voller Wucht auf dich zu!")
+
+
+
+        # =========================
+        # AKTIONSMENÜ
+        # =========================
+
+        aktion_gewaehlt = False
+
+        while not aktion_gewaehlt:
+
+            print()
+            print("1. Angreifen")
+            print("2. Verteidigen")
+            print("3. Gegenstand")
+            if flucht_erlaubt:
+                print("4. Fliehen")
+
+            if flucht_erlaubt:
+                kampf_auswahl = kampf_eingabe(
+                    ("1", "2", "3", "4")
+                )
+            else:
+                kampf_auswahl = kampf_eingabe(
+                    ("1", "2", "3")
+                )
+
+            if kampf_auswahl == "1":
+
+                # =========================
+                # SPEER-ANGRIFFE
+                # =========================
+
+                if spieler["waffe"]["typ"] == "Speer":
+
+                    while True:
+                        print()
+                        print("=== Speer ===")
+                        print("1. Schneller Stich")
+                        print("2. Schwerer Stich")
+                        print("3. Zurück")
+
+                        angriffs_auswahl = kampf_eingabe(
+                        ("1", "2", "3")
+                        )
+
+                        if angriffs_auswahl == "1":
+
+                            angriffs_name = "Schneller Stich"
+
+                            angriffs_treffer_mod = (10 + schneller_stich_treffer_umgebung)
+
+                            angriffs_schaden_faktor = (0.85 * schneller_stich_schaden_umgebung)
+                            parade_mod_diese_runde = 0
+                            aktion = "angriff"
+
+                            aktion_gewaehlt = True
+                            break
+
+                        elif angriffs_auswahl == "2":
+
+                            angriffs_name = "Schwerer Stich"
+
+                            angriffs_treffer_mod = (-15 + schwerer_stich_treffer_umgebung)
+
+                            angriffs_schaden_faktor = (1.35 * schwerer_stich_schaden_umgebung)
+                            parade_mod_diese_runde = -10
+                            aktion = "angriff"
+
+                            aktion_gewaehlt = True
+                            break
+
+                        elif angriffs_auswahl == "3":
+                            break
+
+                        else:
+                            print("Ungültige Eingabe.")
+
+                elif spieler["waffe"]["typ"] == "Schwert":
+
+                    while True:
+                        print()
+                        print("=== Schwert ===")
+                        print("1. Schneller Hieb")
+                        print("2. Kräftiger Hieb")
+                        print("3. Zurück")
+
+                        angriffs_auswahl = kampf_eingabe(
+                            ("1", "2", "3")
+                        )
+
+                        if angriffs_auswahl == "1":
+                            angriffs_name = "Schneller Hieb"
+                            angriffs_treffer_mod = 5
+                            angriffs_schaden_faktor = 0.95
+                            parade_mod_diese_runde = 0
+                            aktion = "angriff"
+                            aktion_gewaehlt = True
+                            break
+
+                        elif angriffs_auswahl == "2":
+                            angriffs_name = "Kräftiger Hieb"
+                            angriffs_treffer_mod = -10
+                            angriffs_schaden_faktor = 1.25
+                            parade_mod_diese_runde = -5
+                            aktion = "angriff"
+                            aktion_gewaehlt = True
+                            break
+
+                        elif angriffs_auswahl == "3":
+                            break
+
+                        else:
+                            print("Ungültige Eingabe.")
+
+                elif spieler["waffe"]["typ"] == "Hammer":
+                    while True:
+                        print()
+                        print("=== Hammer ===")
+                        print("1. Kurzer Schlag")
+                        print("2. Wuchtiger Hieb")
+
+                        rest = max(0, standhalten_bereit_ab - runde)
+
+                        if rest == 0:
+                            print("3. Standhalten [bereit]")
+                        else:
+                            print(f"3. Standhalten [noch {rest} Runden]")
+
+                        print("4. Zurück")
+                        angriffs_auswahl = kampf_eingabe(
+                            ("1", "2", "3", "4")
+                        )
+
+                        if angriffs_auswahl == "1":
+                            angriffs_name = "Kurzer Schlag"
+                            angriffs_treffer_mod = 10
+                            angriffs_schaden_faktor = 0.80
+                            parade_mod_diese_runde = 0
+                            aktion = "angriff"
+                            aktion_gewaehlt = True
+                            break
+
+                        elif angriffs_auswahl == "2":
+                            angriffs_name = "Wuchtiger Hieb"
+                            angriffs_treffer_mod = -15
+                            angriffs_schaden_faktor = 1.30
+                            parade_mod_diese_runde = -10
+                            aktion = "angriff"
+                            aktion_gewaehlt = True
+                            break
+
+                        elif angriffs_auswahl == "3":
+                            if rest > 0:
+                                print("Standhalten ist noch nicht bereit.")
+                                continue
+
+                            aktion = "standhalten"
+                            standhalten_bereit_ab = runde + 3
+                            aktion_gewaehlt = True
+                            print("Du festigst deinen Stand und wartest auf den Angriff.")
+                            break
+
+                        elif angriffs_auswahl == "4":
+                            break
+
+                        else:
+                            print("Ungültige Eingabe.")
+
+                elif spieler["waffe"]["typ"] == "Beil":
+
+                    while True:
+                        print()
+                        print("=== Handbeil ===")
+                        print("1. Kurzer Hieb")
+                        print("2. Spaltender Hieb")
+                        print("3. Zurück")
+
+                        angriffs_auswahl = kampf_eingabe(
+                            ("1", "2", "3")
+                        )
+
+                        if angriffs_auswahl == "1":
+                            angriffs_name = "Kurzer Hieb"
+                            angriffs_treffer_mod = 5
+                            angriffs_schaden_faktor = 0.90
+                            parade_mod_diese_runde = 0
+
+                            aktion = "angriff"
+                            aktion_gewaehlt = True
+                            break
+
+                        elif angriffs_auswahl == "2":
+                            angriffs_name = "Spaltender Hieb"
+                            angriffs_treffer_mod = -15
+                            angriffs_schaden_faktor = 1.40
+                            parade_mod_diese_runde = -10
+
+                            aktion = "angriff"
+                            aktion_gewaehlt = True
+                            break
+
+                        elif angriffs_auswahl == "3":
+                            break
+
+                        else:
+                            print("Ungültige Eingabe.")
+
+                elif spieler["waffe"]["typ"] == "Stab":
+
+                    while True:
+                        print()
+                        print("=== Wanderstab ===")
+
+                        if stab_kontrolle_aktiv:
+                            print(
+                                "1. Schneller Stoß "
+                                "[Distanzvorteil]"
+                            )
+                        else:
+                            print("1. Schneller Stoß")
+
+                        print("2. Weiter Schwung")
+
+                        rest = max(
+                            0,
+                            abstand_halten_bereit_ab - runde
+                        )
+
+                        if rest == 0:
+                            print("3. Abstand halten [bereit]")
+                        else:
+                            einheit = (
+                                "Runde"
+                                if rest == 1
+                                else "Runden"
+                            )
+
+                            print(
+                                f"3. Abstand halten "
+                                f"[noch {rest} {einheit}]"
+                            )
+
+                        print("4. Zurück")
+
+                        angriffs_auswahl = kampf_eingabe(
+                            ("1", "2", "3", "4")
+                        )
+
+                        if angriffs_auswahl == "1":
+                            angriffs_name = "Schneller Stoß"
+                            angriffs_treffer_mod = 10
+                            angriffs_schaden_faktor = 0.85
+                            parade_mod_diese_runde = 5
+
+                            if stab_kontrolle_aktiv:
+                                angriffs_treffer_mod += 10
+                                angriffs_schaden_faktor = 1.25
+
+                            aktion = "angriff"
+                            aktion_gewaehlt = True
+                            break
+
+                        elif angriffs_auswahl == "2":
+                            angriffs_name = "Weiter Schwung"
+                            angriffs_treffer_mod = -5
+                            angriffs_schaden_faktor = 1.05
+                            parade_mod_diese_runde = 0
+
+                            aktion = "angriff"
+                            aktion_gewaehlt = True
+                            break
+
+                        elif angriffs_auswahl == "3":
+
+                            if rest > 0:
+                                print(
+                                    "Abstand halten ist "
+                                    "noch nicht bereit."
+                                )
+                                continue
+
+                            aktion = "abstand_halten"
+
+                            parade_mod_diese_runde = 30
+                            ausweich_mod_diese_runde = 20
+
+                            gegner_zurueckgedraengt_naechste_runde = True
+                            stab_kontrolle_naechste_runde = True
+
+                            abstand_halten_bereit_ab = runde + 2
+
+                            aktion_gewaehlt = True
+
+                            print(
+                                "Du hältst den Stab quer vor dich "
+                                "und zwingst den Gegner auf Abstand."
+                            )
+
+                            break
+
+                        elif angriffs_auswahl == "4":
+                            break
+
+                        else:
+                            print("Ungültige Eingabe.")
+
+                elif spieler["waffe"]["typ"] == "Messer":
+
+                    while True:
+                        print()
+                        print("=== Jagdmesser ===")
+                        print("1. Schneller Schnitt")
+                        print("2. Gezielter Stich")
+                        print("3. Zurück")
+
+                        angriffs_auswahl = kampf_eingabe(
+                            ("1", "2", "3")
+                        )
+
+                        if angriffs_auswahl == "1":
+                            angriffs_name = "Schneller Schnitt"
+                            angriffs_treffer_mod = 15
+                            angriffs_schaden_faktor = 0.75
+                            parade_mod_diese_runde = 0
+                            krit_mod_diese_runde = 5
+
+                            aktion = "angriff"
+                            aktion_gewaehlt = True
+                            break
+
+                        elif angriffs_auswahl == "2":
+                            angriffs_name = "Gezielter Stich"
+                            angriffs_treffer_mod = -5
+                            angriffs_schaden_faktor = 1.10
+                            parade_mod_diese_runde = -5
+                            krit_mod_diese_runde = 20
+
+                            if messer_oeffnung_aktiv:
+                                angriffs_treffer_mod += 15
+                                krit_mod_diese_runde += 20
+
+                            aktion = "angriff"
+                            aktion_gewaehlt = True
+                            break
+
+                        elif angriffs_auswahl == "3":
+                            break
+
+                        else:
+                            print("Ungültige Eingabe.")
+
+                else:
+
+
+
+                    angriffs_name = "Angriff"
+
+                    angriffs_treffer_mod = 0
+                    angriffs_schaden_faktor = 1.0
+                    parade_mod_diese_runde = 0
+                    aktion = "angriff"
+
+                    aktion_gewaehlt = True
+
+
+
+
+            elif kampf_auswahl == "2":
+                aktion = "verteidigen"
+
+                parade_mod_diese_runde = 25
+                ausweich_mod_diese_runde = 10
+
+                if gegner_spezialangriff:
+                    starkes_taumeln_naechste_runde = True
+
+                elif wolf_sprung_diese_runde:
+                    print(f"Du gehst mit deinem {spieler['waffe']['typ']} in eine feste Abwehrhaltung.")
+
+                elif wolf_bereitet_sprung_vor:
+                    print("Du hältst deine Stellung und beobachtest den Wolf.")
+
+                elif keiler_ansturm_diese_runde:
+
+                    if spieler["waffe"]["typ"] == "Speer":
+                        parade_mod_diese_runde = 0
+                        ausweich_mod_diese_runde = 0
+                        keiler_speer_abfangen_versucht = True
+
+                        keiler_speer_chance = 25
+                        keiler_speer_chance += spieler["staerke"] * 5
+
+                        keiler_speer_chance += (spieler["wahrnehmung"] - 2) * 2
+
+                        if situation["umgebung"] == "Lichtung":
+                            keiler_speer_chance += 5
+
+                        elif situation["umgebung"] == "Dichter Wald":
+                            keiler_speer_chance -= 10
+
+                        keiler_speer_chance = max(10, min(85, keiler_speer_chance))
+
+                        if random.randint(1, 100) <= keiler_speer_chance:
+                            keiler_speer_abfangen_erfolgreich = True
+                            print("Du stemmst den Speer gegen den Boden und erwartest den Ansturm.")
+                        else:
+                            print("Du bekommst den Speer nicht rechtzeitig in eine stabile Position!")
+
+                    else:
+                        parade_mod_diese_runde = 0
+                        ausweich_mod_diese_runde = 0
+                        keiler_ausweichen_versucht = True
+
+                        keiler_ausweich_chance = 35
+                        keiler_ausweich_chance += spieler_bewegung * 10
+
+                        keiler_ausweich_chance += (spieler["wahrnehmung"] - 2) * 2
+
+                        keiler_ausweich_chance = max(10, min(85, keiler_ausweich_chance))
+
+                        if random.randint(1, 100) <= keiler_ausweich_chance:
+                            keiler_ausweichen_erfolgreich = True
+                            oeffnung_naechste_runde = True
+                            print("Du bereitest dich darauf vor, im richtigen Moment zur Seite zu springen.")
+                        else:
+                            print("Du versuchst dem Ansturm auszuweichen, kommst aber nicht rechtzeitig weg.")
+
+                elif keiler_bereitet_ansturm_vor:
+                    print("Du gehst auf Abstand und beobachtest den Keiler.")
+
+                else:
+                    oeffnung_naechste_runde = True
+                    print(f"Du zwingst den {gegner['typ']} in eine ungünstige Position.")
+
+
+
+                aktion_gewaehlt = True
+
+            elif kampf_auswahl == "3":
+                print()
+                print("=== Gegenstände ===")
+                print(f"1. Heiltrank ({spieler['heiltraenke']})")
+                print("2. Zurück")
+
+                gegenstand_auswahl = kampf_eingabe(
+                    ("1", "2")
+                )
+
+                if gegenstand_auswahl == "1":
+
+                    blutung_aktiv = (
+                        "bluten" in status_effekte
+                    )
+
+                    if spieler["heiltraenke"] <= 0:
+                        print(
+                            "Du hast keine Heiltränke mehr."
+                        )
+
+                    elif (
+                        spieler["hp"]
+                        >= spieler["max_hp"]
+                        and not blutung_aktiv
+                    ):
+                        print(
+                            "Deine Lebenspunkte sind bereits voll."
+                        )
+
+                    else:
+                        heilung = 30
+
+                        spieler["hp"] += heilung
+                        spieler["hp"] = min(
+                            spieler["hp"],
+                            spieler["max_hp"]
+                        )
+
+                        spieler["heiltraenke"] -= 1
+
+                        if blutung_aktiv:
+                            status_effekte.pop(
+                                "bluten",
+                                None
+                            )
+
+                        aktion = "gegenstand"
+                        aktion_gewaehlt = True
+
+                        farbig_ausgeben(
+                            f"Du trinkst einen Heiltrank und hast jetzt "
+                            f"{spieler['hp']} HP.",
+                            "gruen"
+                        )
+
+                        if blutung_aktiv:
+                            farbig_ausgeben(
+                                "Die Blutung kommt zum Stillstand.",
+                                "gruen"
+                            )
+
+                elif gegenstand_auswahl == "2":
+                    pass
+
+                else:
+                    print("Ungültige Eingabe.")
+
+            elif kampf_auswahl == "4":
+                if not flucht_erlaubt:
+                    print("Aus diesem Bosskampf kannst du nicht fliehen.")
+                    continue
+
+                aktion = "fliehen"
+
+                flucht_chance = 40
+                flucht_chance += effekte["fluchtchance"]
+
+                flucht_chance = max(10, min(90, flucht_chance))
+
+                flucht_wurf = random.randint(1, 100)
+
+                if flucht_wurf <= flucht_chance:
+                    geflohen = True
+                    print(f"Du entkommst dem {gegner['typ']}!")
+
+                else:
+                    print("Deine Flucht misslingt!")
+
+                aktion_gewaehlt = True
+
+            else:
+                print("Ungültige Eingabe.")
+
+        if geflohen:
+            break
+        if aktion != "angriff":
+            letzter_combo_angriff = None
+
+
+
+
+        # =========================
+        # SPIELER-ANGRIFF
+        # =========================
+
+        if aktion == "angriff":
+
+            if wolf_sprung_diese_runde and spieler["waffe"]["typ"] == "Speer" and angriffs_name == "Schneller Stich":
+                wolf_konter_versucht = True
+                wolf_abfangen_chance = 30
+
+                wolf_abfangen_chance += max(0, spieler["geschick"] - 2) * 3
+
+                wolf_abfangen_chance += (spieler["wahrnehmung"] - 2) * 2
+
+                if situation["umgebung"] == "Lichtung":
+                    wolf_abfangen_chance += 5
+                elif situation["umgebung"] == "Dichter Wald":
+                    wolf_abfangen_chance -= 10
+
+                wolf_abfangen_chance = max(10, min(80, wolf_abfangen_chance))
+                wolf_abfangen_wurf = random.randint(1, 100)
+
+                if wolf_abfangen_wurf <= wolf_abfangen_chance:
+                    treffer_art = "voll"
+                    wolf_sprung_abgefangen = True
+                else:
+                    treffer_art = "verfehlt"
+
+
+            if wolf_sprung_diese_runde and spieler["waffe"]["typ"] == "Schwert" and angriffs_name == "Schneller Hieb":
+                wolf_schwert_konter = True
+                schwert_konter_chance = 25
+
+                schwert_konter_chance += max(0, spieler["geschick"] - 2) * 3
+
+                schwert_konter_chance += (spieler["wahrnehmung"] - 2) * 2
+
+                if situation["umgebung"] == "Lichtung":
+                    schwert_konter_chance += 5
+                elif situation["umgebung"] == "Dichter Wald":
+                    schwert_konter_chance -= 5
+
+                schwert_konter_chance = max(10, min(80, schwert_konter_chance))
+
+                if random.randint(1, 100) <= schwert_konter_chance:
+                    wolf_schwert_konter_erfolgreich = True
+
+        
+            if not wolf_konter_versucht:
+                grund_trefferchance = 80
+
+                spieler_trefferchance = grund_trefferchance
+                spieler_trefferchance += effekte["trefferchance_spieler"]
+                spieler_trefferchance -= effekte["ausweichchance_gegner"]
+                spieler_trefferchance += angriffs_treffer_mod
+                spieler_trefferchance += bonus_durch_oeffnung
+
+                if wolf_sprung_diese_runde and angriffs_name == "Schwerer Stich":
+                    spieler_trefferchance -= 30
+
+                spieler_trefferchance = max(0, min(100, spieler_trefferchance))
+                streifgrenze = min(100, spieler_trefferchance + 15)
+                angriff_wurf = random.randint(1, 100)
+
+                if angriff_wurf <= spieler_trefferchance:
+                    treffer_art = "voll"
+                elif angriff_wurf <= streifgrenze:
+                    treffer_art = "streif"
+                else:
+                    treffer_art = "verfehlt"
+
+            if wolf_schwert_konter and treffer_art != "voll":
+                wolf_schwert_konter_erfolgreich = False
+
+
+            if (
+                gegner["typ"] == "Bandit"
+                and angriffs_name == "Schwerer Stich"
+                and treffer_art == "verfehlt"
+            ):
+                bandit_konter_bonus = 20
+
+            if (
+                letzter_combo_angriff == "Kräftiger Hieb"
+                and angriffs_name == "Schneller Hieb"
+                and treffer_art == "voll"
+            ):
+                combo_nachsetzen = True
+
+            if (
+                letzter_combo_angriff == "Schneller Hieb"
+                and angriffs_name == "Kräftiger Hieb"
+                and treffer_art == "voll"
+            ):
+                combo_durchbruch = True
+
+            # =========================
+            # SPIELER-SCHADEN / KRIT
+            # =========================
+
+            schaden = 0
+            krit = False
+            krit_wurf = 0
+
+            krit_chance = 5
+            krit_chance += spieler["glück"] * 2
+            krit_chance += effekte["krit_chance_spieler"]
+            krit_chance += krit_mod_diese_runde
+
+            if combo_nachsetzen:
+                krit_chance += 30
+
+
+            if starkes_taumeln_aktiv and angriffs_name == "Schneller Hieb":
+                krit_chance += 20
+
+            krit_chance = max(0, min(100, krit_chance))
+
+            if treffer_art == "voll":
+
+                schaden = random.randint(spieler["waffe"]["schaden_min"], spieler["waffe"]["schaden_max"])
+
+                schaden = int(schaden * angriffs_schaden_faktor)
+                if starkes_taumeln_aktiv and angriffs_name == "Schneller Stich":
+                    schaden = int(schaden * schadensbonus_durch_taumeln)
+
+                krit_wurf = random.randint(1, 100)
+                krit = krit_wurf <= krit_chance
+
+                if krit:
+                    schaden = int(schaden * 1.5)
+
+            elif treffer_art == "streif":
