@@ -1,0 +1,1000 @@
+
+    print()
+
+    design_text(
+        f"{gefundene_menge}x Holz gesammelt",
+        design="positiv",
+        art="menue"
+    )
+
+    print(
+        f"Holz insgesamt: "
+        f"{item_anzahl('holz')}"
+    )
+
+    if status["vorrat"] == 0:
+        print()
+        print(
+            "Viel brauchbares Totholz ist hier "
+            "vorerst nicht mehr übrig."
+        )
+
+    elif status["vorrat"] == 1:
+        print()
+        print(
+            "In diesem Teil des Waldes wird "
+            "brauchbares Totholz langsam knapp."
+        )
+
+    warte_auf_taste()
+
+def lagerfeuer():
+    ort_titel("Lagerfeuer")
+
+    holz_kosten = 2
+    heilung = 25
+
+    print(
+        f"Für ein Lagerfeuer brauchst du "
+        f"{holz_kosten} Holz."
+    )
+
+    print(
+        f"Du besitzt: "
+        f"{item_anzahl('holz')} Holz"
+    )
+
+    print()
+
+    if not item_besitzt(
+        "holz",
+        holz_kosten
+    ):
+        print(
+            "Du hast nicht genug trockenes Holz."
+        )
+
+        warte_auf_taste()
+        return
+
+    print("1. Lagerfeuer entzünden")
+    print("2. Zurück")
+
+    auswahl = eingabe_menu(
+        1,
+        2,
+        sonder_tasten=()
+    )
+
+    if auswahl == 2:
+        return
+
+    item_entfernen(
+        "holz",
+        holz_kosten
+    )
+
+    ort_titel("Lagerfeuer")
+
+    text_ausgeben(
+        "Du sammelst das trockene Holz zu einer "
+        "kleinen Feuerstelle."
+    )
+
+    text_ausgeben(
+        "Nach einigen Versuchen greifen die Flammen."
+    )
+
+    print()
+
+    print(
+        f"Verbleibendes Holz: "
+        f"{item_anzahl('holz')}"
+    )
+
+    warte_auf_taste(
+        "Am Feuer Platz nehmen"
+    )
+
+    geruht = False
+
+    while True:
+        ort_titel("Lagerfeuer")
+
+        print(
+            f"Lebenspunkte: "
+            f"{spieler['lebenspunkte']}/100"
+        )
+
+        print()
+        print(
+            "Das Feuer brennt ruhig vor dir."
+        )
+
+        print()
+        print("1. Am Feuer ausruhen")
+        print("2. Am Feuer kochen")
+        print("3. Feuer verlassen")
+
+        feuer_auswahl = eingabe_menu(
+            1,
+            3,
+            sonder_tasten=()
+        )
+
+        if feuer_auswahl == 1:
+            if geruht:
+                print()
+                print(
+                    "Du hast dich an diesem Feuer "
+                    "bereits ausgeruht."
+                )
+
+                warte_auf_taste()
+                continue
+
+            if spieler["lebenspunkte"] >= 100:
+                print()
+                print(
+                    "Du bist bereits vollständig erholt."
+                )
+
+                warte_auf_taste()
+                continue
+
+            alte_lebenspunkte = spieler[
+                "lebenspunkte"
+            ]
+
+            spieler["lebenspunkte"] = min(
+                100,
+                spieler["lebenspunkte"] + heilung
+            )
+
+            geheilt = (
+                spieler["lebenspunkte"]
+                - alte_lebenspunkte
+            )
+
+            geruht = True
+
+            print()
+
+            text_ausgeben(
+                "Du setzt dich in die Wärme und ruhst "
+                "dich eine Weile aus."
+            )
+
+            print()
+
+            design_text(
+                f"Du regenerierst {geheilt} Lebenspunkte.",
+                design="positiv",
+                art="menue"
+            )
+
+            print(
+                f"Lebenspunkte: "
+                f"{spieler['lebenspunkte']}/100"
+            )
+
+            warte_auf_taste()
+
+        elif feuer_auswahl == 2:
+            kochen(
+                titel="Kochen am Lagerfeuer"
+            )
+
+        elif feuer_auswahl == 3:
+            return
+
+def gegenstaende_inventar():
+    while True:
+        ort_titel("Inventar - Gegenstände")
+
+        inventar_items = spieler.get(
+            "inventar_items",
+            {}
+        )
+
+        sichtbare_items = []
+
+        for item_id, anzahl in inventar_items.items():
+            if item_id in ITEMS:
+                sichtbare_items.append(
+                    (item_id, anzahl)
+                )
+
+        if not sichtbare_items:
+            print(
+                "Du trägst momentan keine "
+                "Gegenstände bei dir."
+            )
+
+            warte_auf_taste()
+            return
+
+        print("Wähle einen Gegenstand:")
+        print()
+
+        for nummer, (item_id, anzahl) in enumerate(
+            sichtbare_items,
+            start=1
+        ):
+            item_daten = ITEMS[item_id]
+
+            if anzahl > 1:
+                print(
+                    f"{nummer}. "
+                    f"{item_daten['name']} x{anzahl}"
+                )
+
+            else:
+                print(
+                    f"{nummer}. "
+                    f"{item_daten['name']}"
+                )
+
+            print(
+                f"   {item_daten['typ']}"
+            )
+
+        zurueck_nummer = len(sichtbare_items) + 1
+
+        print()
+        print(f"{zurueck_nummer}. Zurück")
+
+        auswahl = eingabe_menu(
+            1,
+            zurueck_nummer,
+            sonder_tasten=()
+        )
+
+        if auswahl == zurueck_nummer:
+            return
+
+        item_id, anzahl = sichtbare_items[
+            auswahl - 1
+        ]
+
+        item_daten = ITEMS[item_id]
+
+        ort_titel(item_daten["name"])
+
+        print(
+            f"Typ: {item_daten['typ']}"
+        )
+
+        print(
+            f"Anzahl: {anzahl}"
+        )
+
+        print()
+        print(
+            item_daten["beschreibung"]
+        )
+
+        inhalt = item_daten.get(
+            "inhalt"
+        )
+
+        if inhalt:
+            print()
+
+            design_text(
+                "Inhalt:",
+                design="wissen",
+                art="menue"
+            )
+
+            print()
+
+            for zeile in inhalt:
+                print(
+                    zeile
+                )
+
+        if (
+            item_id == "mareks_routenmappe"
+            and routenkenntnis_bekannt(
+                "koenigsring"
+            )
+        ):
+            print()
+
+            design_text(
+                "Routenkenntnis: Königsring",
+                design="wissen",
+                art="menue"
+            )
+
+            print(
+                "Bei Reisen zwischen Eichenruh und Letzthafen "
+                "kannst du die vertraute Strecke zügig zurücklegen."
+            )
+
+        heilung = item_daten.get(
+            "heilung",
+            0
+        )
+
+        status_eintraege = item_daten.get(
+            "status_effekte",
+            []
+        )
+
+        if not isinstance(
+            status_eintraege,
+            list
+        ):
+            status_eintraege = []
+
+        if heilung > 0:
+            print()
+            print(
+                f"Heilung: {heilung} HP"
+            )
+
+        for effekt in status_eintraege:
+            if not isinstance(
+                effekt,
+                dict
+            ):
+                continue
+
+            status_id = effekt.get(
+                "id"
+            )
+
+            definition = STATUS_EFFEKTE.get(
+                status_id
+            )
+
+            if not definition:
+                continue
+
+            print()
+
+            design_text(
+                (
+                    f"Effekt: "
+                    f"{definition['name']}"
+                ),
+                design=definition.get(
+                    "design",
+                    "wissen"
+                ),
+                art="menue"
+            )
+
+            print(
+                definition.get(
+                    "beschreibung",
+                    ""
+                )
+            )
+
+            dauer = effekt.get(
+                "dauer",
+                definition.get(
+                    "standard_dauer"
+                )
+            )
+
+            einheit = effekt.get(
+                "einheit",
+                definition.get(
+                    "standard_einheit"
+                )
+            )
+
+            if (
+                dauer is not None
+                and einheit
+            ):
+                if einheit == "schritte":
+                    einheit_text = (
+                        "Schritt"
+                        if dauer == 1
+                        else "Schritte"
+                    )
+
+                elif einheit == "runden":
+                    einheit_text = (
+                        "Kampfrunde"
+                        if dauer == 1
+                        else "Kampfrunden"
+                    )
+
+                else:
+                    einheit_text = einheit
+
+                print(
+                    f"Dauer: "
+                    f"{dauer} "
+                    f"{einheit_text}"
+                )
+
+        if (
+            heilung > 0
+            or status_eintraege
+        ):
+            print()
+            print("1. Essen")
+            print("2. Zurück")
+
+            detail_auswahl = eingabe_menu(
+                1,
+                2,
+                sonder_tasten=()
+            )
+
+            if detail_auswahl == 1:
+                item_benutzen(
+                    item_id
+                )
+
+        else:
+            warte_auf_taste()
+
+def inventar():
+    while True:
+        ort_titel("Inventar")
+
+        print(
+            f"Lebenspunkte: "
+            f"{spieler['lebenspunkte']}/100"
+        )
+
+        print(
+            f"Heiltränke: "
+            f"{spieler['heiltränke']}"
+        )
+
+        print(
+            f"Fackeln: "
+            f"{spieler['fackeln']}"
+        )
+
+        print(
+            f"Diamanten: "
+            f"{spieler['diamanten']}"
+        )
+
+        aktuelle_waffe = spieler.get(
+            "waffe"
+        )
+
+        print()
+
+        if aktuelle_waffe:
+            print(
+                f"Aktuelle Waffe: "
+                f"{aktuelle_waffe['name']}"
+            )
+
+        else:
+            print(
+                "Aktuelle Waffe: Keine"
+            )
+
+        menue_trenner()
+
+        print("1. Gegenstände")
+        print("2. Heiltrank benutzen")
+        print("3. Waffen")
+        print("4. Status")
+        print("5. Zurück")
+
+        inventar_auswahl = eingabe_menu(
+            1,
+            5,
+            sonder_tasten=()
+        )
+
+        if inventar_auswahl == 1:
+            gegenstaende_inventar()
+
+        elif inventar_auswahl == 2:
+            spieler[
+                "lebenspunkte"
+            ], spieler[
+                "heiltränke"
+            ] = heiltrank_benutzen(
+                spieler["lebenspunkte"],
+                spieler["heiltränke"]
+            )
+
+            warte_auf_taste()
+
+        elif inventar_auswahl == 3:
+            ort_titel(
+                "Inventar - Waffen"
+            )
+
+            waffeninventar()
+
+        elif inventar_auswahl == 4:
+            status_anzeigen()
+
+        elif inventar_auswahl == 5:
+            return
+
+def haendler_kaufen(
+    titel,
+    begruessung,
+    sortiment
+):
+    while True:
+        ort_titel(titel)
+
+        print(
+            begruessung
+        )
+
+        print()
+
+        print(
+            f"Gold vorhanden: {spieler['gold']}"
+        )
+
+        print()
+
+        waren = list(
+            sortiment.items()
+        )
+
+        for nummer, (
+            item_id,
+            handels_daten
+        ) in enumerate(
+            waren,
+            start=1
+        ):
+            print(
+                f"{nummer}. "
+                f"{ITEMS[item_id]['name']} "
+                f"- {handels_daten['preis']} Gold "
+                f"(Du hast: {item_anzahl(item_id)})"
+            )
+
+        zurueck_nummer = (
+            len(waren) + 1
+        )
+
+        print()
+        print(
+            f"{zurueck_nummer}. Zurück"
+        )
+
+        auswahl = eingabe_menu(
+            1,
+            zurueck_nummer,
+            sonder_tasten=()
+        )
+
+        if auswahl == zurueck_nummer:
+            return
+
+        item_id, handels_daten = (
+            waren[
+                auswahl - 1
+            ]
+        )
+
+        preis = handels_daten[
+            "preis"
+        ]
+
+        max_anzahl = (
+            spieler["gold"] // preis
+        )
+
+        if max_anzahl <= 0:
+            print()
+            print(
+                "Du hast nicht genug Gold."
+            )
+
+            warte_auf_taste()
+            continue
+
+        ort_titel(
+            f"{ITEMS[item_id]['name']} kaufen"
+        )
+
+        print(
+            f"Preis: {preis} Gold pro Stück"
+        )
+
+        print(
+            f"Gold vorhanden: {spieler['gold']}"
+        )
+
+        print(
+            f"Du kannst maximal "
+            f"{max_anzahl} kaufen."
+        )
+
+        print()
+        print("0. Zurück")
+
+        anzahl = eingabe_zahl(
+            0,
+            max_anzahl
+        )
+
+        if anzahl == 0:
+            continue
+
+        gesamtkosten = (
+            anzahl * preis
+        )
+
+        spieler[
+            "gold"
+        ] -= gesamtkosten
+
+        item_hinzufuegen(
+            item_id,
+            anzahl
+        )
+
+        print()
+
+        design_text(
+            (
+                f"{anzahl}x "
+                f"{ITEMS[item_id]['name']} erhalten"
+            ),
+            design="positiv",
+            art="menue"
+        )
+
+        print(
+            f"Bezahlt: "
+            f"{gesamtkosten} Gold"
+        )
+
+        print(
+            f"Verbleibendes Gold: "
+            f"{spieler['gold']}"
+        )
+
+        print(
+            f"{ITEMS[item_id]['name']}: "
+            f"{item_anzahl(item_id)}"
+        )
+
+        warte_auf_taste()
+
+
+def mara_proviant_kaufen():
+    haendler_kaufen(
+        "Gasthaus - Maras Proviant",
+        (
+            "[Mara] Wenn du wieder raus willst, "
+            "nimm wenigstens etwas Vernünftiges mit."
+        ),
+        MARA_SORTIMENT
+    )
+
+
+def hilda_zutaten_kaufen():
+    haendler_kaufen(
+        "Marktplatz - Hildas Waren",
+        (
+            "[Hilda] Wenn du selbst kochen willst, "
+            "kann ich dir wenigstens die Zutaten verkaufen."
+        ),
+        HILDA_SORTIMENT
+    )
+        
+def joris_im_gasthaus():
+    if spieler.get(
+        "prolog_uebersprungen",
+        False
+    ):
+        return False
+
+    prolog_status = spieler.get(
+        "prolog_status"
+    )
+
+    if prolog_status not in (
+        "joris_gerettet",
+        "koehlerei_lieferung",
+        "prolog_abgeschlossen"
+    ):
+        return False
+
+    daten = npc_status(
+        "joris"
+    )
+
+    daten.setdefault(
+        "ort",
+        "gasthaus"
+    )
+
+    return daten.get(
+        "ort"
+    ) == "gasthaus"
+
+
+def dialog_joris():
+    joris_besuch = npc_besuch_starten(
+        "joris"
+    )
+
+    erste_runde = True
+    themen_dieses_gespraech = set()
+
+    while True:
+        ort_titel(
+            "Gasthaus"
+        )
+
+        dialog_titel(
+            "Joris"
+        )
+
+        if erste_runde:
+            if not npc_reaktion_gezeigt(
+                "joris",
+                "erstes_gespraech_nach_rettung"
+            ):
+                text_ausgeben(
+                    "Joris sitzt an einem der hinteren Tische. "
+                    "Als er dich sieht, richtet er sich etwas auf."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Joris] Ich schulde dir was."
+                )
+
+                text_ausgeben(
+                    "[Joris] Ohne dich würde ich vermutlich noch immer "
+                    "gegen diese verdammte Tür drücken."
+                )
+
+                npc_reaktion_markieren(
+                    "joris",
+                    "erstes_gespraech_nach_rettung"
+                )
+
+            else:
+                begruessung = npc_begruessung_waehlen(
+                    "joris",
+                    [
+                        "[Joris] Na? Wieder da?",
+                        "[Joris] Noch eine Frage?",
+                        "[Joris] Ich höre.",
+                        (
+                            "[Joris] Wenn du wieder wegen des Kellers fragst: "
+                            "Ich habe leider immer noch keine bessere Erklärung."
+                        ),
+                        (
+                            "[Joris] Mara meint, ich soll mich ausruhen. "
+                            "Reden zählt hoffentlich nicht als Arbeit."
+                        )
+                    ]
+                )
+
+                text_ausgeben(
+                    begruessung
+                )
+
+        else:
+            text_ausgeben(
+                "[Joris] Noch etwas?"
+            )
+
+        print()
+
+        optionen = []
+
+        if "keller" not in themen_dieses_gespraech:
+            optionen.append(
+                (
+                    "keller",
+                    dialog_option(
+                        "joris",
+                        "keller",
+                        "Wie war es dort unten?"
+                    )
+                )
+            )
+
+        zeitgefuehl_bekannt = dialog_thema_bekannt(
+            "joris",
+            "zeitgefuehl"
+        )
+
+        if (
+            "zeitgefuehl"
+            not in themen_dieses_gespraech
+            and (
+                zeitgefuehl_bekannt
+                or spieler_pruefung(
+                    "ausdauer",
+                    2
+                )
+            )
+        ):
+            optionen.append(
+                (
+                    "zeitgefuehl",
+                    dialog_option(
+                        "joris",
+                        "zeitgefuehl",
+                        "[Ausdauer] Dein Körper wirkt nicht, "
+                        "als wärst du die ganze Nacht dort unten gewesen."
+                    )
+                )
+            )
+
+        if "bjorn" not in themen_dieses_gespraech:
+            optionen.append(
+                (
+                    "bjorn",
+                    dialog_option(
+                        "joris",
+                        "bjorn",
+                        "Was sagt Bjorn zu der Sache?"
+                    )
+                )
+            )
+
+        optionen.append(
+            (
+                "ende",
+                "Gespräch beenden"
+            )
+        )
+
+        for nummer, (aktion, text) in enumerate(
+            optionen,
+            start=1
+        ):
+            print(
+                f"{nummer}. {text}"
+            )
+
+        auswahl = eingabe_menu(
+            1,
+            len(optionen),
+            sonder_tasten=()
+        )
+
+        aktion = optionen[
+            auswahl - 1
+        ][0]
+
+        erste_runde = False
+
+        if aktion != "ende":
+            themen_dieses_gespraech.add(
+                aktion
+            )
+
+        print()
+
+        if aktion == "keller":
+            schon_besprochen = dialog_thema_bekannt(
+                "joris",
+                "keller"
+            )
+
+            dialog_thema_markieren(
+                "joris",
+                "keller"
+            )
+
+            if not schon_besprochen:
+                text_ausgeben(
+                    "[Joris] Am Anfang war es nur dunkel."
+                )
+
+                text_ausgeben(
+                    "[Joris] Dann wurde es irgendwann so still, "
+                    "dass ich jeden Atemzug gezählt habe."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Joris] Irgendwann war ich überzeugt, "
+                    "dass draußen längst Nacht sein müsste."
+                )
+
+                text_ausgeben(
+                    "[Joris] Dabei war kaum ein halber Vormittag vorbei."
+                )
+
+            else:
+                text_ausgeben(
+                    "[Joris] Ich kann dir nur sagen, "
+                    "wie es sich angefühlt hat."
+                )
+
+                text_ausgeben(
+                    "[Joris] Viel länger, als es gewesen sein kann."
+                )
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+        elif aktion == "zeitgefuehl":
+            schon_besprochen = dialog_thema_bekannt(
+                "joris",
+                "zeitgefuehl"
+            )
+
+            dialog_thema_markieren(
+                "joris",
+                "zeitgefuehl"
+            )
+
+            text_ausgeben(
+                f'[{spieler["name"]}] '
+                "Wenn du wirklich die ganze Nacht dort unten gewesen wärst, "
+                "müsstest du viel erschöpfter sein."
+            )
+
+            print()
+
+            if not schon_besprochen:
+                text_ausgeben(
+                    "Joris schaut an sich hinunter und bewegt langsam "
+                    "die Finger seiner rechten Hand."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Joris] Genau das verstehe ich nicht."
+                )
+
+                text_ausgeben(
+                    "[Joris] Ich war hungrig. Durstig auch."
+                )
+
+                text_ausgeben(
+                    "[Joris] Aber nicht so, wie nach einem ganzen Tag Arbeit."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Joris] Mein Kopf sagt mir, ich war ewig dort unten."
+                )
+
+                text_ausgeben(
+                    "[Joris] Mein Körper offenbar nicht."
+                )
+
+                print()
+
+                design_text(
+                    "Beobachtung: Joris' empfundenes Zeitgefühl passt "
+                    "nicht zu seinem körperlichen Zustand.",
+                    design="wissen",
+                    art="menue"
+                )
+
+                akt1_lernerfahrung(
+                    "joris_zeitgefuehl"
+                )
+
+            else:
+                text_ausgeben(
+                    "Joris nickt langsam."
+                )
+
+                print()
+
+                text_ausgeben(
