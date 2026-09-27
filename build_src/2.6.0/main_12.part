@@ -1,0 +1,1000 @@
+                    "lied",
+                    dialog_option(
+                        "edda",
+                        "lied",
+                        lied_frage
+                    )
+                )
+            )
+
+        if "lina" not in themen_dieses_gespraech:
+            optionen.append(
+                (
+                    "lina",
+                    dialog_option(
+                        "edda",
+                        "lina",
+                        lina_frage
+                    )
+                )
+            )
+
+        optionen.append(
+            (
+                "ende",
+                "Gespräch beenden"
+            )
+        )
+
+        for nummer, (_, text) in enumerate(
+            optionen,
+            start=1
+        ):
+            print(
+                f"{nummer}. {text}"
+            )
+
+        auswahl = eingabe_menu(
+            1,
+            len(optionen),
+            sonder_tasten=()
+        )
+
+        aktion = optionen[
+            auswahl - 1
+        ][0]
+
+        erste_runde = False
+
+        if aktion != "ende":
+            themen_dieses_gespraech.add(
+                aktion
+            )
+
+        print()
+
+        if aktion == "lied":
+            dialog_thema_markieren(
+                "edda",
+                "lied"
+            )
+
+            if quest_abgeschlossen:
+                text_ausgeben(
+                    "[Edda] Die Worte stehen wieder auf Papier."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Edda] Erinnern ist etwas anderes. "
+                    "Aber ich muss nicht mehr fürchten, "
+                    "dass das Lied ganz verschwindet."
+                )
+
+                warte_auf_taste(
+                    "Weiter"
+                )
+
+                continue
+
+            text_ausgeben(
+                "[Edda] Ein altes Wiegenlied."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Edda summt die ersten Töne noch einmal. "
+                "Bei der nächsten Stelle bricht sie ab."
+            )
+
+            text_ausgeben(
+                "[Edda] Die Melodie bleibt. Bei den Worten "
+                "sind inzwischen ganze Stücke leer."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Edda] Lina hat daraus früher ein Spiel gemacht."
+            )
+
+            text_ausgeben(
+                "[Edda] An der kleinen Truhe dort sind vier Bilder. "
+                "Sie stellte sie so ein, wie sie im Lied vorkommen."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Edda schaut zur Truhe und tippt einmal mit dem Finger "
+                "auf den Stoff in ihrem Schoß."
+            )
+
+            text_ausgeben(
+                "[Edda] Mit der Laterne fing es an. "
+                "Daran erinnere ich mich sicher."
+            )
+
+            wiegenlied[
+                "laterne_hinweis"
+            ] = True
+
+            if spieler.get(
+                "quest_wiegenlied"
+            ) == "edda_suchen":
+                spieler[
+                    "quest_wiegenlied"
+                ] = "lied_rekonstruieren"
+
+                quest_meldung(
+                    "update",
+                    "Das stumme Wiegenlied",
+                    "Finde in Letzthafen heraus, wie Linas "
+                    "Wiegenlied weitergeht. Die Truhe beginnt "
+                    "mit der Laterne."
+                )
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+        elif aktion == "lina":
+            dialog_thema_markieren(
+                "edda",
+                "lina"
+            )
+
+            if quest_abgeschlossen:
+                text_ausgeben(
+                    "[Edda] Lina konnte aus vier Zeilen "
+                    "ein ganzes Spiel machen."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Edda] Und sie konnte furchtbar schlecht "
+                    "verlieren, wenn ich die Reihenfolge doch wusste."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "Edda lächelt, diesmal ohne gleich wieder "
+                    "zum Fenster zu sehen."
+                )
+
+                warte_auf_taste(
+                    "Weiter"
+                )
+
+                continue
+
+            if wiegenlied.get(
+                "namenstein_lina_gelesen",
+                False
+            ):
+                text_ausgeben(
+                    f'[{spieler["name"]}] Lina Rehn. '
+                    "Den Namen habe ich am Namenstein gelesen."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "Eddas Hände bleiben für einen Moment still."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Edda] Ja. Lina war meine Tochter."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Edda] Ich habe ihren Namen dort selbst "
+                    "oft genug gelesen."
+                )
+
+            else:
+                text_ausgeben(
+                    "[Edda] Lina war meine Tochter."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Edda] Ihr Name steht draußen am Namenstein."
+                )
+
+            print()
+
+            text_ausgeben(
+                "Edda streicht mit dem Daumen über die Kante des Stoffes "
+                "auf ihren Knien."
+            )
+
+            text_ausgeben(
+                "[Edda] Wenn ich das Lied sang, hat Lina die Bilder "
+                "an der Truhe mitgezählt."
+            )
+
+            print()
+
+            text_ausgeben(
+                "[Edda] Mehr möchte ich im Moment nicht dazu sagen."
+            )
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+        elif aktion == "ende":
+            return
+
+def letzthafen_edda_truheninhalt():
+    wiegenlied = letzthafen_status()[
+        "wiegenlied"
+    ]
+
+    if not wiegenlied.get(
+        "truhe_geoeffnet",
+        False
+    ):
+        return
+
+    ort_titel(
+        "Eddas Haus - Inhalt der Truhe"
+    )
+
+    # -------------------------
+    # BEREITS UNTERSUCHT
+    # -------------------------
+
+    if wiegenlied.get(
+        "truhe_inhalt_untersucht",
+        False
+    ):
+        text_ausgeben(
+            "Die Truhe steht offen. Das alte Liedblatt und die übrigen "
+            "Erinnerungsstücke liegen wieder ordentlich darin.",
+            art="menue"
+        )
+
+        if item_besitzt(
+            "lina_wiegenlied_abschrift"
+        ):
+            print()
+
+            design_text(
+                "Du trägst eine Abschrift von Linas Wiegenlied bei dir.",
+                design="wissen",
+                art="menue"
+            )
+
+        warte_auf_taste(
+            "Zurück"
+        )
+
+        return
+
+    # -------------------------
+    # ERSTES ÖFFNEN
+    # -------------------------
+
+    text_ausgeben(
+        "Du hebst den Deckel vorsichtig an."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Obenauf liegt eine kleine Stoffpuppe. Das Tuch ist ausgeblichen, "
+        "doch um ihren Hals ist noch ein schmales blaues Band geknotet."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Darunter findest du ein mehrfach gefaltetes Blatt. "
+        "Die Schrift darauf ist fein und gleichmäßig."
+    )
+
+    print()
+
+    design_text(
+        "Linas Handschrift",
+        design="wissen",
+        art="menue"
+    )
+
+    print()
+
+    text_ausgeben(
+        "Wenn die Laterne brennt,"
+    )
+
+    text_ausgeben(
+        "zieht die Möwe heim."
+    )
+
+    text_ausgeben(
+        "Wenn die Welle schweigt,"
+    )
+
+    text_ausgeben(
+        "steigt die Sonne über den Stein."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Unter den vier Zeilen steht, in derselben Handschrift:"
+    )
+
+    print()
+
+    text_ausgeben(
+        '"Für Mama, falls dir wieder eine Zeile fehlt. - Lina"'
+    )
+
+    seite_wechseln(
+        "Eddas Haus - Inhalt der Truhe",
+        "Edda Rehn"
+    )
+
+    text_ausgeben(
+        "Edda ist hinter dich getreten. Lange sagt sie nichts."
+    )
+
+    text_ausgeben(
+        "Ihr Blick bleibt auf der letzten Zeile stehen."
+    )
+
+    print()
+
+    text_ausgeben(
+        "[Edda] Das ist ihre Schrift."
+    )
+
+    text_ausgeben(
+        "[Edda] Sie hat sich immer darüber lustig gemacht, "
+        "dass ich die zweite und dritte Zeile vertauscht habe."
+    )
+
+    print()
+
+    text_ausgeben(
+        "[Edda] Danach habe ich das Lied jahrelang nur noch gesummt."
+    )
+
+    text_ausgeben(
+        "[Edda] Irgendwann wusste ich nur noch die Melodie."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Edda nimmt das Blatt vorsichtig aus deinen Händen."
+    )
+
+    print()
+
+    text_ausgeben(
+        "[Edda] Nach Linas Tod habe ich alles hier hineingelegt."
+    )
+
+    text_ausgeben(
+        "[Edda] Irgendwann wusste ich noch, dass die Truhe wichtig war. "
+        "Nur nicht mehr, wie ich sie öffnen sollte."
+    )
+
+    print()
+
+    text_ausgeben(
+        "Sie liest die vier Zeilen noch einmal. Nicht singend. "
+        "Nur leise genug, dass der Wind sie nicht übertönt."
+    )
+
+    print()
+
+    text_ausgeben(
+        "[Edda] Mach dir eine Abschrift."
+    )
+
+    text_ausgeben(
+        "[Edda] Das Original bleibt bei mir."
+    )
+
+    print()
+
+    text_ausgeben(
+        "[Edda] Aber ein Lied, das nur in einer Truhe liegt, "
+        "ist auch eine Art von Schweigen."
+    )
+
+    seite_wechseln(
+        "Eddas Haus - Inhalt der Truhe"
+    )
+
+    # -------------------------
+    # BELOHNUNGEN
+    # -------------------------
+
+    if not item_besitzt(
+        "lina_wiegenlied_abschrift"
+    ):
+        item_hinzufuegen(
+            "lina_wiegenlied_abschrift"
+        )
+
+    besonderen_fund_dokumentieren(
+        "linas_wiegenlied",
+        "abgeschrieben"
+    )
+
+    wiegenlied[
+        "truhe_inhalt_untersucht"
+    ] = True
+
+    spieler[
+        "quest_wiegenlied"
+    ] = "abgeschlossen"
+
+    quest_meldung(
+        "abgeschlossen",
+        "Das stumme Wiegenlied",
+        belohnungen=[
+            "Abschrift von Linas Wiegenlied"
+        ]
+    )
+
+    erfolg_freischalten(
+        "ein_lied_das_blieb"
+    )
+
+    print()
+
+    text_ausgeben(
+        "Edda faltet das Original wieder entlang der alten Kanten."
+    )
+
+    text_ausgeben(
+        "Bevor sie es zurücklegt, liest sie die erste Zeile noch einmal laut."
+    )
+
+    print()
+
+    text_ausgeben(
+        "[Edda] Diesmal muss ich sie nicht erraten."
+    )
+
+    warte_auf_taste(
+        "Weiter"
+    )
+
+def letzthafen_edda_truhe():
+    wiegenlied = letzthafen_status()[
+        "wiegenlied"
+    ]
+
+    while True:
+        ort_titel(
+            "Eddas Haus - Alte Truhe"
+        )
+
+        if wiegenlied.get(
+            "truhe_geoeffnet",
+            False
+        ):
+            if not wiegenlied.get(
+                "truhe_inhalt_untersucht",
+                False
+            ):
+                text_ausgeben(
+                    "Der Verschluss der kleinen Truhe steht offen. "
+                    "Der Deckel lässt sich jetzt ohne Widerstand anheben.",
+                    art="menue"
+                )
+
+                menue_trenner()
+
+                print(
+                    "1. Den Inhalt untersuchen"
+                )
+
+                print(
+                    "2. Zurück"
+                )
+
+                auswahl = eingabe_menu(
+                    1,
+                    2,
+                    sonder_tasten=()
+                )
+
+                if auswahl == 1:
+                    letzthafen_edda_truheninhalt()
+
+                return
+
+            letzthafen_edda_truheninhalt()
+            return
+
+        text_ausgeben(
+            "Die kleine Holztruhe ist dunkel vom Alter. "
+            "An der Vorderseite sitzen vier drehbare Messingscheiben."
+        )
+
+        text_ausgeben(
+            "Ein Schlüsselloch gibt es nicht. Der Verschluss scheint "
+            "vollständig über die vier Scheiben zu funktionieren."
+        )
+
+        print()
+
+        print("Laterne")
+        print("Möwe")
+        print("Welle")
+        print("Sonne")
+
+        print()
+
+        text_ausgeben(
+            "Jede Scheibe rastet spürbar in ihrer Position ein."
+        )
+
+        wiegenlied[
+            "truhe_untersucht"
+        ] = True
+
+        wahrnehmungs_option = (
+            not wiegenlied.get(
+                "truhe_spuren_hinweis",
+                False
+            )
+            and spieler_pruefung(
+                "wahrnehmung",
+                2
+            )
+        )
+
+        menue_trenner()
+
+        print(
+            "1. Die Messingscheiben einstellen"
+        )
+
+        print(
+            "2. Gesammelte Hinweise ordnen"
+        )
+
+        if wahrnehmungs_option:
+            print(
+                "3. [Wahrnehmung] Den Verschluss genauer untersuchen"
+            )
+
+            print(
+                "4. Zurück"
+            )
+
+            max_auswahl = 4
+
+        else:
+            print(
+                "3. Zurück"
+            )
+
+            max_auswahl = 3
+
+        auswahl = eingabe_menu(
+            1,
+            max_auswahl,
+            sonder_tasten=()
+        )
+
+        # -------------------------
+        # RÄTSEL VERSUCHEN
+        # -------------------------
+
+        if auswahl == 1:
+            symbole = [
+                "Laterne",
+                "Möwe",
+                "Welle",
+                "Sonne"
+            ]
+
+            reihenfolge = []
+            abgebrochen = False
+
+            for position in range(
+                1,
+                5
+            ):
+                ort_titel(
+                    "Eddas Haus - Alte Truhe"
+                )
+
+                print(
+                    f"Position {position} von 4"
+                )
+
+                if reihenfolge:
+                    print()
+
+                    print(
+                        "Bisher: "
+                        + " → ".join(
+                            reihenfolge
+                        )
+                    )
+
+                print()
+
+                for nummer, symbol in enumerate(
+                    symbole,
+                    start=1
+                ):
+                    print(
+                        f"{nummer}. {symbol}"
+                    )
+
+                abbrechen_nummer = (
+                    len(symbole) + 1
+                )
+
+                print(
+                    f"{abbrechen_nummer}. Abbrechen"
+                )
+
+                symbol_auswahl = eingabe_menu(
+                    1,
+                    abbrechen_nummer,
+                    sonder_tasten=()
+                )
+
+                if (
+                    symbol_auswahl
+                    == abbrechen_nummer
+                ):
+                    abgebrochen = True
+                    break
+
+                symbol = symbole.pop(
+                    symbol_auswahl - 1
+                )
+
+                reihenfolge.append(
+                    symbol
+                )
+
+            if abgebrochen:
+                continue
+
+            ort_titel(
+                "Eddas Haus - Alte Truhe"
+            )
+
+            design_text(
+                " → ".join(
+                    reihenfolge
+                ),
+                design="wissen",
+                art="menue"
+            )
+
+            print()
+
+            if reihenfolge == [
+                "Laterne",
+                "Möwe",
+                "Welle",
+                "Sonne"
+            ]:
+                text_ausgeben(
+                    "Die letzte Scheibe rastet mit einem leisen Klicken ein."
+                )
+
+                text_ausgeben(
+                    "Für einen Moment geschieht nichts. Dann löst sich im "
+                    "Inneren mit einem trockenen Schnappen der alte Mechanismus."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "Der Deckel hebt sich einen Fingerbreit."
+                )
+
+                wiegenlied[
+                    "truhe_geoeffnet"
+                ] = True
+
+                akt1_lernerfahrung(
+                    "edda_raetsel"
+                )
+
+                spieler[
+                    "quest_wiegenlied"
+                ] = "truhe_geoeffnet"
+
+                quest_meldung(
+                    "update",
+                    "Das stumme Wiegenlied",
+                    "Untersuche den Inhalt der geöffneten Truhe."
+                )
+
+                warte_auf_taste(
+                    "Weiter"
+                )
+
+                return
+
+            text_ausgeben(
+                "Du drehst die letzte Scheibe in Position. "
+                "Für einen Moment geschieht nichts."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Dann springt der Mechanismus zurück. "
+                "Die Reihenfolge war nicht richtig."
+            )
+
+            warte_auf_taste(
+                "Noch einmal überlegen"
+            )
+
+        # -------------------------
+        # HINWEISE
+        # -------------------------
+
+        elif auswahl == 2:
+            ort_titel(
+                "Eddas Haus - Hinweise"
+            )
+
+            hinweise = []
+
+            if wiegenlied.get(
+                "laterne_hinweis",
+                False
+            ):
+                hinweise.append(
+                    "Edda erinnert sich: "
+                    "Die Laterne steht am Anfang."
+                )
+
+            if wiegenlied.get(
+                "sera_hinweis",
+                False
+            ):
+                hinweise.append(
+                    "Sera erinnert sich: "
+                    "Auf die Laterne folgt die Möwe."
+                )
+
+            if wiegenlied.get(
+                "namenstein_hinweis",
+                False
+            ):
+                hinweise.append(
+                    "Bei Lina Rehns Namen steht "
+                    "die Möwe vor der Welle."
+                )
+
+            elif wiegenlied.get(
+                "truhe_spuren_hinweis",
+                False
+            ):
+                hinweise.append(
+                    "Am Verschluss der Truhe liegt "
+                    "die Möwe vor der Welle."
+                )
+
+            if wiegenlied.get(
+                "register_hinweis",
+                False
+            ):
+                hinweise.append(
+                    "Das alte Hauszeichen der Rehns "
+                    "zeigt Welle vor Sonne."
+                )
+
+            if not hinweise:
+                print(
+                    "Du hast noch keinen sicheren Hinweis "
+                    "auf die Reihenfolge."
+                )
+
+            else:
+                for hinweis in hinweise:
+                    print(
+                        f"- {hinweis}"
+                    )
+
+            warte_auf_taste(
+                "Zurück"
+            )
+
+        elif (
+            wahrnehmungs_option
+            and auswahl == 3
+        ):
+            ort_titel(
+                "Eddas Haus - Alte Truhe"
+            )
+
+            text_ausgeben(
+                "Du gehst mit den Fingern langsam am unteren Rand "
+                "des Messingverschlusses entlang."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Fast vollständig vom dunklen Holz verdeckt entdeckst du "
+                "zwei winzige eingeritzte Zeichen."
+            )
+
+            text_ausgeben(
+                "Links eine Möwe, rechts eine Wellenlinie. Zwischen beiden "
+                "verläuft ein kurzer Strich."
+            )
+
+            print()
+
+            design_text(
+                "Möwe  →  Welle",
+                design="wissen",
+                art="menue"
+            )
+
+            print()
+
+            text_ausgeben(
+                "Die feinen Kratzer wirken deutlich jünger als der "
+                "eigentliche Messingverschluss."
+            )
+
+            wiegenlied[
+                "truhe_spuren_hinweis"
+            ] = True
+
+            akt1_lernerfahrung(
+                "edda_truhe_spuren"
+            )
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+        elif (
+            wahrnehmungs_option
+            and auswahl == 4
+        ):
+            return
+
+        elif (
+            not wahrnehmungs_option
+            and auswahl == 3
+        ):
+            return
+
+def letzthafen_edda_haus():
+    daten = letzthafen_status()
+
+    wiegenlied = daten[
+        "wiegenlied"
+    ]
+
+    erstmals = letzthafen_bereich_betreten(
+        "edda_haus"
+    )
+
+    while True:
+        ort_titel(
+            "Eddas Haus"
+        )
+
+        if erstmals:
+            text_ausgeben(
+                "Das Haus mit der verwitterten blauen Tür steht "
+                "etwas abseits der dichtesten Häuserreihe."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Als du näher kommst, hörst du dieselbe wortlose Melodie. "
+                "Hinter der blauen Tür ist sie kaum lauter als draußen im Wind."
+            )
+
+            print()
+
+            text_ausgeben(
+                "Nach deinem Klopfen bricht das Summen ab. "
+                "Eine ältere Frau öffnet die Tür."
+            )
+
+            text_ausgeben(
+                "Hinter ihr ist der kleine Raum ordentlich, aber voll."
+            )
+
+            print()
+            text_ausgeben(
+                "[Edda] Wenn du wegen des Summens hier bist: "
+                "Manchmal merke ich nicht, wie weit man es hört."
+            )
+
+            print()
+            text_ausgeben(
+                f'[{spieler["name"]}] Bis zum Leuchtfeuer.'
+            )
+
+            text_ausgeben(
+                "Edda schaut kurz in Richtung der Klippen."
+            )
+
+            text_ausgeben(
+                "[Edda] Dann trägt der Wind heute weiter als sonst."
+            )
+
+            wiegenlied[
+                "edda_getroffen"
+            ] = True
+
+            erstmals = False
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+        else:
+            text_ausgeben(
+                "Hinter der verwitterten blauen Tür ist es still. "
+                "Nur das Meer ist durch die Wände zu hören.",
+                art="menue"
+            )
+
+        menue_trenner()
+
+        print("1. Mit Edda reden")
+        print("2. Die alte Truhe ansehen")
+        print("3. Dich im Zimmer umsehen")
+        print("4. Zurück zum Klippenweg")
+
+        auswahl = eingabe_menu(
+            1,
+            4,
+            sonder_tasten=()
+        )
+
+        if auswahl == 1:
+            dialog_edda()
+
+        elif auswahl == 2:
+            letzthafen_edda_truhe()
+
+        elif auswahl == 3:
+            ort_titel(
+                "Eddas Haus"
+            )
+
+            text_ausgeben(
+                "Unter dem Fenster steht eine alte, leere Wiege. "
+                "Darin liegen heute nur gefaltete Decken."
+            )
+
+            text_ausgeben(
+                "An der Wand hängen getrocknete Kräuter, Garnrollen "
+                "und zwei kleine Bilderrahmen, deren Glas blind geworden ist."
+            )
+
+            print()
