@@ -1,0 +1,999 @@
+import os
+
+import sys
+
+import subprocess
+
+import json
+
+import shutil
+
+import zipfile
+
+import hashlib
+
+import urllib.request
+
+import urllib.error
+
+import truststore
+
+import time
+
+
+
+truststore.inject_into_ssl()
+
+
+
+
+
+LAUNCHER_VERSION = "1.2.8"
+
+SPIEL_DATEI = "Void.exe"
+
+VERSION_DATEI = "void_version.json"
+
+ONLINE_VERSION_URL = (
+
+    "https\://raw\.githubusercontent.com/"
+
+    "DoomPingu/Void-Updates/refs/heads/main/"
+
+    "void_online_version.json"
+
+)
+
+UPDATE_ORDNER = "update_paket"
+
+UPDATE_ZIP = "\_void_update_download.zip"
+
+TEMP_UPDATE_ORDNER = "\_void_update_temp"
+
+LAUNCHER_UPDATE_DATEI = "\_void_launcher_update.exe"
+
+LAUNCHER_UPDATE_SCRIPT = "\_void_launcher_update.bat"
+
+
+
+GESCHUETZTE_DATEIEN = {
+
+    "void_save.json",
+
+    "void_settings.json",
+
+    "void_launcher.py",
+
+    "Void Launcher.exe"
+
+}
+
+
+
+def basis_ordner():
+
+    if getattr(sys, "frozen", False):
+
+        return os.path.dirname(
+
+            sys.executable
+
+        )
+
+
+
+    return os.path.dirname(
+
+        os.path.abspath(\_\_file\_\_)
+
+    )
+
+
+
+
+
+def version_als_tuple(version):
+
+    try:
+
+        return tuple(
+
+            int(teil)
+
+            for teil in version.split(".")
+
+        )
+
+
+
+    except (
+
+        ValueError,
+
+        AttributeError
+
+    ):
+
+        return (0, 0, 0)
+
+
+
+def version_laden():
+
+    pfad = os.path.join(
+
+        basis_ordner(),
+
+        VERSION_DATEI
+
+    )
+
+
+
+    if not os.path.exists(pfad):
+
+        return {
+
+            "version": "0.0.0",
+
+            "name": "Unbekannte Version"
+
+        }
+
+
+
+    try:
+
+        with open(
+
+            pfad,
+
+            "r",
+
+            encoding="utf-8"
+
+        ) as datei:
+
+            daten = json.load(datei)
+
+
+
+        return {
+
+            "version": daten.get(
+
+                "version",
+
+                "0.0.0"
+
+            ),
+
+            "name": daten.get(
+
+                "name",
+
+                "Unbekannte Version"
+
+            )
+
+        }
+
+
+
+    except (
+
+        OSError,
+
+        json.JSONDecodeError
+
+    ):
+
+        return {
+
+            "version": "0.0.0",
+
+            "name": "Unbekannte Version"
+
+        }
+
+
+
+def online_version_laden():
+
+    try:
+
+        aktuelle_url = (
+
+            ONLINE_VERSION_URL
+
+            + "?t="
+
+            + str(int(time.time()))
+
+        )
+
+
+
+        anfrage = urllib.request.Request(
+
+            aktuelle_url,
+
+            headers={
+
+                "User-Agent": "Void-Launcher",
+
+                "Cache-Control": "no-cache",
+
+                "Pragma": "no-cache"
+
+            }
+
+        )
+
+
+
+        with urllib.request.urlopen(&#x20;
+
+            anfrage,
+
+            timeout=5
+
+        ) as antwort:
+
+            inhalt = antwort.read().decode(
+
+                "utf-8"
+
+            )
+
+
+
+        daten = json.loads(
+
+            inhalt
+
+        )
+
+
+
+        return {
+
+            "version": daten.get(
+
+                "version",
+
+                "0.0.0"
+
+            ),
+
+
+
+            "name": daten.get(
+
+                "name",
+
+                "Unbekannte Version"
+
+            ),
+
+
+
+            "sha256": daten.get(
+
+                "sha256",
+
+                ""
+
+            ),
+
+
+
+            "download_url": daten.get(
+
+                "download_url",
+
+                ""
+
+            ),
+
+
+
+            "patch_notes": daten.get(
+
+                "patch_notes",
+
+                []
+
+            ),
+
+
+
+            "launcher_version": daten.get(
+
+                "launcher_version",
+
+                ""
+
+            ),
+
+
+
+            "launcher_sha256": daten.get(
+
+                "launcher_sha256",
+
+                ""
+
+            ),
+
+
+
+            "launcher_download_url": daten.get(
+
+                "launcher_download_url",
+
+                ""
+
+            )
+
+        }
+
+
+
+    except (
+
+        urllib.error.URLError,
+
+        urllib.error.HTTPError,
+
+        TimeoutError,
+
+        json.JSONDecodeError,
+
+        UnicodeDecodeError
+
+    ):
+
+        return None
+
+
+
+def spiel_pfad():
+
+    return os.path.join(
+
+        basis_ordner(),
+
+        SPIEL_DATEI
+
+    )
+
+
+
+
+
+def spiel_starten():
+
+    pfad = spiel_pfad()
+
+
+
+    if not os.path.exists(pfad):
+
+        print()
+
+        print("Void konnte nicht gefunden werden.")
+
+        print()
+
+        print(
+
+            f"Gesucht wurde:"
+
+        )
+
+        print(pfad)
+
+
+
+        input(
+
+            "\n[Enter] Launcher schließen ..."
+
+        )
+
+
+
+        return
+
+
+
+    print()
+
+    print("Void wird gestartet ...")
+
+
+
+    if pfad.lower().endswith(
+
+        ".py"
+
+    ):
+
+        subprocess.Popen(
+
+            [
+
+                sys.executable,
+
+                pfad
+
+            ],
+
+            cwd=basis_ordner()
+
+        )
+
+
+
+    else:
+
+        subprocess.Popen(
+
+            [pfad],
+
+            cwd=basis_ordner()
+
+        )
+
+
+
+def datei_sha256(pfad):
+
+    sha256 = hashlib.sha256()
+
+
+
+    try:
+
+        with open(
+
+            pfad,
+
+            "rb"
+
+        ) as datei:
+
+
+
+            while True:
+
+                block = datei.read(
+
+                    1024 \* 1024
+
+                )
+
+
+
+                if not block:
+
+                    break
+
+
+
+                sha256.update(
+
+                    block
+
+                )
+
+
+
+    except OSError:
+
+        return None
+
+
+
+    return sha256.hexdigest()
+
+
+
+
+
+def update_herunterladen(
+
+    online_version
+
+):
+
+    download_url = online_version.get(
+
+        "download_url",
+
+        ""
+
+    ).strip()
+
+
+
+    if not download_url:
+
+        print()
+
+        print(
+
+            "Für dieses Update fehlt "
+
+            "die Download-Adresse."
+
+        )
+
+
+
+        return False
+
+
+
+    if not download_url.startswith(
+
+        "https\://"
+
+    ):
+
+        print()
+
+        print(
+
+            "Die Download-Adresse ist ungültig."
+
+        )
+
+
+
+        return False
+
+
+
+    ziel_pfad = os.path.join(
+
+        basis_ordner(),
+
+        UPDATE_ZIP
+
+    )
+
+
+
+    teil_pfad = (
+
+        ziel_pfad + ".part"
+
+    )
+
+
+
+    print()
+
+    print(
+
+        "Update wird heruntergeladen ..."
+
+    )
+
+
+
+    try:
+
+        anfrage = urllib.request.Request(
+
+            download_url,
+
+            headers={
+
+                "User-Agent": "Void-Launcher"
+
+            }
+
+        )
+
+
+
+        with urllib.request.urlopen(
+
+            anfrage,
+
+            timeout=30
+
+        ) as antwort:
+
+
+
+            with open(
+
+                teil_pfad,
+
+                "wb"
+
+            ) as datei:
+
+
+
+                while True:
+
+                    block = antwort.read(
+
+                        1024 \* 256
+
+                    )
+
+
+
+                    if not block:
+
+                        break
+
+
+
+                    datei.write(
+
+                        block
+
+                    )
+
+
+
+        os.replace(
+
+            teil_pfad,
+
+            ziel_pfad
+
+        )
+
+
+
+    except (
+
+        urllib.error.URLError,
+
+        urllib.error.HTTPError,
+
+        TimeoutError,
+
+        OSError
+
+    ) as fehler:
+
+
+
+        if os.path.exists(
+
+            teil_pfad
+
+        ):
+
+            try:
+
+                os.remove(
+
+                    teil_pfad
+
+                )
+
+
+
+            except OSError:
+
+                pass
+
+
+
+        print()
+
+        print(
+
+            "Das Update konnte nicht "
+
+            "heruntergeladen werden."
+
+        )
+
+
+
+        print(
+
+            f"Fehler: {fehler}"
+
+        )
+
+
+
+        return False
+
+
+
+    print(
+
+        "Download abgeschlossen."
+
+    )
+
+
+
+    return True
+
+
+
+def update_download_loeschen():
+
+    zip_pfad = os.path.join(
+
+        basis_ordner(),
+
+        UPDATE_ZIP
+
+    )
+
+
+
+    teil_pfad = (
+
+        zip_pfad + ".part"
+
+    )
+
+
+
+    for pfad in (
+
+        zip_pfad,
+
+        teil_pfad
+
+    ):
+
+        if not os.path.exists(
+
+            pfad
+
+        ):
+
+            continue
+
+
+
+        try:
+
+            os.remove(
+
+                pfad
+
+            )
+
+
+
+        except OSError:
+
+            pass
+
+
+
+def update_sha256_pruefen(
+
+    online_version
+
+):
+
+    zip_pfad = os.path.join(
+
+        basis_ordner(),
+
+        UPDATE_ZIP
+
+    )
+
+
+
+    erwarteter_hash = (
+
+        online_version.get(
+
+            "sha256",
+
+            ""
+
+        )
+
+        .strip()
+
+        .lower()
+
+    )
+
+
+
+    if not erwarteter_hash:
+
+        print()
+
+        print(
+
+            "Für dieses Update fehlt "
+
+            "die SHA256-Prüfsumme."
+
+        )
+
+
+
+        return False
+
+
+
+    berechneter_hash = datei_sha256(
+
+        zip_pfad
+
+    )
+
+
+
+    if berechneter_hash is None:
+
+        print()
+
+        print(
+
+            "Die Update-Datei konnte "
+
+            "nicht geprüft werden."
+
+        )
+
+
+
+        return False
+
+
+
+    if (
+
+        berechneter_hash.lower()
+
+        != erwarteter_hash
+
+    ):
+
+        print()
+
+        print("\*\*\* UPDATE ABGEBROCHEN \*\*\*")
+
+        print()
+
+        print(
+
+            "Die SHA256-Prüfsumme stimmt "
+
+            "nicht überein."
+
+        )
+
+
+
+        print()
+
+        print(
+
+            "Die Update-Datei ist möglicherweise "
+
+            "beschädigt oder wurde verändert."
+
+        )
+
+
+
+        return False
+
+
+
+    print()
+
+    print(
+
+        "SHA256-Prüfung erfolgreich."
+
+    )
+
+
+
+    return True
+
+
+
+def launcher_update_herunterladen(
+
+    online_version
+
+):
+
+    download_url = online_version.get(
+
+        "launcher_download_url",
+
+        ""
+
+    ).strip()
+
+
+
+    erwarteter_hash = online_version.get(
+
+        "launcher_sha256",
+
+        ""
+
+    ).strip().lower()
+
+
+
+    if not download_url:
+
+        print()
+
+        print(
+
+            "Für das Launcher-Update fehlt "
+
+            "die Download-Adresse."
+
+        )
+
+        return False
+
+
+
+    if not download_url.startswith(
+
+        "https\://"
+
+    ):
+
+        print()
+
+        print(
+
+            "Die Launcher-Download-Adresse "
+
+            "ist ungültig."
+
+        )
+
+        return False
+
+
+
+    if not erwarteter_hash:
+
+        print()
+
+        print(
+
+            "Für das Launcher-Update fehlt "
+
+            "die SHA256-Prüfsumme."
+
+        )
+
+        return False
+
+
+
+    ziel_pfad = os.path.join(
+
+        basis_ordner(),
+
+        LAUNCHER_UPDATE_DATEI
+
+    )
