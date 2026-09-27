@@ -1,0 +1,1000 @@
+        basis_ordner(),
+        f"void_save_{slot}.json"
+    )
+
+def alten_spielstand_importieren():
+    if not os.path.exists(
+        ALTE_SPEICHER_DATEI
+    ):
+        return None
+
+    for slot in range(
+        1,
+        ANZAHL_SPEICHER_SLOTS + 1
+    ):
+        neue_datei = (
+            speicherdatei_pfad(
+                slot
+            )
+        )
+
+        if os.path.exists(
+            neue_datei
+        ):
+            continue
+
+        try:
+            os.replace(
+                ALTE_SPEICHER_DATEI,
+                neue_datei
+            )
+
+        except OSError:
+            return None
+
+        return slot
+
+    return None
+
+EINSTELLUNGS_DATEI = os.path.join(
+    basis_ordner(),
+    "void_settings.json"
+)
+
+SAVE_VERSION = 2
+MIN_SAVE_VERSION = 1
+
+
+def einstellungen_laden():
+    if not os.path.exists(
+        EINSTELLUNGS_DATEI
+    ):
+        return False
+
+    try:
+        with open(
+            EINSTELLUNGS_DATEI,
+            "r",
+            encoding="utf-8"
+        ) as datei:
+            daten = json.load(
+                datei
+            )
+
+        if not isinstance(
+            daten,
+            dict
+        ):
+            return False
+
+    except (
+        OSError,
+        json.JSONDecodeError
+    ):
+        return False
+
+    textgeschwindigkeit = daten.get(
+        "textgeschwindigkeit"
+    )
+
+    if textgeschwindigkeit in TEXT_FAKTOREN:
+        STANDARD_EINSTELLUNGEN[
+            "textgeschwindigkeit"
+        ] = textgeschwindigkeit
+
+    menue_eingabe = daten.get(
+        "menue_eingabe"
+    )
+
+    if menue_eingabe in (
+        "enter",
+        "direkt"
+    ):
+        STANDARD_EINSTELLUNGEN[
+            "menue_eingabe"
+        ] = menue_eingabe
+
+    bildschirm_leeren = daten.get(
+        "bildschirm_leeren"
+    )
+
+    if isinstance(
+        bildschirm_leeren,
+        bool
+    ):
+        STANDARD_EINSTELLUNGEN[
+            "bildschirm_leeren"
+        ] = bildschirm_leeren
+
+    spieler_name_farbe = daten.get(
+        "spieler_name_farbe"
+    )
+
+    if spieler_name_farbe in (
+        "standard",
+        "blau",
+        "cyan",
+        "gruen",
+        "gelb",
+        "lila",
+        "rot",
+        "schwarz"
+    ):
+        STANDARD_EINSTELLUNGEN[
+            "spieler_name_farbe"
+        ] = spieler_name_farbe
+
+    return True
+
+
+def einstellungen_speichern(
+    einstellungen
+):
+    daten = {
+        "textgeschwindigkeit": einstellungen.get(
+            "textgeschwindigkeit",
+            STANDARD_EINSTELLUNGEN[
+                "textgeschwindigkeit"
+            ]
+        ),
+
+        "menue_eingabe": einstellungen.get(
+            "menue_eingabe",
+            STANDARD_EINSTELLUNGEN[
+                "menue_eingabe"
+            ]
+        ),
+
+        "bildschirm_leeren": einstellungen.get(
+            "bildschirm_leeren",
+            STANDARD_EINSTELLUNGEN[
+                "bildschirm_leeren"
+            ]
+        ),
+
+        "spieler_name_farbe": einstellungen.get(
+            "spieler_name_farbe",
+            STANDARD_EINSTELLUNGEN[
+                "spieler_name_farbe"
+            ]
+        )
+    }
+
+    temp_datei = (
+        EINSTELLUNGS_DATEI + ".tmp"
+    )
+
+    try:
+        with open(
+            temp_datei,
+            "w",
+            encoding="utf-8"
+        ) as datei:
+            json.dump(
+                daten,
+                datei,
+                ensure_ascii=False,
+                indent=4
+            )
+
+        os.replace(
+            temp_datei,
+            EINSTELLUNGS_DATEI
+        )
+
+    except (
+        OSError,
+        TypeError,
+        ValueError
+    ):
+        if os.path.exists(
+            temp_datei
+        ):
+            try:
+                os.remove(
+                    temp_datei
+                )
+            except OSError:
+                pass
+
+        return False
+
+    return True
+
+TEXT_DESIGN = {
+    "normal": {
+        "stil": None,
+        "farbe": None
+    },
+
+    "positiv": {
+        "stil": None,
+        "farbe": "gruen"
+    },
+
+    "gefahr": {
+        "stil": None,
+        "farbe": "rot"
+    },
+
+    "warnung": {
+        "stil": None,
+        "farbe": "gelb"
+    },
+
+    "wissen": {
+        "stil": None,
+        "farbe": "cyan"
+    },
+
+    "void": {
+        "stil": "kursiv",
+        "farbe": "lila"
+    },
+
+    "quest_neu": {
+        "stil": "fett",
+        "farbe": "cyan"
+    },
+
+    "quest_update": {
+        "stil": "fett",
+        "farbe": "gelb"
+    },
+
+    "quest_abgeschlossen": {
+        "stil": "fett",
+        "farbe": "gruen"
+    },
+
+    "wichtig": {
+        "stil": "fett",
+        "farbe": None
+    },
+
+    "ort": {
+        "stil": "fett",
+        "farbe": "cyan"
+    },
+
+    "dialog": {
+        "stil": "fett",
+        "farbe": "gelb"
+    }
+    }
+
+def rueckkehr_hinweis_status(hinweis_id):
+    if not isinstance(
+        globals().get("spieler"),
+        dict
+    ):
+        return None
+
+    return spieler.get(
+        "rueckkehr_hinweise",
+        {}
+    ).get(
+        hinweis_id
+    )
+
+
+def rueckkehr_hinweis_offen(hinweis_id):
+    return rueckkehr_hinweis_status(
+        hinweis_id
+    ) in (
+        "neu",
+        "offen"
+    )
+
+
+def rueckkehr_hinweis_aktivieren(hinweis_id):
+    if hinweis_id not in RUECKKEHR_HINWEISE:
+        return False
+
+    hinweise = spieler.setdefault(
+        "rueckkehr_hinweise",
+        {}
+    )
+
+    if hinweise.get(
+        hinweis_id
+    ) in (
+        "neu",
+        "offen",
+        "erledigt"
+    ):
+        return False
+
+    hinweise[
+        hinweis_id
+    ] = "neu"
+
+    return True
+
+
+def rueckkehr_hinweis_erledigen(hinweis_id):
+    hinweise = spieler.setdefault(
+        "rueckkehr_hinweise",
+        {}
+    )
+
+    if hinweis_id not in hinweise:
+        return False
+
+    hinweise[
+        hinweis_id
+    ] = "erledigt"
+
+    return True
+
+
+def rueckkehr_hinweise_offen_vorhanden():
+    if not isinstance(
+        globals().get("spieler"),
+        dict
+    ):
+        return False
+
+    return any(
+        status in (
+            "neu",
+            "offen"
+        )
+        for status in spieler.get(
+            "rueckkehr_hinweise",
+            {}
+        ).values()
+    )
+
+
+def rueckkehr_hinweise_pruefen():
+    if not isinstance(
+        globals().get("spieler"),
+        dict
+    ):
+        return
+
+    wegstation = spieler.get(
+        "wegstation_status",
+        {}
+    )
+
+    funde = wegstation.get(
+        "funde",
+        {}
+    )
+
+    karten_status = spieler.get(
+        "besondere_funde",
+        {}
+    ).get(
+        "altes_kartenstueck"
+    )
+
+    kartenstueck_bekannt = (
+        item_besitzt(
+            "altes_kartenstueck"
+        )
+        or karten_status in (
+            "erhalten",
+            "zugeordnet"
+        )
+    )
+
+    if (
+        funde.get(
+            "archiv_untersucht",
+            False
+        )
+        and kartenstueck_bekannt
+        and not funde.get(
+            "geheimraum_hinweis",
+            False
+        )
+        and not wegstation.get(
+            "geheimgang_offen",
+            False
+        )
+    ):
+        rueckkehr_hinweis_aktivieren(
+            "wegstation_archiv_kartenstueck"
+        )
+
+    if (
+        spieler.get(
+            "waldwaechter_schwelle_erlebt",
+            False
+        )
+        and spieler.get(
+            "wald_fragment_gefunden",
+            False
+        )
+        and not wald_fund_bekannt(
+            "wegstein_nachhall"
+        )
+    ):
+        rueckkehr_hinweis_aktivieren(
+            "wegstein_nach_erwachen"
+        )
+
+
+def rueckkehr_hinweis_meldung_anzeigen():
+    if not isinstance(
+        globals().get("spieler"),
+        dict
+    ):
+        return
+
+    hinweise = spieler.get(
+        "rueckkehr_hinweise",
+        {}
+    )
+
+    for hinweis_id, status in hinweise.items():
+
+        if status != "neu":
+            continue
+
+        daten = RUECKKEHR_HINWEISE.get(
+            hinweis_id
+        )
+
+        if not daten:
+            continue
+
+        print("-" * 34)
+
+        design_text(
+            "NEUER GEDANKE",
+            design="wissen",
+            art="menue"
+        )
+
+        print()
+        print(
+            daten["text"]
+        )
+
+        print("-" * 34)
+        print()
+
+        hinweise[
+            hinweis_id
+        ] = "offen"
+
+        return
+
+def ort_titel(name):
+    global TEXT_SKIP_AKTIV
+    TEXT_SKIP_AKTIV = False
+
+    if "spieler" in globals() and isinstance(spieler, dict):
+        bildschirm_leeren = spieler.get(
+            "bildschirm_leeren",
+            STANDARD_EINSTELLUNGEN["bildschirm_leeren"]
+        )
+    else:
+        bildschirm_leeren = STANDARD_EINSTELLUNGEN["bildschirm_leeren"]
+
+    if bildschirm_leeren:
+        os.system("cls" if os.name == "nt" else "clear")
+
+
+
+    print("=" * 34)
+
+    design_text(
+        name.upper(),
+        design="ort",
+        art="menue"
+    )
+
+    print("=" * 34)
+    print()
+
+    rueckkehr_hinweis_meldung_anzeigen()
+
+def spieler_name_formatieren(text):
+    if not isinstance(
+        globals().get("spieler"),
+        dict
+    ):
+        return text
+
+    name = spieler.get("name")
+
+    if not name:
+        return text
+
+    name_text = f"[{name}]"
+
+    if not text.startswith(name_text):
+        return text
+
+    farbe = spieler.get(
+        "spieler_name_farbe",
+        STANDARD_EINSTELLUNGEN[
+            "spieler_name_farbe"
+        ]
+    )
+
+    if (
+        farbe == "standard"
+        or not ANSI_STILE_AKTIV
+        or farbe not in ANSI_STILE
+    ):
+        return text
+
+    return (
+        f"{ANSI_STILE[farbe]}"
+        f"{name_text}"
+        f"{ANSI_STILE['reset']}"
+        f"{text[len(name_text):]}"
+    )
+
+def dialog_titel(name):
+    print()
+    print("-" * 34)
+    design_text(
+        name,
+        design="dialog",
+        art="menue"
+    )
+    print("-" * 34)
+    print()
+
+
+def menue_trenner():
+    if TEXT_SKIP_AKTIV:
+        warte_auf_taste("Weiter")
+
+    print()
+    print("-" * 34)
+
+def auswahl_trenner():
+    print()
+    print("-" * 34)
+    print()
+
+def seite_wechseln(
+    ort=None,
+    dialog=None
+):
+    global TEXT_SKIP_AKTIV
+
+    warte_auf_taste(
+        "Weiterlesen"
+    )
+
+    TEXT_SKIP_AKTIV = False
+
+    if (
+        isinstance(
+            globals().get("spieler"),
+            dict
+        )
+    ):
+        bildschirm_leeren = spieler.get(
+            "bildschirm_leeren",
+            STANDARD_EINSTELLUNGEN[
+                "bildschirm_leeren"
+            ]
+        )
+
+    else:
+        bildschirm_leeren = (
+            STANDARD_EINSTELLUNGEN[
+                "bildschirm_leeren"
+            ]
+        )
+
+    if bildschirm_leeren:
+        os.system(
+            "cls" if os.name == "nt"
+            else "clear"
+        )
+
+    else:
+        print()
+        print("=" * 34)
+        print()
+
+    if ort:
+        print("=" * 34)
+
+        design_text(
+            ort.upper(),
+            design="ort",
+            art="menue"
+        )
+
+        print("=" * 34)
+        print()
+
+    if dialog:
+        dialog_titel(
+            dialog
+        )
+
+def ort_nachricht_setzen(*zeilen):
+    spieler["ort_nachricht"] = list(zeilen)
+
+
+def ort_nachricht_anzeigen():
+    nachricht = spieler.get("ort_nachricht")
+
+    if not nachricht:
+        return
+
+    aktueller_ort = spieler.get("ort")
+
+    schon_besucht = (
+        aktueller_ort in spieler.get("besuchte_orte", [])
+    )
+
+    if schon_besucht:
+        text_art = "menue"
+    else:
+        text_art = "atmosphaere"
+
+    for zeile in nachricht:
+        text_ausgeben(
+            zeile,
+            art=text_art
+        )
+
+    if (
+        aktueller_ort
+        and aktueller_ort not in spieler["besuchte_orte"]
+    ):
+        spieler["besuchte_orte"].append(aktueller_ort)
+
+    spieler["ort_nachricht"] = None
+    print()
+
+
+def reise(
+    ziel,
+    *ankunft_zeilen,
+    gebiet_modus=False
+):
+    start = spieler["ort"]
+    strecke = frozenset((start, ziel))
+
+    if strecke not in REISE_STRECKEN:
+        print(
+            "Für diese Strecke ist noch keine Verbindung festgelegt."
+        )
+        warte_auf_taste()
+        return
+
+    reise_daten = REISE_STRECKEN[
+        strecke
+    ]
+
+    weg_id = reise_daten.get(
+        "weg_id"
+    )
+
+    # -------------------------
+    # VERTRAUTE ROUTE
+    # -------------------------
+
+    if (
+        weg_id
+        and reise_daten.get(
+            "schnellreise",
+            False
+        )
+        and routenkenntnis_bekannt(
+            weg_id
+        )
+    ):
+        reise_name = reise_daten.get(
+            "name",
+            reise_daten["gebiet"]
+        )
+
+        ort_titel(
+            f"Reise - {reise_name}"
+        )
+
+        print(
+            f"{start} → {ziel}"
+        )
+
+        print()
+
+        design_text(
+            "Vertraute Route",
+            design="wissen",
+            art="menue"
+        )
+
+        print()
+
+        print(
+            "Du kennst diese Strecke inzwischen gut genug, "
+            "um sie ohne längere Erkundung zurückzulegen."
+        )
+
+        menue_trenner()
+
+        print(
+            "1. Normal reisen"
+        )
+
+        print(
+            "2. Strecke zügig zurücklegen"
+        )
+
+        print(
+            "3. Zurück"
+        )
+
+        reise_auswahl = eingabe_menu(
+            1,
+            3,
+            sonder_tasten=()
+        )
+
+        if reise_auswahl == 3:
+            return
+
+        # -------------------------
+        # ZÜGIG REISEN
+        # -------------------------
+
+        if reise_auswahl == 2:
+
+            # Zeit vergeht trotzdem.
+            if reise_daten[
+                "gebiet"
+            ] in (
+                "Wald",
+                "Waldweg"
+            ):
+                ressourcen_vorkommen_regenerieren(
+                    "wald_holz",
+                    reise_daten[
+                        "schritte"
+                    ]
+                )
+
+            if not status_schritte_abschliessen(
+                reise_daten[
+                    "schritte"
+                ]
+            ):
+                return
+
+            spieler[
+                "reise"
+            ] = None
+
+            spieler[
+                "ort"
+            ] = ziel
+
+            ort_nachricht_setzen(
+                (
+                    f"Du folgst den vertrauten Markierungen auf dem "
+                    f"{reise_name} und vermeidest unnötige Umwege."
+                ),
+                *ankunft_zeilen
+            )
+
+            return
+
+    # -------------------------
+    # NORMALE REISE
+    # -------------------------
+
+    spieler["reise"] = {
+        "start": start,
+        "ziel": ziel,
+        "gebiet": reise_daten[
+            "gebiet"
+        ],
+
+        "name": reise_daten.get(
+            "name",
+            reise_daten["gebiet"]
+        ),
+
+        "weg_id": reise_daten.get(
+            "weg_id"
+        ),
+
+        "gesamt_schritte": reise_daten[
+            "schritte"
+        ],
+
+        "aktueller_schritt": 0,
+
+        "ausgeloeste_ereignisse": [],
+
+        "angebotene_abzweigungen": [],
+
+        "zufallsereignisse": reise_daten.get(
+            "zufallsereignisse",
+            True
+        ),
+
+        "ankunft_zeilen": list(
+            ankunft_zeilen
+        )
+    }
+
+    if gebiet_modus:
+        spieler[
+            "ort"
+        ] = reise_daten[
+            "gebiet"
+        ]
+
+        if (
+            start == "Eichenruh"
+            and ziel == "Köhlerei"
+            and spieler.get(
+                "quest_hilda"
+            ) == "aktiv"
+        ):
+            ort_nachricht_setzen(
+                "Du lässt Eichenruh hinter dir und folgst erneut "
+                "dem Waldweg zur Köhlerei.",
+                "Diesmal achtest du weniger auf das Ziel als auf "
+                "Spuren am Wegesrand.",
+                "Irgendwo auf dieser Strecke hätte Hildas Händler "
+                "vorbeikommen müssen."
+            )
+
+        elif (
+            start == "Eichenruh"
+            and ziel == "Letzthafen"
+            and spieler.get(
+                "quest_ein_name_fehlt"
+            ) == "letzthafen_suchen"
+        ):
+            ort_nachricht_setzen(
+                "Du verlässt den Marktplatz über die breite Straße "
+                "nach Osten.",
+                "Unter Gras und Erde tauchen die alten Pflastersteine "
+                "des Königsrings auf.",
+                "Im Fahrtenbuch stehen nur wenige brauchbare Worte: "
+                "Klippen. Hafen. Mehr hast du im Moment nicht."
+            )
+
+        elif (
+            start == "Eichenruh"
+            and ziel == "verlassenes_dorf"
+            and spieler.get(
+                "quest_schmied"
+            ) == "suche_verlassenes_dorf"
+        ):
+            ort_nachricht_setzen(
+                "Du verlässt Eichenruh nach Süden und folgst dem Weg "
+                "zwischen den Feldern.",
+                "Bjorns Beschreibung ist knapp: ein alter Waldweg, "
+                "ein vergessenes Dorf und irgendwo darin eine Schmiede.",
+                "Vor dir liegt der Pfad des Vergessens."
+            )
+
+        elif (
+            start == "verlassenes_dorf"
+            and ziel == "Eichenruh"
+            and spieler.get(
+                "quest_schmied"
+            ) == "hammer_gefunden"
+        ):
+            ort_nachricht_setzen(
+                "Du lässt die stillen Häuser des verlassenen Dorfes hinter dir.",
+                "Der alte Schmiedehammer liegt sorgfältig eingewickelt "
+                "in deinem Gepäck.",
+                "Bjorn war derjenige, der die Geschichte kannte. "
+                "Jetzt kannst du ihm zeigen, dass sie wahr war."
+            )
+
+        else:
+            ort_nachricht_setzen(
+                f"Du lässt {reise_ort_name(start)} hinter dir "
+                "und machst dich auf den Weg.",
+                f"Vor dir liegt die Strecke in Richtung "
+                f"{reise_ort_name(ziel)}."
+            )
+
+        return
+
+    reise_fortsetzen()
+
+def reise_strecken_daten(reise_daten):
+    if not isinstance(
+        reise_daten,
+        dict
+    ):
+        return {}
+
+    start = reise_daten.get(
+        "start"
+    )
+
+    ziel = reise_daten.get(
+        "ziel"
+    )
+
+    if not start or not ziel:
+        return {}
+
+    strecke = frozenset(
+        (start, ziel)
+    )
+
+    return REISE_STRECKEN.get(
+        strecke,
+        {}
+    )
+
+
+def status_effekte_aktiv():
+    return spieler.setdefault(
+        "status_effekte",
+        {}
+    )
+
+
+def status_aktiv(status_id):
+    return status_id in status_effekte_aktiv()
+
+
+def status_hinzufuegen(
+    status_id,
+    dauer=None,
+    einheit=None,
+    stapel=1,
+    quelle=None,
+    meldung=True
+):
+    definition = STATUS_EFFEKTE.get(
+        status_id
+    )
+
+    if not definition:
+        return False
+
+    if dauer is None:
+        dauer = definition.get(
+            "standard_dauer"
+        )
+
+    if einheit is None:
+        einheit = definition.get(
+            "standard_einheit"
+        )
+
+    if (
+        dauer is not None
+        and (
+            isinstance(dauer, bool)
+            or not isinstance(
+                dauer,
+                (int, float)
+            )
+            or dauer <= 0
+        )
+    ):
+        return False
+
+    if (
+        isinstance(stapel, bool)
+        or not isinstance(stapel, int)
+        or stapel <= 0
+    ):
+        return False
+
+    aktive = status_effekte_aktiv()
+
+    vorhanden = aktive.get(
+        status_id
+    )
+
+    if vorhanden:
