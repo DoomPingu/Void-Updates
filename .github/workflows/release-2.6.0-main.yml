@@ -49,14 +49,20 @@ jobs:
           end = main.index('    elif menu_auswahl == 3:', start)
           main = main[:start] + main[end:]
           main = main.replace("\r\n", "\n").replace("\r", "\n")
+          if not main.endswith("\n"):
+              main += "\n"
 
           combat = combine("combat_*.part").replace("\r\n", "\n").replace("\r", "\n")
+          if not combat.endswith("\n"):
+              combat += "\n"
 
           launcher = combine("launcher_*.part")
           launcher = launcher.replace("\u00a0", " ")
           launcher = html.unescape(launcher)
           launcher = re.sub(r'\\([_*.:~])', r'\1', launcher)
           launcher = launcher.replace("\r\n", "\n").replace("\r", "\n")
+          if not launcher.endswith("\n"):
+              launcher += "\n"
 
           (out / "void.py").write_text(main, encoding="utf-8", newline="\n")
           (out / "kampfsystem.py").write_text(combat, encoding="utf-8", newline="\n")
