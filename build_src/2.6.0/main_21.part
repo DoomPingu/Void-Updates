@@ -1,0 +1,1000 @@
+                )
+
+                for zeile in antwort.split("\n"):
+                    if zeile:
+                        text_ausgeben(
+                            zeile
+                        )
+                    else:
+                        print()
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+        elif aktion == "menschen_lesen":
+            schon_besprochen = (
+                dialog_thema_bekannt(
+                    "mara",
+                    "menschen_lesen"
+                )
+            )
+
+            dialog_thema_markieren(
+                "mara",
+                "menschen_lesen"
+            )
+
+            text_ausgeben(
+                f'[{spieler["name"]}] '
+                "Du merkst ziemlich schnell, "
+                "wenn mit jemandem etwas nicht stimmt, oder?"
+            )
+
+            print()
+
+            if not schon_besprochen:
+                Mara = None
+
+                text_ausgeben(
+                    "Mara legt das Tuch neben dem Becher ab "
+                    "und sieht dich einen Moment lang an."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Mara] Wenn jeden Tag dieselben Leute "
+                    "durch dieselbe Tür kommen, fällt irgendwann auf, "
+                    "wenn einer anders hereinkommt als sonst."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Mara] Manche reden zu viel. "
+                    "Andere plötzlich gar nicht mehr."
+                )
+
+                text_ausgeben(
+                    "[Mara] Manche bestellen dasselbe wie immer "
+                    "und sitzen trotzdem da, als wären sie "
+                    "zum ersten Mal hier."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Mara] Das Schwierige ist nicht, "
+                    "es zu bemerken."
+                )
+
+                text_ausgeben(
+                    "[Mara] Das Schwierige ist zu wissen, "
+                    "ob man fragen sollte."
+                )
+
+            else:
+                text_ausgeben(
+                    "Mara hebt leicht eine Augenbraue."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Mara] Immer noch derselbe Trick."
+                )
+
+                text_ausgeben(
+                    "[Mara] Hinsehen, zuhören "
+                    "und nicht glauben, man wüsste deshalb schon alles."
+                )
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+        elif aktion == "hilda_sorge":
+            schon_besprochen = (
+                dialog_thema_bekannt(
+                    "mara",
+                    "hilda_sorge"
+                )
+            )
+
+            dialog_thema_markieren(
+                "mara",
+                "hilda_sorge"
+            )
+
+            text_ausgeben(
+                f'[{spieler["name"]}] '
+                "Bei Hilda passt irgendetwas nicht zusammen."
+            )
+
+            print()
+
+            if not schon_besprochen:
+                text_ausgeben(
+                    "Mara hält mitten in der Bewegung inne "
+                    "und sieht dich genauer an."
+                )
+
+                print()
+
+                if hilda_status == "aktiv":
+                    text_ausgeben(
+                        f'[{spieler["name"]}] '
+                        "Sie schaut ständig zur Straße."
+                    )
+
+                    text_ausgeben(
+                        f'[{spieler["name"]}] '
+                        "Aber sobald man sie darauf anspricht, "
+                        "redet sie fast nur über die Lieferung."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "Mara legt langsam das Tuch beiseite."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "[Mara] Ja."
+                    )
+
+                    text_ausgeben(
+                        "[Mara] Genau das ist mir auch aufgefallen."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "[Mara] Sie wartet auf jemanden."
+                    )
+
+                    text_ausgeben(
+                        "[Mara] Aber manchmal wirkt es fast so, "
+                        "als könnte sie selbst nicht sagen, "
+                        "auf wen."
+                    )
+
+                else:
+                    text_ausgeben(
+                        f'[{spieler["name"]}] '
+                        "Vorher wusste Hilda genau, "
+                        "dass dieser Händler kommen sollte."
+                    )
+
+                    text_ausgeben(
+                        f'[{spieler["name"]}] '
+                        "Jetzt erinnert sie sich nur noch "
+                        "an die Lieferung."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "Maras Gesicht wird ernst."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "[Mara] Dann hast du dir das also "
+                        "nicht eingebildet."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "[Mara] Waren vergisst man vielleicht."
+                    )
+
+                    text_ausgeben(
+                        "[Mara] Einen Menschen, der regelmäßig "
+                        "ins Dorf kommt, eigentlich nicht."
+                    )
+
+                akt1_lernerfahrung(
+                    "mara_hilda_sorge"
+                )
+
+            else:
+                text_ausgeben(
+                    "Mara nickt langsam."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Mara] Ich weiß."
+                )
+
+                text_ausgeben(
+                    "[Mara] Je länger ich darüber nachdenke, "
+                    "desto weniger gefällt es mir."
+                )
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+        elif aktion == "essen_pause":
+            schon_besprochen = npc_thema_bekannt(
+                "mara",
+                "essen_pause"
+            )
+
+            npc_thema_markieren(
+                "mara",
+                "essen_pause"
+            )
+
+            if not schon_besprochen:
+
+                if spieler["lebenspunkte"] <= 50:
+                    text_ausgeben(
+                        "Mara sieht dich einen Moment lang an. "
+                        "Das Schmunzeln verschwindet aus ihrem Gesicht."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "[Mara] Nein."
+                    )
+
+                    text_ausgeben(
+                        "[Mara] Erst setzt du dich hin."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "[Mara] Was auch immer passiert ist, "
+                        "kann zwei Minuten warten."
+                    )
+
+                else:
+                    text_ausgeben(
+                        "Mara sieht dich einmal von oben bis unten an "
+                        "und zieht mit dem Fuß einen Stuhl hervor."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "[Mara] Gut. Wenigstens muss ich dich diesmal "
+                        "nicht erst davon überzeugen."
+                    )
+
+                    text_ausgeben(
+                        "[Mara] Setz dich."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "[Mara] Essen ist leichter zu lösen "
+                        "als die meisten Probleme, "
+                        "mit denen Leute hier hereinkommen."
+                    )
+
+                if not rezept_ist_gelernt(
+                    "apfelkompott"
+                ):
+                    print()
+
+                    text_ausgeben(
+                        "Mara nickt in Richtung Küche."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "[Mara] Wenn du ein paar Äpfel zuhause hast, "
+                        "brauchst du dafür übrigens keinen Koch."
+                    )
+
+                    text_ausgeben(
+                        "[Mara] Zwei Äpfel klein schneiden, "
+                        "langsam weich werden lassen."
+                    )
+
+                    print()
+
+                    text_ausgeben(
+                        "[Mara] Einfach. Warm. "
+                        "Und schwer zu ruinieren."
+                    )
+
+                    rezept_lernen(
+                        "apfelkompott"
+                    )
+
+            else:
+                if spieler["lebenspunkte"] <= 50:
+                    antwort = npc_variante_waehlen(
+                        "mara",
+                        "letzte_essen_pause_verletzt",
+                        [
+                            (
+                                "Mara sieht dich einen Moment lang an.\n\n"
+                                "[Mara] Diesmal frage ich nicht, "
+                                "wo du gewesen bist.\n"
+                                "[Mara] Setz dich. "
+                                "Die Geschichte kann warten."
+                            ),
+                            (
+                                "Mara schiebt einen Stuhl mit dem Fuß hervor.\n\n"
+                                "[Mara] Nein. Erst hinsetzen.\n"
+                                "[Mara] Wenn du danach immer noch behauptest, "
+                                "es gehe dir gut, höre ich mir die Lüge an."
+                            ),
+                            (
+                                "Mara mustert dich schweigend.\n\n"
+                                "[Mara] Weißt du, was praktisch daran ist, "
+                                "jeden Tag Menschen zu bedienen?\n"
+                                "[Mara] Man erkennt irgendwann, "
+                                "wenn jemand eine Pause braucht."
+                            ),
+                            (
+                                "Mara greift bereits nach einem Becher.\n\n"
+                                "[Mara] Du bekommst etwas zu essen.\n"
+                                "[Mara] Und nein, das war keine Frage."
+                            )
+                        ]
+                    )
+
+                else:
+                    antwort = npc_variante_waehlen(
+                        "mara",
+                        "letzte_essen_pause_normal",
+                        [
+                            (
+                                "Mara deutet auf den freien Stuhl "
+                                "vor dem Tresen.\n\n"
+                                "[Mara] Du kennst den Ablauf inzwischen.\n"
+                                "[Mara] Erst hinsetzen. "
+                                "Dann kannst du mir erzählen, "
+                                "warum du eigentlich keine Zeit dafür hast."
+                            ),
+                            (
+                                "Mara sieht kurz zur Küche und wieder zu dir.\n\n"
+                                "[Mara] Hunger kann ich beheben.\n"
+                                "[Mara] Bei allem anderen "
+                                "müsstest du mir schon mehr erzählen."
+                            ),
+                            (
+                                "Mara stellt einen Becher vor dir ab.\n\n"
+                                "[Mara] Fünf Minuten.\n"
+                                "[Mara] Du sitzt, isst etwas "
+                                "und tust so, als wäre das deine eigene Idee."
+                            ),
+                            (
+                                "Mara zieht einen Stuhl ein Stück hervor.\n\n"
+                                "[Mara] Setz dich.\n"
+                                "[Mara] Die Welt kommt vermutlich "
+                                "auch ohne dich bis zum nächsten Bissen zurecht."
+                            )
+                        ]
+                    )
+
+                for zeile in antwort.split("\n"):
+                    if zeile:
+                        text_ausgeben(
+                            zeile
+                        )
+                    else:
+                        print()
+
+            status_hinzufuegen(
+                "kurze_rast",
+                quelle="mara_gasthaus"
+            )
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+        elif aktion == "grund_gasthaus":
+            schon_besprochen = npc_thema_bekannt(
+                "mara",
+                "grund_gasthaus"
+            )
+
+            npc_thema_markieren(
+                "mara",
+                "grund_gasthaus"
+            )
+
+            if not schon_besprochen:
+                text_ausgeben(
+                    "Mara sieht dich einen Moment an, "
+                    "dann schmunzelt sie."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Mara] Musst du nicht."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Mara] Die Hälfte der Leute kommt her, "
+                    "weil sie Hunger hat."
+                )
+
+                text_ausgeben(
+                    "[Mara] Die andere Hälfte, weil sie "
+                    "nicht allein zuhause sitzen will."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Mara] Beides sind ziemlich brauchbare Gründe."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Mara] Und falls du tatsächlich nur "
+                    "wegen meiner Gesellschaft hier bist ..."
+                )
+
+                text_ausgeben(
+                    "[Mara] Ich werde dir die Vorstellung "
+                    "nicht kaputtmachen."
+                )
+
+            else:
+                antwort = npc_variante_waehlen(
+                    "mara",
+                    "letzte_grund_gasthaus",
+                    [
+                        (
+                            "Mara legt den Kopf leicht schief.\n\n"
+                            "[Mara] Du brauchst immer noch keinen Grund.\n"
+                            "[Mara] Aber langsam glaube ich, "
+                            "du brauchst die Bestätigung häufiger als gedacht."
+                        ),
+                        (
+                            "Mara stützt einen Ellbogen auf den Tresen.\n\n"
+                            "[Mara] Wenn du oft genug fragst, "
+                            "erfinde ich dir irgendwann einen.\n"
+                            "[Mara] Bis dahin darfst du einfach hier sein."
+                        ),
+                        (
+                            "Mara grinst.\n\n"
+                            "[Mara] Wenn du unbedingt eine Erklärung brauchst: "
+                            "Der Stuhl ist frei, das Dach ist dicht "
+                            "und ich werfe dich nicht raus.\n"
+                            "[Mara] Reicht das?"
+                        ),
+                        (
+                            "Mara schaut kurz durch die Gaststube.\n\n"
+                            "[Mara] Man muss nicht immer etwas wollen, "
+                            "wenn man irgendwo hingeht.\n"
+                            "[Mara] Manchmal reicht es, "
+                            "dass dort Leute sind."
+                        ),
+                        (
+                            "Mara hebt eine Augenbraue.\n\n"
+                            "[Mara] Du bist wieder hier. "
+                            "Ich bin wieder hier.\n"
+                            "[Mara] Für ein Gasthaus ist das "
+                            "eigentlich schon genug Planung."
+                        )
+                    ]
+                )
+
+                for zeile in antwort.split("\n"):
+                    if zeile:
+                        text_ausgeben(
+                            zeile
+                        )
+                    else:
+                        print()
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+        elif aktion == "ende":
+            direkte_besuche = npc_status(
+                "mara"
+            ).get(
+                "direkte_besuche",
+                0
+            )
+
+            if spieler["lebenspunkte"] <= 50:
+                abschied = npc_variante_waehlen(
+                    "mara",
+                    "letzter_abschied_verletzt",
+                    [
+                        (
+                            "[Mara] Und diesmal gehst du langsam.\n"
+                            "[Mara] Das war keine Bitte."
+                        ),
+                        (
+                            "[Mara] Pass auf dich auf.\n"
+                            "[Mara] Ich habe keine Lust, dich morgen "
+                            "vom Boden aufzusammeln."
+                        ),
+                        (
+                            "[Mara] Wenn es schlimmer wird, "
+                            "kommst du zurück.\n"
+                            "[Mara] Ohne Diskussion."
+                        )
+                    ]
+                )
+
+            elif direkte_besuche >= 5:
+                abschied = npc_variante_waehlen(
+                    "mara",
+                    "letzter_abschied_dauerbesuch",
+                    [
+                        (
+                            "[Mara] Bis gleich, vermutlich."
+                        ),
+                        (
+                            "[Mara] Ich halte deinen Platz frei.\n"
+                            "[Mara] Scheint sich inzwischen zu lohnen."
+                        ),
+                        (
+                            "[Mara] Geh ruhig.\n"
+                            "[Mara] Ich bin ziemlich sicher, "
+                            "du findest wieder zurück."
+                        )
+                    ]
+                )
+
+            else:
+                abschied = npc_variante_waehlen(
+                    "mara",
+                    "letzter_abschied_normal",
+                    [
+                        "[Mara] Bis später.",
+                        "[Mara] Pass auf dich auf.",
+                        "[Mara] Bis dann. Die Tür kennst du ja.",
+                        (
+                            "[Mara] Geh schon.\n"
+                            "[Mara] Ich bin auch später noch hier."
+                        )
+                    ]
+                )
+
+            for zeile in abschied.split("\n"):
+                if zeile:
+                    text_ausgeben(
+                        zeile
+                    )
+                else:
+                    print()
+
+            warte_auf_taste(
+                "Weiter"
+            )
+
+            return
+        
+def dialog_hilda():
+    npc_besuch_starten(
+        "hilda"
+    )
+
+    erste_runde = True
+    themen_dieses_gespraech = set()
+
+    def hilda_abschied():
+        direkte_besuche = npc_status(
+            "hilda"
+        ).get(
+            "direkte_besuche",
+            0
+        )
+
+        if spieler["lebenspunkte"] <= 50:
+            abschied = npc_variante_waehlen(
+                "hilda",
+                "letzter_abschied_verletzt",
+                [
+                    (
+                        "[Hilda] Und jetzt gehst du dich ausruhen."
+                    ),
+                    (
+                        "[Hilda] Pass auf dich auf.\n"
+                        "[Hilda] Ich brauche keine weitere "
+                        "verschwundene Person."
+                    ),
+                    (
+                        "[Hilda] Geh langsam.\n"
+                        "[Hilda] Du siehst aus, als würdest du "
+                        "beim nächsten Windstoß umfallen."
+                    )
+                ]
+            )
+
+        elif direkte_besuche >= 5:
+            abschied = npc_variante_waehlen(
+                "hilda",
+                "letzter_abschied_dauerbesuch",
+                [
+                    "[Hilda] Bis in fünf Minuten.",
+                    (
+                        "[Hilda] Ich sage nicht Auf Wiedersehen.\n"
+                        "[Hilda] Das lohnt sich bei dir kaum noch."
+                    ),
+                    "[Hilda] Du weißt ja inzwischen, wo ich stehe."
+                ]
+            )
+
+        else:
+            abschied = npc_variante_waehlen(
+                "hilda",
+                "letzter_abschied_normal",
+                [
+                    "[Hilda] Bis später.",
+                    "[Hilda] Pass auf dich auf.",
+                    "[Hilda] Gute Wege.",
+                    "[Hilda] Und bring dich nicht wieder in Schwierigkeiten."
+                ]
+            )
+
+        for zeile in abschied.split("\n"):
+            if zeile:
+                text_ausgeben(
+                    zeile
+                )
+            else:
+                print()
+
+        warte_auf_taste(
+            "Weiter"
+        )
+
+    # -------------------------
+    # PROLOG
+    # -------------------------
+
+    if prolog_laeuft():
+        ort_titel("Marktplatz von Eichenruh")
+        dialog_titel("Hilda")
+
+        text_ausgeben(
+            "Hilda steht hinter ihrem Marktstand "
+            "und sortiert mehrere Säcke und Kisten."
+        )
+
+        print()
+        text_ausgeben(
+            "Als sie dich bemerkt, hebt sie kurz den Blick."
+        )
+
+        print()
+        text_ausgeben(
+            f'[Hilda] Morgen, {spieler["name"]}. '
+            "Wenn du etwas kaufen willst, musst du dich noch gedulden."
+        )
+
+        print()
+        text_ausgeben(
+            "[Hilda] Ich bin selbst noch nicht fertig "
+            "mit dem Auspacken."
+        )
+
+        warte_auf_taste()
+        return
+
+
+
+    # -------------------------
+    # NACH DEM PROLOG
+    # -------------------------
+
+    while True:
+        ort_titel("Marktplatz von Eichenruh")
+        dialog_titel("Hilda")
+
+        text_ausgeben(
+            "Hilda steht hinter ihrem Marktstand "
+            "und sortiert mehrere Säcke und Kisten."
+        )
+
+        # -------------------------
+        # QUEST NOCH NICHT ENTDECKT
+        # -------------------------
+
+        if spieler["quest_hilda"] == "nicht_entdeckt":
+            print()
+
+            if npc_reaktion_gezeigt(
+                "hilda",
+                "lieferung_abgelehnt"
+            ):
+                text_ausgeben(
+                    "Hilda sieht von ihren Waren auf."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Hilda] Falls du deine Meinung geändert hast: "
+                    "Meine Lieferung fehlt noch immer."
+                )
+
+            else:
+                text_ausgeben(
+                    "Als sie dich bemerkt, wirft Hilda noch einmal "
+                    "einen Blick zur Straße."
+                )
+
+                print()
+
+                if spieler.get(
+                    "prolog_uebersprungen",
+                    False
+                ):
+                    text_ausgeben(
+                        "[Hilda] Du bist doch inzwischen draußen unterwegs, oder?"
+                    )
+
+                else:
+                    text_ausgeben(
+                        "[Hilda] Du warst doch gerade erst draußen "
+                        "Richtung Köhlerei."
+                    )
+
+                text_ausgeben(
+                    "[Hilda] Dann kannst du mir vielleicht einen Gefallen tun."
+                )
+
+            print()
+
+            print()
+            print("1. Was ist passiert?")
+            print("2. Klingt nach Arbeit. Nein danke.")
+            print("3. Gespräch beenden")
+
+            hilda_auswahl = eingabe_menu(
+                1,
+                3,
+                sonder_tasten=()
+            )
+
+            print()
+
+            if hilda_auswahl == 1:
+                text_ausgeben(
+                    f'[{spieler["name"]}] Was ist passiert?'
+                )
+
+                print()
+
+                text_ausgeben(
+                    "Hilda deutet auf eine auffällige Lücke zwischen "
+                    "den Kisten hinter ihrem Stand."
+                )
+
+                print()
+                text_ausgeben(
+                    "[Hilda] Heute Morgen hätte dort eine Lieferung "
+                    "stehen sollen."
+                )
+
+                text_ausgeben(
+                    "[Hilda] Mehl, Kräuter, Stoffe... nichts Besonderes."
+                )
+
+                print()
+                text_ausgeben(
+                    "[Hilda] Der Händler kommt normalerweise über denselben "
+                    "Waldweg, der zur Köhlerei führt."
+                )
+
+                text_ausgeben(
+                    "[Hilda] Aber weder er noch sein Wagen sind angekommen."
+                )
+
+                print()
+                text_ausgeben(
+                    "Hilda blickt wieder zur Straße, nur für einen Moment."
+                )
+
+                text_ausgeben(
+                    "[Hilda] Wenn du den Weg ohnehin noch einmal gehst, "
+                    "halt die Augen offen."
+                )
+
+                print()
+
+                quest_meldung(
+                    "neu",
+                    "Die verschwundene Lieferung",
+                    "Untersuche den Waldweg zur Köhlerei nach Hildas "
+                    "Händler und seinem Karren."
+                )
+
+                spieler["quest_hilda"] = "aktiv"
+
+                warte_auf_taste("Weiter")
+
+                erste_runde = False
+
+            elif hilda_auswahl == 2:
+                text_ausgeben(
+                    f'[{spieler["name"]}] '
+                    "Klingt nach Arbeit. Nein danke."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "Hilda verdreht die Augen."
+                )
+
+                print()
+
+                text_ausgeben(
+                    "[Hilda] Natürlich. Tiere jagen klingt wohl "
+                    "wichtiger als ehrliche Arbeit."
+                )
+
+                npc_reaktion_markieren(
+                    "hilda",
+                    "lieferung_abgelehnt"
+                )
+
+                warte_auf_taste("Weiter")
+
+                return
+
+            elif hilda_auswahl == 3:
+                hilda_abschied()
+                return
+
+            continue
+
+        # -------------------------
+        # QUEST AKTIV
+        # -------------------------
+
+        elif spieler["quest_hilda"] == "aktiv":
+            print()
+
+            if erste_runde:
+                direkte_besuche = npc_status(
+                    "hilda"
+                ).get(
+                    "direkte_besuche",
+                    0
+                )
+
+                if spieler["lebenspunkte"] <= 50:
+                    text_ausgeben(
+                        "[Hilda] Bei allen Wegen, du siehst fürchterlich aus."
+                    )
+
+                    text_ausgeben(
+                        "[Hilda] Die Lieferung kann warten. "
+                        "Du solltest dich erstmal ausruhen."
+                    )
+
+                elif direkte_besuche >= 5:
+                    begruessung = npc_variante_waehlen(
+                        "hilda",
+                        "letzte_aktive_begruessung",
+                        [
+                            (
+                                "[Hilda] Bevor du fragst: "
+                                "Nein. Der Wagen ist noch nicht aufgetaucht."
+                            ),
+                            (
+                                "[Hilda] Meine Lieferung fehlt noch immer.\n"
+                                "[Hilda] Auch seit deinem letzten Besuch."
+                            ),
+                            (
+                                "[Hilda] Du hoffst wohl, dass der Händler "
+                                "irgendwann einfach hinter dir auftaucht."
+                            )
+                        ]
+                    )
+
+                    for zeile in begruessung.split("\n"):
+                        if zeile:
+                            text_ausgeben(
+                                zeile
+                            )
+                        else:
+                            print()
+
+                else:
+                    text_ausgeben(
+                        "[Hilda] Meine Lieferung fehlt noch immer."
+                    )
+
+                    text_ausgeben(
+                        "[Hilda] Wenn du sowieso in den Wald gehst, "
+                        "halt die Augen offen."
+                    )
+
+            else:
+                text_ausgeben(
+                    "[Hilda] Noch etwas?"
+                )
+
+            print()
+
+            optionen = []
+
+            if "lieferung_inhalt" not in themen_dieses_gespraech:
+                optionen.append(
+                    (
+                        "lieferung_inhalt",
+                        "Was genau sollte geliefert werden?"
+                    )
+                )
+
+            if "haendler" not in themen_dieses_gespraech:
+                optionen.append(
+                    (
+                        "haendler",
+                        "Weißt du etwas über den Händler?"
+                    )
+                )
+
+            hilda_sorge_bekannt = dialog_thema_bekannt(
+                "hilda",
+                "haendler_sorge"
+            )
+
+            if (
+                "haendler_sorge"
+                not in themen_dieses_gespraech
+                and (
+                    hilda_sorge_bekannt
+                    or spieler_pruefung(
+                        "empathie",
+                        2
+                    )
+                )
+            ):
+                optionen.append(
+                    (
+                        "haendler_sorge",
+                        "[Empathie] Es geht dir nicht nur "
+                        "um die Lieferung, oder?"
+                    )
+                )
+
+            optionen.append(
+                (
+                    "ende",
+                    "Gespräch beenden"
+                )
+            )
+
+            for nummer, (aktion_id, text) in enumerate(
+                optionen,
+                start=1
+            ):
+                if aktion_id in (
+                    "lieferung_inhalt",
+                    "haendler",
+                    "haendler_sorge"
+                ):
+                    text = dialog_option(
+                        "hilda",
+                        aktion_id,
+                        text
+                    )
+
+                print(
