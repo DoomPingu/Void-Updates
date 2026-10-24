@@ -1,14 +1,13 @@
 {
-  "version": "3.4.1",
-  "name": "Alpha 3.4.1",
-  "sha256": "54061DD771C81C8C4F795629BC43E1656998FED3841AAF5B918BABF3006EB270",
-  "download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v3.4.1/Void_alpha_3.4.1.zip",
+  "version": "3.4.2",
+  "name": "Alpha 3.4.2",
+  "sha256": "4DEB67B283FC652780F14E080DBD6388AF1E38DFA759FC8B43B5C84DC6A8C5A6",
+  "download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v3.4.2/Void_alpha_3.4.2.zip",
   "patch_notes": [
-    "Vertraute Route: Schnellreise nach einer vollständig abgeschlossenen Normalreise auf dem Pfad des Vergessens, dem Faden der Erinnerung und dem Waldweg zur Köhlerei; der Königsring bleibt bei Mareks Quest.",
-    "Offene Reisequests werden geschützt: Unter anderem Randsteine, Seitenpfad, Versorgungskehre, Hildas Karren und die Lichtung am Königsring lassen sich nicht versehentlich überspringen.",
-    "Spielzeit wird im Status angezeigt und im Spielstand gespeichert; im Browser zusätzlich im HUD.",
-    "„Was die Wege verbinden“: Klarerer Hinweis und verständlichere Wegbeschreibung zu den Randsteinen.",
-    "Spielstände bleiben kompatibel (Save-Version 2)."
+    "Textüberarbeitung: Spielstart (Intro, Aufwachen, Zimmer) und Build-Auswahl sind klarer und weniger gleichförmig formuliert.",
+    "Ort-Beschreibungen und Übergänge wiederholen sich weniger, zum Beispiel im Gasthaus, am Gezeitensteg, im Verlassenen Dorf und im Gang von Oros; der Hinweistext zu den drei Metallplatten ist verständlicher.",
+    "Einzelne Zeilen von Mara, Bjorn und Finch sowie einige Begrüßungen der Dorfbewohner wurden überarbeitet.",
+    "Keine Änderungen an Spielablauf, Werten oder Quests; Spielstände bleiben kompatibel (Save-Version 2)."
   ],
   "launcher_version": "1.2.8",
   "launcher_sha256": "980F63F5D48AF345F6272B666472B932618E9D17B7879687763181CE7A8C12F1",
