@@ -1,15 +1,14 @@
 {
-  "version": "3.4.0",
-  "name": "Alpha 3.4.0",
-  "sha256": "2D76A8257BBF526577243CACE48E00C84FEBD19B637F7860B37410E1EBBBF355",
-  "download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v3.4.0/Void_alpha_3.4.0.zip",
+  "version": "3.4.1",
+  "name": "Alpha 3.4.1",
+  "sha256": "54061DD771C81C8C4F795629BC43E1656998FED3841AAF5B918BABF3006EB270",
+  "download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v3.4.1/Void_alpha_3.4.1.zip",
   "patch_notes": [
-    "Kapitel 6 „Die offenen Tore“ (Teil 2) – „Die Zurückgelassenen“: Ein junger Fuhrknecht erreicht Oros, die Hände aufgeschürft, Kreidestaub an den Stiefeln. An der alten Versorgungskehre sitzen Menschen fest, und der Weg zu ihnen stimmt nicht mehr. Wer dir dabei hilft, hängt davon ab, was du einst in Levins Fall getan hast. An der Kehre musst du entscheiden, was mehr zählt.",
-    "Level 7: Eine neue Stufe (1000 EXP) mit drei neuen Talenten. Für Level 7 brauchst du mehr EXP, als es bisher im Spiel gibt. Wer gründlich spielt, erreicht es mit Kapitel 6 Teil 2.",
-    "Zweiter Atem (Klinge): Einmal pro Kampf gewinnst du 12 Leben zurück, wenn ein Treffer dich unter 30 bringt.",
-    "Wachsam (Pfad): Hinterhalte sind seltener und schwächer. Gewöhnlichen Gegnern auf Reisen kannst du unbemerkt ausweichen, wenn du sie rechtzeitig bemerkst.",
-    "Heilkundige Hand (Werkstatt): Bandagen heilen beim Stoppen einer Blutung 8 Leben, Wundsalben heilen 15 statt 8.",
-    "Spielstände bleiben kompatibel: Du kannst nach dem Update mit deinem bisherigen Spielstand weiterspielen."
+    "Vertraute Route: Schnellreise nach einer vollständig abgeschlossenen Normalreise auf dem Pfad des Vergessens, dem Faden der Erinnerung und dem Waldweg zur Köhlerei; der Königsring bleibt bei Mareks Quest.",
+    "Offene Reisequests werden geschützt: Unter anderem Randsteine, Seitenpfad, Versorgungskehre, Hildas Karren und die Lichtung am Königsring lassen sich nicht versehentlich überspringen.",
+    "Spielzeit wird im Status angezeigt und im Spielstand gespeichert; im Browser zusätzlich im HUD.",
+    "„Was die Wege verbinden“: Klarerer Hinweis und verständlichere Wegbeschreibung zu den Randsteinen.",
+    "Spielstände bleiben kompatibel (Save-Version 2)."
   ],
   "launcher_version": "1.2.8",
   "launcher_sha256": "980F63F5D48AF345F6272B666472B932618E9D17B7879687763181CE7A8C12F1",
