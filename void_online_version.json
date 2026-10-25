@@ -1,13 +1,13 @@
 {
-  "version": "3.4.2",
-  "name": "Alpha 3.4.2",
-  "sha256": "4DEB67B283FC652780F14E080DBD6388AF1E38DFA759FC8B43B5C84DC6A8C5A6",
-  "download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v3.4.2/Void_alpha_3.4.2.zip",
+  "version": "3.4.3",
+  "name": "Alpha 3.4.3",
+  "sha256": "368A8417AB4F87DAEE411B4F126849C204BA64214762C54296BF8DF78A65E63D",
+  "download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v3.4.3/Void_alpha_3.4.3.zip",
   "patch_notes": [
-    "Textüberarbeitung: Spielstart (Intro, Aufwachen, Zimmer) und Build-Auswahl sind klarer und weniger gleichförmig formuliert.",
-    "Ort-Beschreibungen und Übergänge wiederholen sich weniger, zum Beispiel im Gasthaus, am Gezeitensteg, im Verlassenen Dorf und im Gang von Oros; der Hinweistext zu den drei Metallplatten ist verständlicher.",
-    "Einzelne Zeilen von Mara, Bjorn und Finch sowie einige Begrüßungen der Dorfbewohner wurden überarbeitet.",
-    "Keine Änderungen an Spielablauf, Werten oder Quests; Spielstände bleiben kompatibel (Save-Version 2)."
+    "Texte der Hauptgeschichte überarbeitet: Die Szenen in Oros, bei der Alten Wegstation und im Messgang sind straffer und weniger gleichförmig formuliert.",
+    "Einzelne Sätze von Mara, Bjorn, Tomas, Hilda und Sera, die sich bisher geglichen haben, sind angepasst, damit die Figuren unterscheidbarer klingen.",
+    "Einige Ortsbeschreibungen und Übergänge im Wald und auf dem Marktplatz wiederholen sich weniger; der Rauchgeruch auf dem Waldweg zur Köhlerei ist stimmiger beschrieben.",
+    "Kleinigkeiten bei Rechtschreibung und Gedankenstrichen; keine Änderungen an Spielablauf, Werten oder Quests; Spielstände bleiben kompatibel (Save-Version 2)."
   ],
   "launcher_version": "1.2.8",
   "launcher_sha256": "980F63F5D48AF345F6272B666472B932618E9D17B7879687763181CE7A8C12F1",
