@@ -1,12 +1,11 @@
 {
-  "version": "3.4.4",
-  "name": "Alpha 3.4.4",
-  "sha256": "B2DB62F656868348E011CC78F9D85354A5DE8588ECF1C85460D64A37259C7897",
-  "download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v3.4.4/Void_alpha_3.4.4.zip",
+  "version": "3.4.5",
+  "name": "Alpha 3.4.5",
+  "sha256": "9F7F06B77B28E4C0B2826164BED2B6E96AC8C05528B473B55F9C10DCD477265A",
+  "download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v3.4.5/Void_alpha_3.4.5.zip",
   "patch_notes": [
-    "Tag und Nacht, Wetter: Ein Spieltag dauert 40 Minuten Spielzeit, das Wetter wechselt alle 15 Minuten (klar, bewölkt, Nebel, Regen). Beides wird aus der Spielzeit berechnet und im Spielstand gespeichert.",
-    "Draußen siehst du nachts, bei Regen und bei Nebel schlechter: im Kampf weniger Paradechance, schwereres Ausweichen und eine geringere Chance, Gegner zu entdecken; bei Regen ist zusätzlich die Bewegung eingeschränkt. Das Talent Nachtauge gleicht die Nacht aus. Tagsüber bei klarem Wetter bleibt der Kampf wie bisher.",
-    "Nebel ist neu. In den TIEFEN und in der Alten Wegstation gelten weder Tageszeit noch Wetter. Die Kampfvorbereitung erklärt die Sicht mit neuen Zeilen.",
+    "Unter dem Ortsnamen steht draußen (Eichenruh, Wald, Köhlerei, Marktplatz, Verlassenes Dorf) eine kurze Zeile zu Abend, Nacht, Morgen, Regen oder Nebel. Bei Tag und klarem Wetter bleibt sie weg.",
+    "Auf Reisen kommt es nachts und im Nebel etwas häufiger zu Begegnungen (4 % pro Schritt werden nachts 6 %, im Nebel 5 %, bei beidem 7,5 %). Garantie, Ruhezeit und Höchstzahl pro Reise bleiben gleich.",
     "Spielstände bleiben kompatibel (Save-Version 2): Du kannst nach dem Update mit deinem bisherigen Spielstand weiterspielen."
   ],
   "launcher_version": "1.2.8",
