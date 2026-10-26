@@ -1,11 +1,12 @@
 {
-  "version": "3.4.5",
-  "name": "Alpha 3.4.5",
-  "sha256": "9F7F06B77B28E4C0B2826164BED2B6E96AC8C05528B473B55F9C10DCD477265A",
-  "download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v3.4.5/Void_alpha_3.4.5.zip",
+  "version": "3.4.6",
+  "name": "Alpha 3.4.6",
+  "sha256": "8A1E44132B88F3617325BC6B85C9F75CE988DF0B76361228125E003173433254",
+  "download_url": "https://github.com/DoomPingu/Void-Updates/releases/download/v3.4.6/Void_alpha_3.4.6.zip",
   "patch_notes": [
-    "Unter dem Ortsnamen steht draußen (Eichenruh, Wald, Köhlerei, Marktplatz, Verlassenes Dorf) eine kurze Zeile zu Abend, Nacht, Morgen, Regen oder Nebel. Bei Tag und klarem Wetter bleibt sie weg.",
-    "Auf Reisen kommt es nachts und im Nebel etwas häufiger zu Begegnungen (4 % pro Schritt werden nachts 6 %, im Nebel 5 %, bei beidem 7,5 %). Garantie, Ruhezeit und Höchstzahl pro Reise bleiben gleich.",
+    "Schlafen bis zum Morgen: Ab dem Abend kannst du die Nacht verschlafen. Das geht im Bett zu Hause (kostenlos, wie bisher mit voller Heilung), neu in einem Zimmer im Gasthaus (10 Gold, volle Heilung) und auf Reisen am Lagerfeuer. Danach ist es Morgen, und das Wetter ist ein anderes. Tagsüber ist es zum Schlafen noch zu früh.",
+    "Die Nacht am Lagerfeuer kostet 4 Holz und heilt 50 Lebenspunkte (plus Talentbonus). Mit 20 % Wahrscheinlichkeit schleicht vorher etwas ums Lager, dann kommt es zu einem Kampf.",
+    "Tageszeit und Wetter laufen weiter mit der Spielzeit; Schlafen verschiebt sie, ohne die angezeigte Spielzeit zu verändern.",
     "Spielstände bleiben kompatibel (Save-Version 2): Du kannst nach dem Update mit deinem bisherigen Spielstand weiterspielen."
   ],
   "launcher_version": "1.2.8",
